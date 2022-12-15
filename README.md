@@ -9,3 +9,19 @@ gafro can be used either standalone or within a catkin workspace. In both cases 
 
 	target_link_libraries(target gafro::gafro) 
 
+## Background
+
+You can find the accompanying article [here](http://arxiv.org/abs/2212.07237) and more information on our [website](https://tloew.gitlab.io/geometric_algebra/). 
+
+## How to cite
+
+If you use *gafro* in your research, please cite the
+
+	@misc{https://doi.org/10.48550/arxiv.2212.07237,
+	  title = {Geometric Algebra for Optimal Control with Applications in Manipulation Tasks},
+	  author = {Löw, Tobias and Calinon, Sylvain},
+	  publisher = {arXiv},
+	  year = {2022},
+	  doi = {10.48550/ARXIV.2212.07237},
+	  url = {https://arxiv.org/abs/2212.07237},
+	}
