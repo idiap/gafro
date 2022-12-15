@@ -17,9 +17,9 @@ You can find the accompanying article [here](http://arxiv.org/abs/2212.07237) an
 
 If you use *gafro* in your research, please cite the
 
-	@misc{https://doi.org/10.48550/arxiv.2212.07237,
+	@misc{loew2022_geometric_algebra,
 	  title = {Geometric Algebra for Optimal Control with Applications in Manipulation Tasks},
-	  author = {Löw, Tobias and Calinon, Sylvain},
+	  author = {L\"ow, Tobias and Calinon, Sylvain},
 	  publisher = {arXiv},
 	  year = {2022},
 	  doi = {10.48550/ARXIV.2212.07237},
