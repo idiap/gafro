@@ -1,9 +1,10 @@
 # Geometric Algebra For RObotics
 
-This library provides a geometric algebra tools targeted towards robotics applications. However it proves a proper build target and can be easily included in a catkin workspace to use it with ROS. 
+This library provides a geometric algebra tools targeted towards robotics applications. It includes various computations for the kinematics and dynamics of serial manipulators as well as optimal control.  
 
 ## Usage
-gafro can be used either standalone or within a catkin workspace. In both cases it can used in a CMakeLists.txt as follows:
+
+gafro can be used either standalone or within a catkin workspace. In both cases it can be used in a CMakeLists.txt as follows:
 
 	find_package(gafro REQUIRED)
 
