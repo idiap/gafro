@@ -18,11 +18,11 @@ You can find the accompanying article [here](http://arxiv.org/abs/2212.07237) an
 
 If you use *gafro* in your research, please cite the
 
-	@misc{loew2022_geometric_algebra,
-	  title = {Geometric Algebra for Optimal Control with Applications in Manipulation Tasks},
+	@article{lowGeometricAlgebraOptimal2023,
+	  title = {Geometric {{Algebra}} for {{Optimal Control}} with {{Applications}} in {{Manipulation Tasks}}},
 	  author = {L\"ow, Tobias and Calinon, Sylvain},
-	  publisher = {arXiv},
-	  year = {2022},
-	  doi = {10.48550/ARXIV.2212.07237},
-	  url = {https://arxiv.org/abs/2212.07237},
+	  date = {2023},
+	  journal = {IEEE Transactions on Robotics},
+	  doi = {10.1109/TRO.2023.3277282},
+	  note = {In Press}
 	}
