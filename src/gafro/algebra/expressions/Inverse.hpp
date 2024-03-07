@@ -20,7 +20,7 @@
 #pragma once
 
 #include <gafro/algebra/Blades.hpp>
-#include <gafro/algebra/expressions/Expression.hpp>
+#include <gafro/algebra/expressions/UnaryExpression.hpp>
 
 namespace gafro
 {
@@ -43,12 +43,16 @@ namespace gafro
             norm_ = m1.squaredNorm();
         }
 
+        Inverse(M &&m1) : UnaryExpression<Inverse<M>, M, M>(std::move(m1))
+        {
+            norm_ = m1.squaredNorm();
+        }
+
         virtual ~Inverse() = default;
 
         template <int blade>
-        requires(has(blade))  //
-          Vtype get()
-        const
+            requires(has(blade))  //
+        Vtype get() const
         {
             if constexpr (blade > 5 && blade < 26)
             {

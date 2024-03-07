@@ -23,6 +23,7 @@
 //
 #include <gafro/algebra/Blades.hpp>
 #include <gafro/algebra/Multivector.hxx>
+#include <gafro/algebra/Versor.hpp>
 
 namespace gafro
 {
@@ -30,25 +31,23 @@ namespace gafro
     class SandwichProduct;
 
     template <class T>
-    class Rotor : public Multivector<T, blades::scalar, blades::e23, blades::e13, blades::e12>
+    class Rotor : public Versor<Rotor<T>, T, blades::scalar, blades::e23, blades::e13, blades::e12>
     {
       public:
-        using Base = Multivector<T, blades::scalar, blades::e23, blades::e13, blades::e12>;
+        using Base = Versor<Rotor<T>, T, blades::scalar, blades::e23, blades::e13, blades::e12>;
 
         using Parameters = typename Base::Parameters;
 
+        using Base::Base;
+
         class Generator;
+        class Exponential;
 
         Rotor();
-
-        Rotor(const Base &other);
 
         Rotor(const Generator &bivector, const T &angle);
 
         Rotor(const Parameters &parameters);
-
-        template <class E>
-        Rotor(const Expression<E, Base> &expression);
 
         virtual ~Rotor();
 
@@ -68,11 +67,12 @@ namespace gafro
 
         const T &e12() const;
 
-        template <class Object>
-        SandwichProduct<Object, Rotor> apply(const Object &object);
-
       protected:
       private:
+      public:
+        static Exponential exp(const Generator &generator);
+
+        static Rotor fromQuaternion(const Eigen::Quaternion<T> &quaternion);
     };
 
 }  // namespace gafro

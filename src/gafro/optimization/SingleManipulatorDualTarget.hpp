@@ -26,21 +26,23 @@ namespace gafro
 {
 
     template <class T, int dof, template <class Type> class Tool, template <class Type> class Target>
-    class SingleManipulatorTarget
+    class SingleManipulatorDualTarget
     {
       public:
-        using Result = typename OuterProduct<Target<T>, SandwichProduct<Tool<T>, Motor<T>>>::Type;
+        using Result = typename InnerProduct<typename Dual<Target<T>>::Type, SandwichProduct<typename Dual<Tool<T>>::Type, Motor<T>>>::Type;
 
         using VectorX = Eigen::Matrix<T, dof, 1>;
         using MatrixXX = Eigen::Matrix<T, dof, dof>;
 
-        SingleManipulatorTarget(const SingleManipulatorTarget &other)
-          : tool_(other.tool_),          //
-            target_(other.target_),      //
-            arm_(FrankaEmikaRobot<T>())  //
+        SingleManipulatorDualTarget(const SingleManipulatorDualTarget &other)
+          : arm_(other.arm_),        //
+            tool_(other.tool_),      //
+            target_(other.target_)   //
         {}
 
-        SingleManipulatorTarget(const Tool<T> &tool, const Target<T> &target) : tool_(tool), target_(target) {}
+        SingleManipulatorDualTarget(const Manipulator<T, dof> *arm, const Tool<T> &tool, const Target<T> &target)
+          : arm_(arm), tool_(tool), target_(target)
+        {}
 
         T getValue(const VectorX &x) const
         {
@@ -64,20 +66,20 @@ namespace gafro
 
         Eigen::Matrix<T, Result::size, 1> getError(const VectorX &x) const
         {
-            return Result(target_ ^ arm_.getEEMotor(x).apply(tool_)).vector();
+            return Result(target_.dual() | arm_->getEEMotor(x).apply(tool_).evaluate().dual()).vector();
         }
 
         Eigen::Matrix<T, Result::size, dof> getJacobian(const VectorX &x) const
         {
-            Motor<T> motor = arm_.getEEMotor(x);
-            MultivectorMatrix<Motor<T>, 1, dof> jacobian_ee = arm_.getEEAnalyticJacobian(x);
+            Motor<T> motor = arm_->getEEMotor(x);
+            MultivectorMatrix<T, Motor, 1, dof> jacobian_ee = arm_->getEEAnalyticJacobian(x);
 
             Eigen::Matrix<T, Result::size, dof> jacobian;
 
             for (unsigned i = 0; i < dof; ++i)
             {
-                jacobian.col(i) = 2.0 * Result(target_ ^ (jacobian_ee[i] * tool_ * motor.reverse() +  //
-                                                          motor * tool_ * jacobian_ee[i].reverse()))
+                jacobian.col(i) = 2.0 * Result(target_.dual() | (jacobian_ee.getCoefficient(0, i) * tool_.dual() * motor.reverse() +  //
+                                                                 motor * tool_.dual() * jacobian_ee.getCoefficient(0, i).reverse()))
                                           .vector();
             }
 
@@ -85,11 +87,11 @@ namespace gafro
         }
 
       private:
+        const Manipulator<T, dof> *arm_;
+
         Tool<T> tool_;
 
         Target<T> target_;
-
-        FrankaEmikaRobot<T> arm_;
     };
 
 }  // namespace gafro

@@ -20,7 +20,7 @@
 #pragma once
 
 #include <gafro/algebra/Blades.hpp>
-#include <gafro/algebra/expressions/Expression.hpp>
+#include <gafro/algebra/expressions/UnaryExpression.hpp>
 
 namespace gafro
 {
@@ -42,9 +42,8 @@ namespace gafro
         virtual ~Cast() = default;
 
         template <int blade>
-        requires(has(blade))  //
-          Vtype get()
-        const
+            requires(has(blade))  //
+        Vtype get() const
         {
             return this->operand().template get<blade>();
         }

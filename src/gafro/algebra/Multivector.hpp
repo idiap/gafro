@@ -26,10 +26,14 @@
 //
 #include <Eigen/Core>
 //
+#include <gafro/algebra/AbstractMultivector.hpp>
 #include <gafro/algebra/util/Bitset.hpp>
 
 namespace gafro
 {
+    template <class Derived, class Result>
+    class Expression;
+
     template <class M>
     class Reverse;
 
@@ -39,8 +43,14 @@ namespace gafro
     template <class M>
     class Dual;
 
+    template <class M1, class M2>
+    class CommutatorProduct;
+
+    template <class T, template <class S> class M, int rows, int cols>
+    class MultivectorMatrix;
+
     template <class T, int... index>
-    class Multivector
+    class Multivector : public AbstractMultivector<Multivector<T, index...>>
     {
       public:
         constexpr static int size = Bitset<index...>().size();
@@ -51,10 +61,7 @@ namespace gafro
 
         using Parameters = Eigen::Matrix<T, size, 1>;
 
-        constexpr static bool isExpression()
-        {
-            return true;
-        }
+        //
 
         Multivector();
 
@@ -62,19 +69,68 @@ namespace gafro
 
         Multivector(const Parameters &parameters);
 
-        Multivector(Multivector &&other);
+        Multivector(Parameters &&parameters);
 
         Multivector(const Multivector &other);
 
+        Multivector(Multivector &&other);
+
+        template <class Derived>
+        Multivector(const Expression<Derived, Multivector> &expression);
+
+        template <class Derived, class Other>
+        Multivector(const Expression<Derived, Other> &expression);
+
+        template <class S>
+        Multivector(const Multivector<S, index...> &other);
+
+        //
+
         virtual ~Multivector() = default;
+
+        //
+
+        Multivector &operator=(const Parameters &parameters);
+
+        Multivector &operator=(Parameters &&parameters);
+
+        Multivector &operator=(const Multivector &other);
+
+        Multivector &operator=(Multivector &&other);
+
+        Multivector &operator*=(const T &scalar);
+
+        Multivector &operator/=(const T &scalar);
+
+        Multivector &operator+=(const Multivector &other);
+
+        template <class Derived>
+        Multivector &operator=(const Expression<Derived, Multivector> &expression);
+
+        template <class Derived, class Other>
+        Multivector &operator=(const Expression<Derived, Other> &expression);
+
+        //
 
         void setParameters(Parameters &&parameters);
 
         void setParameters(const Parameters &parameters);
 
+        //
+
         Parameters &vector();
 
         const Parameters &vector() const;
+
+        //
+
+        Reverse<Multivector> reverse() const;
+
+        Inverse<Multivector> inverse() const;
+
+        Dual<Multivector> dual() const;
+
+        //
 
         constexpr static const Bitset<index...> &bits();
 
@@ -107,18 +163,29 @@ namespace gafro
             constexpr static int idx = sizeof...(index) - 1;
         };
 
+      public:
         template <int i>
         constexpr static int map()
         {
             return Map<i, index...>::idx;
         }
 
+        template <int blade>
+            requires(has(blade))  //
+        void set(const T &value)
+        {
+            parameters_.coeffRef(map<blade>()) = value;
+        }
+
+        template <int blade>
+            requires(has(blade))  //
+        const T &get() const
+        {
+            return parameters_.coeff(map<blade>());
+        }
+
       public:
-        Reverse<Multivector> reverse() const;
-
-        Inverse<Multivector> inverse() const;
-
-        Dual<Multivector> dual() const;
+        //
 
         T norm() const;
 
@@ -128,101 +195,43 @@ namespace gafro
 
         void normalize();
 
-        template <int blade>
-        requires(has(blade))  //
-          void set(const T &value)
-        {
-            parameters_.coeffRef(map<blade>(), 0) = value;
-        }
+        Multivector normalized() const;
 
-        template <int blade>
-        requires(has(blade))  //
-          const T &get() const
-        {
-            return parameters_.coeff(map<blade>(), 0);
-        }
-
-        const T &operator[](int blade) const;
+        //
 
         template <class Other>
         Other cast() const;
 
-        template <std::size_t... i>
-        constexpr static auto getBlades(std::index_sequence<i...>);
+        template <class M2>
+        CommutatorProduct<Multivector, M2> commutatorProduct(const M2 &multivector) const;
 
-        constexpr static auto split();
+        //
 
-        Multivector &operator+=(const Multivector &other)
+        template <class t>
+        using M = Multivector<t, index...>;
+
+        template <int rows, int cols>
+        using Matrix = MultivectorMatrix<T, M, rows, cols>;
+
+        template <int rows, int cols>
+        static Matrix<rows, cols> CreateMatrix()
         {
-            parameters_ += other.parameters_;
-
-            return *this;
+            return MultivectorMatrix<T, M, rows, cols>();
         }
-
-      private:
-        template <class Expression, int... j>
-        struct Assign;
-
-        template <class Expression, int k, int... j>
-        struct Assign<Expression, k, j...>
-        {
-            static void run(const Expression &expression, Parameters &parameters)
-            {
-                parameters.coeffRef(k, 0) = expression.template get<blades()[k]>();
-
-                Assign<Expression, j...>::run(expression, parameters);
-            }
-        };
-
-        template <class Expression, int k>
-        struct Assign<Expression, k>
-        {
-            static void run(const Expression &expression, Parameters &parameters)
-            {
-                parameters.coeffRef(k, 0) = expression.template get<blades()[k]>();
-            }
-        };
-
-        template <class Expression, std::size_t... i>
-        constexpr static void assign(const Expression &expression, Parameters &parameters, std::index_sequence<i...>)
-        {
-            Assign<Expression, i...>::run(expression, parameters);
-        };
 
       public:
-        template <class Expression>
-        requires(Expression::isExpression())  //
-          Multivector(const Expression &expression)
-        {
-            assign(expression, parameters_, std::make_index_sequence<size>());
-        }
+        auto getBlades() const;
 
-        template <class Expression>
-        requires(Expression::isExpression())  //
-          Multivector &
-          operator=(const Expression &expression)
-        {
-            assign(expression, parameters_, std::make_index_sequence<size>());
+      private:
+        template <std::size_t... i>
+        constexpr static auto getBlades(std::index_sequence<i...>, const Multivector &multivector);
 
-            return *this;
-        }
-
-        Multivector &operator=(const Multivector &other)
-        {
-            setParameters(other.vector());
-
-            return *this;
-        }
-
-        Multivector &operator=(Multivector &&other)
-        {
-            setParameters(std::forward<Parameters>(other.vector()));
-
-            return *this;
-        }
+        //
 
       public:
         static Multivector Random();
+
+        static Multivector Zero();
 
       private:
         Parameters parameters_;
@@ -230,26 +239,6 @@ namespace gafro
         constexpr static Bitset<index...> bits_ = Bitset<index...>();
 
         constexpr static const std::array<int, size> blades_ = bits_.blades();
-
-        // constexpr static const std::array<int, 32> map_ = [] {
-        //     std::array<int, 32> array;
-
-        //     int i = 0;
-
-        //     for (unsigned k = 0; k < 32; ++k)
-        //     {
-        //         if (has(k))
-        //         {
-        //             array[k] = i++;
-        //         }
-        //         else
-        //         {
-        //             array[k] = -1;
-        //         }
-        //     }
-
-        //     return array;
-        // }();
     };
 
 }  // namespace gafro

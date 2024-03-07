@@ -20,19 +20,17 @@
 #pragma once
 
 #include <gafro/algebra/Blades.hpp>
-#include <gafro/algebra/expressions/Expression.hpp>
 #include <gafro/algebra/expressions/GeometricProduct.hpp>
+#include <gafro/algebra/expressions/UnaryExpression.hpp>
 
 namespace gafro
 {
 
     template <class M>
-    class Dual
-      : public UnaryExpression<Dual<M>, GeometricProduct<M, E0123i<typename M::Vtype>>, typename GeometricProduct<M, E0123i<typename M::Vtype>>::Type>
+    class Dual : public UnaryExpression<Dual<M>, M, typename GeometricProduct<M, E0123i<typename M::Vtype>>::Type>
     {
       public:
-        using Base =
-          UnaryExpression<Dual<M>, GeometricProduct<M, E0123i<typename M::Vtype>>, typename GeometricProduct<M, E0123i<typename M::Vtype>>::Type>;
+        using Base = UnaryExpression<Dual<M>, M, typename GeometricProduct<M, E0123i<typename M::Vtype>>::Type>;
 
         using Type = typename GeometricProduct<M, E0123i<typename M::Vtype>>::Type;
         using Vtype = typename M::Vtype;
@@ -42,16 +40,17 @@ namespace gafro
         constexpr static auto bits = Type::bits;
         constexpr static auto has = Type::has;
 
-        Dual(const M &m1) : Base(m1 * E0123i<Vtype>(Vtype(1.0))) {}
+        Dual(const M &m1) : Base(m1) {}
+
+        Dual(M &&m1) : Base(std::move(m1)) {}
 
         virtual ~Dual() = default;
 
         template <int blade>
-        requires(has(blade))  //
-          Vtype get()
-        const
+            requires(has(blade))  //
+        Vtype get() const
         {
-            return this->operand().template get<blade>();
+            return (this->operand() * E0123i<Vtype>(Vtype(1.0))).template get<blade>();
         }
 
       protected:

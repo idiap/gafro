@@ -20,6 +20,7 @@
 #pragma once
 
 #include <gafro/algebra/Motor.hpp>
+#include <gafro/algebra/RotorGenerator.hpp>
 #include <gafro/algebra/expressions/Expression.hpp>
 
 namespace gafro
@@ -33,6 +34,13 @@ namespace gafro
 
         using Parameters = typename Base::Parameters;
 
+        //
+
+        using Base::Base;
+        using Base::operator=;
+
+        //
+
         Generator();
 
         Generator(const Base &other);
@@ -41,39 +49,17 @@ namespace gafro
 
         Generator(const Eigen::Matrix<T, 3, 1> &p1, const Eigen::Matrix<T, 3, 1> &p2);
 
-        template <class E>
-        Generator(const Expression<E, Generator> &expression);
-
-        template <class E, class R>
-        requires(std::is_convertible<R, Generator>::value)  //
-          Generator(const Expression<E, Generator> &expression)
-        {
-            this->template set<blades::e23>(expression.template get<blades::e23>());
-            this->template set<blades::e13>(expression.template get<blades::e13>());
-            this->template set<blades::e12>(expression.template get<blades::e12>());
-            this->template set<blades::e1i>(expression.template get<blades::e1i>());
-            this->template set<blades::e2i>(expression.template get<blades::e2i>());
-            this->template set<blades::e3i>(expression.template get<blades::e3i>());
-        }
-
         virtual ~Generator() = default;
 
-        template <class E, class R>
-        // requires(std::is_convertible<typename R::Type, Generator>::value)  //
-        Generator &operator=(const Expression<E, R> &expression)
-        {
-            this->template set<blades::e23>(expression.template get<blades::e23>());
-            this->template set<blades::e13>(expression.template get<blades::e13>());
-            this->template set<blades::e12>(expression.template get<blades::e12>());
-            this->template set<blades::e1i>(expression.template get<blades::e1i>());
-            this->template set<blades::e2i>(expression.template get<blades::e2i>());
-            this->template set<blades::e3i>(expression.template get<blades::e3i>());
+        typename Rotor<T>::Generator getRotorGenerator() const;
 
-            return *this;
-        }
+        typename Translator<T>::Generator getTranslatorGenerator() const;
 
       protected:
       private:
     };
+
+    template <class T>
+    using MotorGenerator = typename Motor<T>::Generator;
 
 }  // namespace gafro

@@ -45,23 +45,11 @@ namespace gafro
       : Base(p1 ^ p2 ^ p3 ^ p4)
     {}
 
-    // template <typename T>
-    // T Sphere<T>::distance(const Point<T> &point)
-    // {
-    //     return sqrt(abs(T(-2.0) * Multivector<T>::scalarProduct(mv(), point.mv())));
-    // }
-
     template <typename T>
     T Sphere<T>::getRadius() const
     {
         return sqrt(abs(((*this) * Scalar<T>(-1.0 / (this->dual() | Ei<T>(1.0)).template get<blades::scalar>())).evaluate().squaredNorm()));
     }
-
-    // template <typename T>
-    // Meet<Circle<T>> Sphere<T>::meet(const Sphere &sphere) const
-    // {
-    //     return Multivector<T>::template meet<Circle<T>>(mv(), sphere.mv());
-    // }
 
     template <typename T>
     Point<T> Sphere<T>::getCenter() const
@@ -74,6 +62,12 @@ namespace gafro
         center = (center * Scalar<T>(1.0 / center.template get<blades::e0>())).evaluate();
 
         return center;
+    }
+
+    template <class T>
+    Sphere<T> Sphere<T>::Random()
+    {
+        return Sphere(Point<T>::Random(), Point<T>::Random(), Point<T>::Random(), Point<T>::Random());
     }
 
 }  // namespace gafro

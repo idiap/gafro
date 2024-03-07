@@ -23,6 +23,10 @@
 #include <gafro/algebra/Multivector.hxx>
 #include <gafro/algebra/MultivectorMatrix.hpp>
 //
+#include <gafro/algebra/AbstractMultivector.hxx>
+//
+#include <gafro/algebra/expressions/AbstractExpression.hxx>
+#include <gafro/algebra/expressions/CommutatorProduct.hpp>
 #include <gafro/algebra/expressions/GeometricProduct.hpp>
 #include <gafro/algebra/expressions/InnerProduct.hpp>
 #include <gafro/algebra/expressions/OuterProduct.hpp>
@@ -31,14 +35,16 @@
 #include <gafro/algebra/expressions/SandwichProduct.hpp>
 #include <gafro/algebra/expressions/Sum.hpp>
 //
-// #include <gafro/algebra/Operators.hpp>
+#include <gafro/algebra/Operators.hxx>
 //
 #include <gafro/algebra/Circle.hxx>
+#include <gafro/algebra/DirectionVector.hxx>
 #include <gafro/algebra/Line.hxx>
 #include <gafro/algebra/Plane.hxx>
 #include <gafro/algebra/Point.hxx>
 #include <gafro/algebra/PointPair.hxx>
 #include <gafro/algebra/Sphere.hxx>
+#include <gafro/algebra/Vector.hxx>
 //
 #include <gafro/algebra/Motor.hxx>
 #include <gafro/algebra/MotorGenerator.hxx>

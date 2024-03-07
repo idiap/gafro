@@ -35,6 +35,8 @@ namespace gafro
       public:
         using Base = Multivector<T, blades::e123i, blades::e0123, blades::e012i, blades::e023i, blades::e013i>;
 
+        using Base::Base;
+
         Sphere();
 
         Sphere(const Base &other);
@@ -45,16 +47,14 @@ namespace gafro
 
         virtual ~Sphere() = default;
 
-        T distance(const Point<T> &point);
-
         T getRadius() const;
 
         Point<T> getCenter() const;
 
-        // Meet<Circle<T>> meet(const Sphere &sphere) const;
-
       protected:
       private:
+      public:
+        static Sphere Random();
     };
 
 }  // namespace gafro

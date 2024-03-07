@@ -25,61 +25,72 @@ namespace gafro
 {
 
     template <class T>
-    PrismaticJoint<T>::PrismaticJoint(const std::array<T, 3> &parameters)
+    PrismaticJoint<T>::PrismaticJoint() : Joint<T>(Joint<T>::Type::PRISMATIC)
+    {}
+
+    template <class T>
+    PrismaticJoint<T>::PrismaticJoint(const std::array<T, 3> &parameters) : Joint<T>(Joint<T>::Type::PRISMATIC)
     {
         throw std::runtime_error("PrismaticJoint<T>::PrismaticJoint(const std::array<T, 3> &parameters) not implemented!");
 
-        // Rotor<T> rotor(typename Translator<T>::Generator(Eigen::Matrix<T, 3, 1>({ T(1.0), T(0.0), T(0.0) })), parameters[2]);
+        // Rotor<T> rotor(typename Translator<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::One(), TypeTraits<T>::Zero(),
+        // TypeTraits<T>::Zero() })), parameters[2]);
 
         // frame_ = Motor<T>(rotor, Translator<T>(typename Translator<T>::Generator(Eigen::Matrix<T, 3, 1>({ parameters[0], 0.0, parameters[1] }))));
 
-        // axis_ = typename Translator<T>::Generator(Eigen::Matrix<T, 3, 1>({ T(0.0), T(0.0), T(1.0) }));
+        // axis_ = typename Translator<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::One() }));
     }
 
     template <class T>
-    PrismaticJoint<T>::PrismaticJoint(const std::array<T, 6> &parameters, int axis)
+    PrismaticJoint<T>::PrismaticJoint(const std::array<T, 6> &parameters, int axis) : Joint<T>(Joint<T>::Type::PRISMATIC)
     {
         Translator<T> t(typename Translator<T>::Generator({ parameters[0], parameters[1], parameters[2] }));
 
-        Rotor<T> r1(typename Rotor<T>::Generator({ T(1.0), T(0.0), T(0.0) }), parameters[3]);
-        Rotor<T> r2(typename Rotor<T>::Generator({ T(0.0), T(1.0), T(0.0) }), parameters[4]);
-        Rotor<T> r3(typename Rotor<T>::Generator({ T(0.0), T(0.0), T(1.0) }), parameters[5]);
+        Rotor<T> r1(typename Rotor<T>::Generator({ TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() }), parameters[3]);
+        Rotor<T> r2(typename Rotor<T>::Generator({ TypeTraits<T>::Zero(), TypeTraits<T>::One(), TypeTraits<T>::Zero() }), parameters[4]);
+        Rotor<T> r3(typename Rotor<T>::Generator({ TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::One() }), parameters[5]);
 
-        frame_ = t * r1 * r2 * r3;
+        this->setFrame(t * r1 * r2 * r3);
 
         switch (axis)
         {
         case 1:
-            axis_ = typename Translator<T>::Generator(Eigen::Matrix<T, 3, 1>({ T(1.0), T(0.0), T(0.0) }));
+            axis_ = typename Translator<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() }));
             break;
         case 2:
-            axis_ = typename Translator<T>::Generator(Eigen::Matrix<T, 3, 1>({ T(0.0), T(1.0), T(0.0) }));
+            axis_ = typename Translator<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::Zero(), TypeTraits<T>::One(), TypeTraits<T>::Zero() }));
             break;
         case 3:
-            axis_ = typename Translator<T>::Generator(Eigen::Matrix<T, 3, 1>({ T(0.0), T(0.0), T(1.0) }));
+            axis_ = typename Translator<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::One() }));
             break;
         case -1:
-            axis_ = typename Translator<T>::Generator(Eigen::Matrix<T, 3, 1>({ T(-1.0), T(0.0), T(0.0) }));
+            axis_ =
+              typename Translator<T>::Generator(Eigen::Matrix<T, 3, 1>({ -TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() }));
             break;
         case -2:
-            axis_ = typename Translator<T>::Generator(Eigen::Matrix<T, 3, 1>({ T(0.0), T(-1.0), T(0.0) }));
+            axis_ =
+              typename Translator<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::Zero(), -TypeTraits<T>::One(), TypeTraits<T>::Zero() }));
             break;
         case -3:
-            axis_ = typename Translator<T>::Generator(Eigen::Matrix<T, 3, 1>({ T(0.0), T(0.0), T(-1.0) }));
+            axis_ =
+              typename Translator<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), -TypeTraits<T>::One() }));
             break;
         default:
-            axis_ = typename Translator<T>::Generator(Eigen::Matrix<T, 3, 1>({ T(0.0), T(0.0), T(1.0) }));
+            axis_ = typename Translator<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::One() }));
         }
     }
 
     template <class T>
-    const Motor<T> &PrismaticJoint<T>::getFrame() const
+    PrismaticJoint<T>::~PrismaticJoint() = default;
+
+    template <class T>
+    void PrismaticJoint<T>::setAxis(const Axis &axis)
     {
-        return frame_;
+        axis_ = axis;
     }
 
     template <class T>
-    const typename Translator<T>::Generator &PrismaticJoint<T>::getAxis() const
+    const typename PrismaticJoint<T>::Axis &PrismaticJoint<T>::getAxis() const
     {
         return axis_;
     }
@@ -87,13 +98,33 @@ namespace gafro
     template <class T>
     Motor<T> PrismaticJoint<T>::getMotor(const T &displacement) const
     {
-        return frame_ * (Scalar<T>(T(1.0)) + Scalar<T>(T(-0.5 * displacement)) * axis_);
+        return this->getFrame() * (Scalar<T>(TypeTraits<T>::One()) + Scalar<T>(TypeTraits<T>::Value(-0.5) * displacement) * axis_);
+    }
+
+    template <class T>
+    Motor<T> PrismaticJoint<T>::getMotorDerivative(const T &displacement) const
+    {
+        throw std::runtime_error("PrismaticJoint<T>::getMotorDerivative not implemented!");
+
+        return this->getFrame() * (Scalar<T>(TypeTraits<T>::One()) + Scalar<T>(TypeTraits<T>::Value(-0.5) * displacement) * axis_);
     }
 
     template <class T>
     Translator<T> PrismaticJoint<T>::getTranslator(const T &displacement) const
     {
-        return Translator<T>(Scalar<T>(T(1.0)) + Scalar<T>(T(-0.5 * displacement)) * axis_);
+        return Translator<T>(Scalar<T>(TypeTraits<T>::One()) + Scalar<T>(TypeTraits<T>::Value(-0.5) * displacement) * axis_);
+    }
+
+    template <class T>
+    typename Motor<T>::Generator PrismaticJoint<T>::getCurrentAxis(const Motor<T> &motor) const
+    {
+        auto expression = motor * axis_ * motor.reverse();
+
+        return (typename Rotor<T>::Generator()                    //
+                + E1i<T>(expression.template get<blades::e1i>())  //
+                + E2i<T>(expression.template get<blades::e2i>())  //
+                + E3i<T>(expression.template get<blades::e3i>()))
+          .evaluate();
     }
 
 }  // namespace gafro

@@ -20,7 +20,7 @@
 #pragma once
 
 #include <gafro/algebra/Motor.hpp>
-#include <gafro/algebra/expressions/Expression.hpp>
+#include <gafro/algebra/expressions/UnaryExpression.hpp>
 
 namespace gafro
 {
@@ -32,15 +32,14 @@ namespace gafro
         Exponential(const typename Motor<T>::Generator &generator)
           : UnaryExpression<Motor<T>::Exponential, typename Motor<T>::Generator, Motor<T>>(generator)
         {
-            if (generator.template get<blades::e23>() * generator.template get<blades::e23>()      //
-                  + generator.template get<blades::e13>() * generator.template get<blades::e13>()  //
-                  + generator.template get<blades::e12>() * generator.template get<blades::e12>() >
-                T(0.0))
+            if (TypeTraits<T>::greater(generator.template get<blades::e23>() * generator.template get<blades::e23>()       //
+                                         + generator.template get<blades::e13>() * generator.template get<blades::e13>()   //
+                                         + generator.template get<blades::e12>() * generator.template get<blades::e12>(),  //
+                                       TypeTraits<T>::Zero()))
             {
                 typename Rotor<T>::Generator b({ generator.template get<blades::e23>(),  //
                                                  generator.template get<blades::e13>(),  //
-                                                 generator.template get<blades::e12>() },
-                                               false);
+                                                 generator.template get<blades::e12>() });
                 T theta = b.norm();
 
                 typename Translator<T>::Generator t({ generator.template get<blades::e1i>(),  //
@@ -51,38 +50,23 @@ namespace gafro
 
                 result_ = Motor<T>(Translator<T>(t), Rotor<T>(b, theta));
             }
+            else
+            {
+                typename Translator<T>::Generator t({ generator.template get<blades::e1i>(),  //
+                                                      generator.template get<blades::e2i>(),  //
+                                                      generator.template get<blades::e3i>() });
+
+                result_ = Motor<T>(Translator<T>(t), Rotor<T>());
+            }
         }
 
         virtual ~Exponential() = default;
 
         template <int blade>
-        requires(Motor<T>::has(blade))  //
-          T get()
-        const
+            requires(Motor<T>::has(blade))  //
+        T get() const
         {
-            const Motor<T>::Generator &generator = this->operand();
-
-            switch (blade)
-            {
-            case blades::scalar:
-                return result_.template get<blades::scalar>();
-            case blades::e23:
-                return result_.template get<blades::e23>();
-            case blades::e13:
-                return result_.template get<blades::e13>();
-            case blades::e12:
-                return result_.template get<blades::e12>();
-            case blades::e1i:
-                return result_.template get<blades::e1i>();
-            case blades::e2i:
-                return result_.template get<blades::e2i>();
-            case blades::e3i:
-                return result_.template get<blades::e3i>();
-            case blades::e123i:
-                return result_.template get<blades::e123i>();
-            default:
-                return 1.0;
-            }
+            return result_.template get<blade>();
         }
 
       protected:

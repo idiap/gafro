@@ -31,129 +31,41 @@ namespace gafro
     template <class T>
     Point<T>::Point(const T &x, const T &y, const T &z)
     {
-        Parameters parameters = Parameters::Ones();
-
-        parameters.coeffRef(0, 0) = x;
-        parameters.coeffRef(1, 0) = y;
-        parameters.coeffRef(2, 0) = z;
-        parameters.coeffRef(3, 0) = 0.5 * parameters.topRows(3).squaredNorm();
-        parameters.coeffRef(4, 0) = 1.0;
-
-        this->setParameters(parameters);
+        this->template set<blades::e1>(x);
+        this->template set<blades::e2>(y);
+        this->template set<blades::e3>(z);
+        this->template set<blades::ei>(T(0.5) * (x * x + y * y + z * z));
+        this->template set<blades::e0>(T(1.0));
     }
 
     template <class T>
     Point<T>::Point(const Base &other) : Base(other)
     {}
 
-    // template <class T>
-    // Point<T> &Point<T>::operator=(const Point &point)
-    // {
-    //     mv() = point.mv();
+    template <class T>
+    Point<T> Point<T>::X(const T &x)
+    {
+        return Point(x, T(0.0), T(0.0));
+    }
 
-    //     return *this;
-    // }
+    template <class T>
+    Point<T> Point<T>::Y(const T &y)
+    {
+        return Point(T(0.0), y, T(0.0));
+    }
 
-    // template <class T>
-    // T Point<T>::distance(const Point &other) const
-    // {
-    //     return sqrt(abs(T(-2.0) * Multivector<T>::scalarProduct(mv(), other.mv())));
-    //     // return (*this - other).mv().norm();
-    // }
+    template <class T>
+    Point<T> Point<T>::Z(const T &z)
+    {
+        return Point(T(0.0), T(0.0), z);
+    }
 
-    // template <class T>
-    // Point<T> Point<T>::toSphere(const Sphere<T> &sphere) const
-    // {
-    //     Multivector<T> dual_sphere = sphere.mv().dual();
+    template <class T>
+    Point<T> Point<T>::Random()
+    {
+        Eigen::Vector3<T> p = Eigen::Vector3<T>::Random();
 
-    //     Multivector<T> dual_line = (mv() ^ dual_sphere ^ blades::Ei<T>()).dual();
-
-    //     return Point<T>(PointPair<T>(dual_line, dual_sphere).getPoint1());
-    // }
-
-    // template <class T>
-    // Point<T> Point<T>::toSphere(const Point<T> &center, const T &radius) const
-    // {
-    //     Multivector<T> dual_sphere = Sphere<T>(center, radius);
-
-    //     Multivector<T> line = mv() ^ center ^ blades::Ei<T>();
-
-    //     Multivector<T> pp = line | dual_sphere;
-
-    //     // std::cout << "-----" << std::endl;
-    //     // std::cout << pp << std::endl;
-    //     // std::cout << pp.norm() << std::endl;
-    //     // std::cout << pp + pp.norm() << std::endl;
-    //     // std::cout << pp - pp.norm() << std::endl;
-    //     // std::cout << (pp + pp.norm()) * (blades::Ei(-1.0) | pp).inverse() << std::endl;
-    //     // std::cout << (pp - pp.norm()) * (blades::Ei(-1.0) | pp).inverse() << std::endl;
-    //     // std::cout << (1 + pp / std::sqrt(std::abs((pp * pp.reverse()).scalar()))) * (pp | blades::Ei()) << std::endl;
-
-    //     return PointPair<T>(pp).getPoint2();
-    // }
-
-    // template <class T>
-    // Eigen::Matrix<T, 3, 1> Point<T>::toEuclidean() const
-    // {
-    //     Eigen::Matrix<T, 3, 1> vector;
-
-    //     vector.x() = mv().select(blades::E1<T>());
-    //     vector.y() = mv().select(blades::E2<T>());
-    //     vector.z() = mv().select(blades::E3<T>());
-
-    //     vector /= mv().select(blades::E0<T>());
-
-    //     return vector;
-    // }
-
-    // template <class T>
-    // Vector<T> Point<T>::toVector() const
-    // {
-    //     return Vector(toEuclidean());
-    // }
-
-    // template <class T>
-    // PointPair<T> Point<T>::operator^(const Point &point) const
-    // {
-    //     return mv() ^ point.mv();
-    // }
-
-    // template <class T>
-    // Point<T> Point<T>::operator*(const Point &point) const
-    // {
-    //     return mv() * point.mv();
-    // }
-
-    // template <class T>
-    // Point<T> Point<T>::operator*(const T &val)
-    // {
-    //     return val * mv();
-    // }
-
-    // template <class T>
-    // Point<T> &Point<T>::operator+=(const Point &other)
-    // {
-    //     mv() += other.mv();
-
-    //     return *this;
-    // }
-
-    // template <class T>
-    // Point<T> operator*(const double &val, const Point<T> &point)
-    // {
-    //     return val * point.mv();
-    // }
-
-    // template <class T>
-    // T Point<T>::operator|(const Point &other) const
-    // {
-    //     return (mv() | other.mv()).select(blades::Scalar<T>());
-    // }
-
-    // template <class T>
-    // Point<T> Point<T>::operator-(const Point &other) const
-    // {
-    //     return mv() - other.mv();
-    // }
+        return Point(p.x(), p.y(), p.z());
+    }
 
 }  // namespace gafro

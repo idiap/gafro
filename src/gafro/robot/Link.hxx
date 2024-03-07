@@ -25,13 +25,28 @@ namespace gafro
 {
 
     template <class T>
-    Link<T>::Link() : Link<T>(T(0.0), Translator<T>())
+    Link<T>::Link() : mass_(TypeTraits<T>::Zero())
     {}
 
     template <class T>
-    Link<T>::Link(const T &mass, const Translator<T> &center_of_mass, const Inertia<T> &inertia)
-      : mass_(mass), center_of_mass_(center_of_mass), inertia_(inertia)
-    {}
+    Link<T>::Link(Link &&other)
+    {
+        *this = std::move(other);
+    }
+
+    template <class T>
+    Link<T> &Link<T>::operator=(Link &&other)
+    {
+        mass_ = std::move(other.mass_);
+        center_of_mass_ = std::move(other.center_of_mass_);
+        inertia_ = std::move(other.inertia_);
+        name_ = std::move(other.name_);
+        parent_joint_ = std::move(other.parent_joint_);
+        child_joints_ = std::move(other.child_joints_);
+        axis_ = std::move(other.axis_);
+
+        return *this;
+    }
 
     template <class T>
     void Link<T>::setMass(const T &mass)
@@ -43,12 +58,35 @@ namespace gafro
     void Link<T>::setCenterOfMass(const Translator<T> &center_of_mass)
     {
         center_of_mass_ = center_of_mass;
+
+        if (parent_joint_)
+        {
+            axis_ = parent_joint_->getCurrentAxis(Translator<T>(center_of_mass_.reverse()));
+        }
     }
 
     template <class T>
     void Link<T>::setInertia(const Inertia<T> &inertia)
     {
         inertia_ = inertia;
+    }
+
+    template <class T>
+    void Link<T>::setParentJoint(const Joint<T> *parent_joint)
+    {
+        parent_joint_ = parent_joint;
+    }
+
+    template <class T>
+    void Link<T>::addChildJoint(const Joint<T> *child_joint)
+    {
+        child_joints_.push_back(child_joint);
+    }
+
+    template <class T>
+    void Link<T>::setAxis(const typename Motor<T>::Generator &axis)
+    {
+        axis_ = axis;
     }
 
     template <class T>
@@ -67,6 +105,36 @@ namespace gafro
     const Inertia<T> &Link<T>::getInertia() const
     {
         return inertia_;
+    }
+
+    template <class T>
+    void Link<T>::setName(const std::string &name)
+    {
+        name_ = name;
+    }
+
+    template <class T>
+    const std::string &Link<T>::getName() const
+    {
+        return name_;
+    }
+
+    template <class T>
+    const Joint<T> *Link<T>::getParentJoint() const
+    {
+        return parent_joint_;
+    }
+
+    template <class T>
+    const std::vector<const Joint<T> *> &Link<T>::getChildJoints() const
+    {
+        return child_joints_;
+    }
+
+    template <class T>
+    const typename Motor<T>::Generator &Link<T>::getAxis() const
+    {
+        return axis_;
     }
 
 }  // namespace gafro

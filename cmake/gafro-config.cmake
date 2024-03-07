@@ -57,5 +57,4 @@ function(register_target TARGET INCLUDES_VAR LIBRARIES_VAR)
   endif(TARGET ${TARGET})
 endfunction(register_target)
 
-register_target(gafro::gafro GAFRO_INCLUDE_DIRS GAFRO_LIBRARIES)
-# register_target(gafro::gafro_benchmark GAFRO_INCLUDE_DIRS GAFRO_LIBRARIES)
+register_target(gafro::gafro gafro_INCLUDE_DIRS gafro_LIBRARIES)

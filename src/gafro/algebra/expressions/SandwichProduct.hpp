@@ -32,29 +32,28 @@ namespace gafro
       public:
         using Type = Object;
         using Vtype = typename Object::Vtype;
+        using Product = decltype(Versor() * Object() * Versor().reverse());
 
         constexpr static int size = Type::size;
         constexpr static auto blades = Type::blades;
         constexpr static auto bits = Type::bits;
-        // constexpr static auto map = Type::map;
 
-        using Base = BinaryExpression<SandwichProduct<Object, Versor>, Object, Versor, Object>;
-
-        SandwichProduct(const Object &object, const Versor &versor) : product_(versor * object * versor.reverse()) {}
+        SandwichProduct(const Object &object, const Versor &versor)  //
+          : product_(versor * object * versor.reverse())
+        {}
 
         virtual ~SandwichProduct() = default;
 
         template <int blade>
-        requires(Type::has(blade))  //
-          Vtype get()
-        const
+            requires(Type::has(blade))  //
+        Vtype get() const
         {
             return product_.template get<blade>();
         }
 
       protected:
       private:
-        GeometricProduct<GeometricProduct<Versor, Object>, Reverse<typename Versor::Type>> product_;
+        Product product_;
     };
 
 }  // namespace gafro

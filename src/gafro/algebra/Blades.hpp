@@ -63,13 +63,15 @@ namespace gafro
         constexpr short e013i = 30;
         //
         constexpr short e0123i = 31;
-    };  // namespace blades
+    }   // namespace blades
 
     template <class T, int index>
     class Blade : public Multivector<T, index>
     {
       public:
         using Base = Multivector<T, index>;
+
+        using Base::Base;
 
         Blade(const Base &other) : Base(other) {}
 
@@ -78,6 +80,11 @@ namespace gafro
         virtual ~Blade() = default;
 
         using Multivector<T, index>::blades;
+
+        const T &value() const
+        {
+            return this->template get<index>();
+        }
 
       public:
       private:
@@ -547,16 +554,5 @@ namespace gafro
 
       private:
     };
-
-    template <class T>
-    using FullMultivector = Multivector<T, blades::scalar,  //
-                                        blades::e1, blades::e2, blades::e3, blades::ei,
-                                        blades::e0,  //
-                                        blades::e23, blades::e13, blades::e12, blades::e1i, blades::e2i, blades::e3i, blades::e01, blades::e02,
-                                        blades::e03,  //
-                                        blades::e0i, blades::e123, blades::e12i, blades::e13i, blades::e23i, blades::e012, blades::e013, blades::e023,
-                                        blades::e01i, blades::e02i, blades::e03i, blades::e123i, blades::e0123, blades::e012i,
-                                        blades::e023i,  //
-                                        blades::e013i, blades::e0123i>;
 
 }  // namespace gafro

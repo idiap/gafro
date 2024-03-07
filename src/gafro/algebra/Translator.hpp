@@ -20,25 +20,23 @@
 #pragma once
 
 #include <gafro/algebra/Blades.hpp>
-#include <gafro/algebra/Multivector.hxx>
+#include <gafro/algebra/Versor.hpp>
 
 namespace gafro
 {
     template <class T>
-    class Translator : public Multivector<T, blades::scalar, blades::e1i, blades::e2i, blades::e3i>
+    class Translator : public Versor<Translator<T>, T, blades::scalar, blades::e1i, blades::e2i, blades::e3i>
     {
       public:
-        using Base = Multivector<T, blades::scalar, blades::e1i, blades::e2i, blades::e3i>;
+        using Base = Versor<Translator<T>, T, blades::scalar, blades::e1i, blades::e2i, blades::e3i>;
 
         using Parameters = typename Base::Parameters;
 
         class Generator;
 
+        using Base::Base;
+
         Translator();
-
-        Translator(const Base &other);
-
-        Translator(const Parameters &parameters);
 
         Translator(const Generator &generator);
 
@@ -46,8 +44,14 @@ namespace gafro
 
         Generator log() const;
 
+        Eigen::Vector<T, 3> toTranslationVector() const;
+
+        Eigen::Matrix<T, 3, 3> toSkewSymmetricMatrix() const;
+
       protected:
       private:
+      public:
+        static Translator exp(const Generator &generator);
     };
 
 }  // namespace gafro

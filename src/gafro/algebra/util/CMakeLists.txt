@@ -3,11 +3,14 @@ target_sources(${PROJECT_NAME}
         ${CMAKE_CURRENT_LIST_DIR}/util.cpp
 )
 
-install(
-    FILES 
-        Bitset.hpp
-    DESTINATION 
-        ${GAFRO_PREFIX_INCLUDE}/${PROJECT_NAME}/algebra/util
-    COMPONENT 
-        Devel
-)
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    install(
+        FILES 
+            Bitset.hpp
+            TypeTraits.hpp
+        DESTINATION 
+            ${GAFRO_PREFIX_INCLUDE}/${PROJECT_NAME}/algebra/util
+        COMPONENT 
+            Devel
+    )
+endif()

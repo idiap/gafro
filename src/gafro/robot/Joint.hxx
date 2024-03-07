@@ -25,63 +25,67 @@ namespace gafro
 {
 
     template <class T>
-    Joint<T>::Joint()
+    Joint<T>::Joint(Type type) : type_(type), parent_link_(nullptr), child_link_(nullptr)
     {}
 
     template <class T>
-    Joint<T>::Joint(const std::array<T, 3> &parameters)
+    Joint<T>::Joint(Joint &&other)
     {
-        Rotor<T> rotor(typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ T(1.0), T(0.0), T(0.0) })), parameters[2]);
-
-        frame_ = Motor<T>(rotor, Translator<T>(typename Translator<T>::Generator(Eigen::Matrix<T, 3, 1>({ parameters[0], 0.0, parameters[1] }))));
-
-        axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ T(0.0), T(0.0), T(1.0) }));
+        *this = std::move(other);
     }
 
     template <class T>
-    Joint<T>::Joint(const std::array<T, 6> &parameters, int axis)
+    Joint<T> &Joint<T>::operator=(Joint &&other)
     {
-        Translator<T> t({ parameters[0], parameters[1], parameters[2] });
+        type_ = std::move(other.type_);
+        name_ = std::move(other.name_);
+        frame_ = std::move(other.frame_);
+        limits_ = std::move(other.limits_);
+        parent_link_ = std::move(other.parent_link_);
+        child_link_ = std::move(other.child_link_);
 
-        Rotor<T> r1(typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ T(1.0), T(0.0), T(0.0) })), parameters[3]);
-        Rotor<T> r2(typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ T(0.0), T(1.0), T(0.0) })), parameters[4]);
-        Rotor<T> r3(typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ T(0.0), T(0.0), T(1.0) })), parameters[5]);
-
-        frame_ = Motor<T>(t) * Motor<T>(r1) * Motor<T>(r2) * Motor<T>(r3);
-
-        switch (axis)
-        {
-        case 1:
-            axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ T(1.0), T(0.0), T(0.0) }));
-            break;
-        case 2:
-            axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ T(0.0), T(1.0), T(0.0) }));
-            break;
-        case 3:
-            axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ T(0.0), T(0.0), T(1.0) }));
-            break;
-        case -1:
-            axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ T(-1.0), T(0.0), T(0.0) }));
-            break;
-        case -2:
-            axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ T(0.0), T(-1.0), T(0.0) }));
-            break;
-        case -3:
-            axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ T(0.0), T(0.0), T(-1.0) }));
-            break;
-        default:
-            axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ T(0.0), T(0.0), T(1.0) }));
-        }
+        return *this;
     }
-
-    template <typename T>
-    template <typename T2>
-    Joint<T>::Joint(const Joint<T2> &other) : frame_(other.getFrame())
-    {}
 
     template <class T>
     Joint<T>::~Joint()
     {}
+
+    template <class T>
+    void Joint<T>::setFrame(const Motor<T> &frame)
+    {
+        frame_ = frame;
+    }
+
+    template <class T>
+    void Joint<T>::setLimits(const Limits &limits)
+    {
+        limits_ = limits;
+    }
+
+    template <class T>
+    void Joint<T>::setName(const std::string &name)
+    {
+        name_ = name;
+    }
+
+    template <class T>
+    void Joint<T>::setParentLink(const Link<T> *parent_link)
+    {
+        parent_link_ = parent_link;
+    }
+
+    template <class T>
+    void Joint<T>::setChildLink(const Link<T> *child_link)
+    {
+        child_link_ = child_link;
+    }
+
+    template <class T>
+    const std::string &Joint<T>::getName() const
+    {
+        return name_;
+    }
 
     template <class T>
     const Motor<T> &Joint<T>::getFrame() const
@@ -90,42 +94,33 @@ namespace gafro
     }
 
     template <class T>
-    const typename Rotor<T>::Generator &Joint<T>::getAxis() const
+    const typename Joint<T>::Type &Joint<T>::getType() const
     {
-        return axis_;
-        // return typename Motor<T>::Generator(axis_.vector(), Eigen::Matrix<T, 3, 1>::Zero());
+        return type_;
     }
 
     template <class T>
-    Motor<T> Joint<T>::getMotor(const T &angle) const
+    const typename Joint<T>::Limits &Joint<T>::getLimits() const
     {
-        T half_angle = 0.5 * angle;
-
-        T s = -sin(half_angle);
-
-        return frame_ * gafro::Rotor<T>({ cos(half_angle),                        //
-                                          s * axis_.template get<blades::e23>(),  //
-                                          s * axis_.template get<blades::e13>(),  //
-                                          s * axis_.template get<blades::e12>() });
-        // (Scalar<T>(cos(half_angle)) + Scalar<T>(-sin(half_angle)) * axis_);
+        return limits_;
     }
 
     template <class T>
-    auto Joint<T>::getMotorExpression(const T &angle) const
+    const Link<T> *Joint<T>::getParentLink() const
     {
-        return frame_ * (Scalar<T>(cos(0.5 * angle)) + Scalar<T>(-sin(0.5 * angle)) * axis_);
+        return parent_link_;
     }
 
     template <class T>
-    Rotor<T> Joint<T>::getRotor(const T &angle) const
+    const Link<T> *Joint<T>::getChildLink() const
     {
-        return Rotor<T>(axis_, angle);
+        return child_link_;
     }
 
     template <class T>
-    const typename Rotor<T>::Generator &Joint<T>::getRotationRotorGenerator() const
+    bool Joint<T>::isActuated() const
     {
-        return axis_;
+        return type_ != Type::FIXED;
     }
 
 }  // namespace gafro

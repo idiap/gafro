@@ -35,12 +35,20 @@ namespace gafro
     class GeometricProduct : public Product<M1, M2, CayleyTable>
     {
       public:
-        using Product<M1, M2, CayleyTable>::Product;
-
-        GeometricProduct(const Product<M1, M2, CayleyTable> &other) : Product<M1, M2, CayleyTable>(other)  //
+        GeometricProduct(const M1 &m1, const M2 &m2)  //
+          : Product<M1, M2, CayleyTable>(m1, m2)
         {}
 
-        GeometricProduct(const GeometricProduct<M1, M2> &other) : Product<M1, M2, CayleyTable>(other)  //
+        GeometricProduct(M1 &&m1, M2 &&m2)  //
+          : Product<M1, M2, CayleyTable>(std::move(m1), std::move(m2))
+        {}
+
+        GeometricProduct(const M1 &m1, M2 &&m2)  //
+          : Product<M1, M2, CayleyTable>(m1, std::move(m2))
+        {}
+
+        GeometricProduct(M1 &&m1, const M2 &m2)  //
+          : Product<M1, M2, CayleyTable>(std::move(m1), m2)
         {}
 
         virtual ~GeometricProduct() = default;
@@ -54,13 +62,5 @@ namespace gafro
       protected:
       private:
     };
-
-    template <class E1, class E2>
-    requires(E1::isExpression() && E2::isExpression())  //
-      GeometricProduct<E1, E2>
-    operator*(const E1 &u, const E2 &v)
-    {
-        return GeometricProduct<E1, E2>(*static_cast<const E1 *>(&u), *static_cast<const E2 *>(&v));
-    }
 
 }  // namespace gafro

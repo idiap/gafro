@@ -20,7 +20,7 @@
 #pragma once
 
 #include <gafro/algebra/Motor.hpp>
-#include <gafro/algebra/expressions/Expression.hpp>
+#include <gafro/algebra/expressions/UnaryExpression.hpp>
 
 namespace gafro
 {
@@ -34,55 +34,54 @@ namespace gafro
         virtual ~Logarithm() = default;
 
         template <int blade>
-        requires(Motor<T>::has(blade))  //
-          T get()
-        const
+            requires(Motor<T>::has(blade))  //
+        T get() const
         {
             const Motor<T> &motor = this->operand();
 
             switch (blade)
             {
             case blades::e23:
-                if (abs(motor.template get<blades::scalar>()) >= T(1.0 - 1e-10))
+                if (TypeTraits<T>::greaterEqual(abs(motor.template get<blades::scalar>()), TypeTraits<T>::Value(1.0 - 1e-10)))
                 {
-                    return T(0.0);
+                    return TypeTraits<T>::Zero();
                 }
 
-                return motor.template get<blades::e23>() * -2.0 * acos(motor.template get<blades::scalar>()) /
-                       (sin(acos(motor.template get<blades::scalar>())) + 1e-10);
+                return motor.template get<blades::e23>() * TypeTraits<T>::Value(-2.0) * acos(motor.template get<blades::scalar>()) /
+                       (sin(acos(motor.template get<blades::scalar>())) + TypeTraits<T>::Value(1e-10));
             case blades::e13:
-                if (abs(motor.template get<blades::scalar>()) >= T(1.0 - 1e-10))
+                if (TypeTraits<T>::greaterEqual(abs(motor.template get<blades::scalar>()), TypeTraits<T>::Value(1.0 - 1e-10)))
                 {
-                    return T(0.0);
+                    return TypeTraits<T>::Zero();
                 }
 
-                return motor.template get<blades::e13>() * -2.0 * acos(motor.template get<blades::scalar>()) /
-                       (sin(acos(motor.template get<blades::scalar>())) + 1e-10);
+                return motor.template get<blades::e13>() * TypeTraits<T>::Value(-2.0) * acos(motor.template get<blades::scalar>()) /
+                       (sin(acos(motor.template get<blades::scalar>())) + TypeTraits<T>::Value(1e-10));
             case blades::e12:
-                if (abs(motor.template get<blades::scalar>()) >= T(1.0 - 1e-10))
+                if (TypeTraits<T>::greaterEqual(abs(motor.template get<blades::scalar>()), TypeTraits<T>::Value(1.0 - 1e-10)))
                 {
-                    return T(0.0);
+                    return TypeTraits<T>::Zero();
                 }
 
-                return motor.template get<blades::e12>() * -2.0 * acos(motor.template get<blades::scalar>()) /
-                       (sin(acos(motor.template get<blades::scalar>())) + 1e-10);
+                return motor.template get<blades::e12>() * TypeTraits<T>::Value(-2.0) * acos(motor.template get<blades::scalar>()) /
+                       (sin(acos(motor.template get<blades::scalar>())) + TypeTraits<T>::Value(1e-10));
             case blades::e1i:
-                return -2.0 * (motor.template get<blades::scalar>() * motor.template get<blades::e1i>() +
-                               motor.template get<blades::e12>() * motor.template get<blades::e2i>() +
-                               motor.template get<blades::e13>() * motor.template get<blades::e3i>() +
-                               motor.template get<blades::e23>() * motor.template get<blades::e123i>());
+                return TypeTraits<T>::Value(-2.0) * (motor.template get<blades::scalar>() * motor.template get<blades::e1i>() +
+                                                     motor.template get<blades::e12>() * motor.template get<blades::e2i>() +
+                                                     motor.template get<blades::e13>() * motor.template get<blades::e3i>() +
+                                                     motor.template get<blades::e23>() * motor.template get<blades::e123i>());
             case blades::e2i:
-                return -2.0 * (-motor.template get<blades::e12>() * motor.template get<blades::e1i>() +
-                               motor.template get<blades::scalar>() * motor.template get<blades::e2i>() +
-                               motor.template get<blades::e23>() * motor.template get<blades::e3i>() -
-                               motor.template get<blades::e13>() * motor.template get<blades::e123i>());
+                return TypeTraits<T>::Value(-2.0) * (-motor.template get<blades::e12>() * motor.template get<blades::e1i>() +
+                                                     motor.template get<blades::scalar>() * motor.template get<blades::e2i>() +
+                                                     motor.template get<blades::e23>() * motor.template get<blades::e3i>() -
+                                                     motor.template get<blades::e13>() * motor.template get<blades::e123i>());
             case blades::e3i:
-                return -2.0 * (-motor.template get<blades::e13>() * motor.template get<blades::e1i>() -
-                               motor.template get<blades::e23>() * motor.template get<blades::e2i>() +
-                               motor.template get<blades::scalar>() * motor.template get<blades::e3i>() +
-                               motor.template get<blades::e12>() * motor.template get<blades::e123i>());
+                return TypeTraits<T>::Value(-2.0) * (-motor.template get<blades::e13>() * motor.template get<blades::e1i>() -
+                                                     motor.template get<blades::e23>() * motor.template get<blades::e2i>() +
+                                                     motor.template get<blades::scalar>() * motor.template get<blades::e3i>() +
+                                                     motor.template get<blades::e12>() * motor.template get<blades::e123i>());
             default:
-                return 0.0;
+                return TypeTraits<T>::Zero();
             }
         }
 

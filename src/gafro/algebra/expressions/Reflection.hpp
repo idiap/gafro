@@ -20,8 +20,8 @@
 #pragma once
 
 #include <gafro/algebra/Blades.hpp>
-#include <gafro/algebra/expressions/Expression.hpp>
 #include <gafro/algebra/expressions/GeometricProduct.hpp>
+#include <gafro/algebra/expressions/UnaryExpression.hpp>
 
 namespace gafro
 {
@@ -32,29 +32,26 @@ namespace gafro
       public:
         using Type = Object;
         using Vtype = typename Object::Vtype;
+        using Product = decltype(Mirror() * Object() * Mirror());
 
         constexpr static int size = Type::size;
         constexpr static auto blades = Type::blades;
         constexpr static auto bits = Type::bits;
-        // constexpr static auto map = Type::map;
-
-        using Base = BinaryExpression<Reflection<Object, Mirror>, Object, Mirror, Object>;
 
         Reflection(const Object &object, const Mirror &versor) : product_(versor * object * versor) {}
 
         virtual ~Reflection() = default;
 
         template <int blade>
-        requires(Type::has(blade))  //
-          Vtype get()
-        const
+            requires(Type::has(blade))  //
+        Vtype get() const
         {
             return product_.template get<blade>();
         }
 
       protected:
       private:
-        GeometricProduct<GeometricProduct<Mirror, Object>, typename Mirror::Type> product_;
+        Product product_;
     };
 
 }  // namespace gafro

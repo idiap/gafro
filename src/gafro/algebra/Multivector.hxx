@@ -19,7 +19,9 @@
 
 #pragma once
 
+#include <gafro/algebra/expressions/Assign.hpp>
 #include <gafro/algebra/expressions/Cast.hpp>
+#include <gafro/algebra/expressions/CommutatorProduct.hpp>
 #include <gafro/algebra/expressions/Dual.hpp>
 #include <gafro/algebra/expressions/Inverse.hpp>
 #include <gafro/algebra/expressions/Reverse.hpp>
@@ -32,11 +34,11 @@ namespace gafro
 {
 
     template <class T, int... index>
-    Multivector<T, index...>::Multivector() : Multivector(Parameters::Zero())
+    Multivector<T, index...>::Multivector() : Multivector(Parameters::Constant(TypeTraits<T>::Zero()))
     {}
 
     template <class T, int... index>
-    Multivector<T, index...>::Multivector(const int &value) : Multivector(Parameters::Zero())
+    Multivector<T, index...>::Multivector(const int &value) : Multivector(Parameters::Ones() * value)
     {}
 
     template <class T, int... index>
@@ -44,17 +46,43 @@ namespace gafro
     {}
 
     template <class T, int... index>
-    Multivector<T, index...>::Multivector(const Multivector &other) : Multivector(other.parameters_)
+    Multivector<T, index...>::Multivector(Parameters &&parameters) : parameters_(std::move(parameters))
     {}
 
     template <class T, int... index>
-    Multivector<T, index...>::Multivector(Multivector &&other) : parameters_(std::forward<Parameters>(other.parameters_))
+    Multivector<T, index...>::Multivector(const Multivector &other) : parameters_(other.parameters_)
     {}
+
+    template <class T, int... index>
+    Multivector<T, index...>::Multivector(Multivector &&other) : parameters_(std::move(other.parameters_))
+    {}
+
+    template <class T, int... index>
+    template <class Derived>
+    Multivector<T, index...>::Multivector(const Expression<Derived, Multivector> &expression)
+    {
+        *this = expression;
+    }
+
+    template <class T, int... index>
+    template <class Derived, class Other>
+    Multivector<T, index...>::Multivector(const Expression<Derived, Other> &expression)
+    {
+        *this = expression;
+    }
+
+    template <class T, int... index>
+    template <class S>
+    Multivector<T, index...>::Multivector(const Multivector<S, index...> &other)
+      : parameters_(other.vector().unaryExpr([](const S &v) { return TypeTraits<T>::Value(v); }))
+    {}
+
+    // OPERATORS
 
     template <class T, int... index>
     void Multivector<T, index...>::setParameters(Parameters &&parameters)
     {
-        parameters_.noalias() = parameters;
+        parameters_.noalias() = std::move(parameters);
     }
 
     template <class T, int... index>
@@ -75,6 +103,104 @@ namespace gafro
         return parameters_;
     }
 
+    //
+
+    template <class T, int... index>
+    Reverse<Multivector<T, index...>> Multivector<T, index...>::reverse() const
+    {
+        return Reverse<Multivector<T, index...>>(*this);
+    }
+
+    template <class T, int... index>
+    Inverse<Multivector<T, index...>> Multivector<T, index...>::inverse() const
+    {
+        return Inverse<Multivector<T, index...>>(*this);
+    }
+
+    template <class T, int... index>
+    Dual<Multivector<T, index...>> Multivector<T, index...>::dual() const
+    {
+        return Dual<Multivector<T, index...>>(*this);
+    }
+
+    // OPERATORS
+
+    template <class T, int... index>
+    Multivector<T, index...> &Multivector<T, index...>::operator=(const Parameters &parameters)
+    {
+        setParameters(parameters);
+
+        return *this;
+    }
+
+    template <class T, int... index>
+    Multivector<T, index...> &Multivector<T, index...>::operator=(Parameters &&parameters)
+    {
+        setParameters(std::move(parameters));
+
+        return *this;
+    }
+
+    template <class T, int... index>
+    Multivector<T, index...> &Multivector<T, index...>::operator=(const Multivector &other)
+    {
+        setParameters(other.parameters_);
+
+        return *this;
+    }
+
+    template <class T, int... index>
+    Multivector<T, index...> &Multivector<T, index...>::operator=(Multivector &&other)
+    {
+        setParameters(std::move(other.parameters_));
+
+        return *this;
+    }
+
+    template <class T, int... index>
+    template <class Derived>
+    Multivector<T, index...> &Multivector<T, index...>::operator=(const Expression<Derived, Multivector> &expression)
+    {
+        Assign<Derived, Multivector, T, index...>::run(*this, expression);
+
+        return *this;
+    }
+
+    template <class T, int... index>
+    template <class Derived, class Other>
+    Multivector<T, index...> &Multivector<T, index...>::operator=(const Expression<Derived, Other> &expression)
+    {
+        Assign<Derived, Other, T, index...>::run(*this, expression);
+
+        return *this;
+    }
+
+    template <class T, int... index>
+    Multivector<T, index...> &Multivector<T, index...>::operator*=(const T &scalar)
+    {
+        parameters_ *= scalar;
+
+        return *this;
+    }
+
+    template <class T, int... index>
+    Multivector<T, index...> &Multivector<T, index...>::operator/=(const T &scalar)
+    {
+        parameters_ /= scalar;
+
+        return *this;
+    }
+
+    template <class T, int... index>
+    Multivector<T, index...> &Multivector<T, index...>::operator+=(const Multivector &other)
+    {
+        parameters_ += other.parameters_;
+
+        return *this;
+    }
+
+    //
+
     template <class T, int... index>
     constexpr const Bitset<index...> &Multivector<T, index...>::bits()
     {
@@ -93,23 +219,16 @@ namespace gafro
         return bits_.test(blade);
     }
 
-    template <class T, int... index>
-    Reverse<Multivector<T, index...>> Multivector<T, index...>::reverse() const
-    {
-        return Reverse<Multivector>(*static_cast<const Multivector *>(this));
-    }
+    //
 
     template <class T, int... index>
-    Inverse<Multivector<T, index...>> Multivector<T, index...>::inverse() const
+    template <class M2>
+    CommutatorProduct<Multivector<T, index...>, M2> Multivector<T, index...>::commutatorProduct(const M2 &multivector) const
     {
-        return Inverse<Multivector>(*static_cast<const Multivector *>(this));
+        return CommutatorProduct<Multivector<T, index...>, M2>(*this, multivector);
     }
 
-    template <class T, int... index>
-    Dual<Multivector<T, index...>> Multivector<T, index...>::dual() const
-    {
-        return Dual<Multivector>(*static_cast<const Multivector *>(this));
-    }
+    //
 
     template <class T, int... index>
     T Multivector<T, index...>::norm() const
@@ -136,39 +255,38 @@ namespace gafro
     {
         T value = norm();
 
-        if (value > 1e-10)
-        {
-            *this = (*this) * Scalar<T>(1.0 / value);
-        }
+        // if (value > 1e-10)
+        // {
+        *this = (*this) * Scalar<T>(1.0 / value);
+        // }
     }
 
-    // template <class T, int... index>
-    // const T &Multivector<T, index...>::operator[](int blade) const
-    // {
-    //     const static T zero = 0.0;
+    template <class T, int... index>
+    Multivector<T, index...> Multivector<T, index...>::normalized() const
+    {
+        Multivector other = *this;
 
-    //     if (has(blade))
-    //     {
-    //         return parameters_.coeff(map(blade), 0);
-    //     }
-    //     else
-    //     {
-    //         return zero;
-    //     }
-    // }
+        other.normalize();
+
+        return other;
+    }
+
+    //
 
     template <class T, int... index>
     template <std::size_t... i>
-    constexpr auto Multivector<T, index...>::getBlades(std::index_sequence<i...>)
+    constexpr auto Multivector<T, index...>::getBlades(std::index_sequence<i...>, const Multivector &multivector)
     {
-        return std::tuple{ Multivector<T, blades()[i]>()... };
+        return std::tuple{ Blade<T, blades()[i]>(multivector.get<blades()[i]>())... };
     }
 
     template <class T, int... index>
-    constexpr auto Multivector<T, index...>::split()
+    auto Multivector<T, index...>::getBlades() const
     {
-        return getBlades(std::make_index_sequence<size>{});
+        return getBlades(std::make_index_sequence<size>{}, *this);
     }
+
+    //
 
     template <class T, int... index>
     Multivector<T, index...> Multivector<T, index...>::Random()
@@ -177,11 +295,19 @@ namespace gafro
     }
 
     template <class T, int... index>
+    Multivector<T, index...> Multivector<T, index...>::Zero()
+    {
+        return Multivector(Parameters::Constant(TypeTraits<T>::Zero()));
+    }
+
+    template <class T, int... index>
     template <class Other>
     Other Multivector<T, index...>::cast() const
     {
         return Cast<Multivector<T, index...>, Other>(*this);
     }
+
+    //
 
     template <class T, int... index>
     std::ostream &operator<<(std::ostream &ostream, const Multivector<T, index...> &mv)
@@ -200,7 +326,7 @@ namespace gafro
 
         for (unsigned int k = 0; k < mv.vector().rows(); ++k)
         {
-            if (std::abs(mv.vector().coeff(k, 0)) < 1e-10)
+            if (abs(mv.vector().coeff(k, 0)) < 1e-10)
             {
                 continue;
             }
