@@ -1,0 +1,10 @@
+target_sources(unittests
+    PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}/FixedJoint.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/KinematicChain.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/Link.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/Manipulator.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/PrismaticJoint.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/RevoluteJoint.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/System.cpp
+)

@@ -47,7 +47,7 @@ namespace gafro
     template <typename T>
     T Circle<T>::getRadius() const
     {
-        auto mv = (*this) * (Scalar<T>(T(-1.0)) * ((*this).dual() | Ei<T>(T(1.0))).evaluate().inverse());
+        auto mv = ((*this) * (Scalar<T>(T(-1.0)) * ((*this).dual() | Ei<T>(T(1.0))).evaluate().inverse())).evaluate();
 
         return sqrt(abs((mv * mv).template get<blades::scalar>()));
     }
@@ -56,6 +56,12 @@ namespace gafro
     Plane<T> Circle<T>::getPlane() const
     {
         return Plane<T>((*this) ^ Ei<T>(T(1.0)));
+    }
+
+    template <class T>
+    Circle<T> Circle<T>::Random()
+    {
+        return Circle(Point<T>::Random(), Point<T>::Random(), Point<T>::Random());
     }
 
 }  // namespace gafro

@@ -20,6 +20,8 @@
 #pragma once
 
 #include <gafro/algebra/Multivector.hxx>
+#include <gafro/algebra/expressions/BinaryExpression.hpp>
+#include <gafro/algebra/util/TypeTraits.hpp>
 
 namespace gafro
 {
@@ -36,14 +38,35 @@ namespace gafro
             constexpr static auto makeType(std::index_sequence<idx...>)
             {
                 return Multivector<Vtype, (M1::bits() | M2::bits()).blades()[idx]...>();
-            };
+            }
 
             using Type = decltype(makeType(std::make_index_sequence<(M1::bits() | M2::bits()).size()>{}));
         };
+
+        template <class T>
+        class AdditionOperator
+        {
+          public:
+            T operator()(const T &lhs, const T &rhs)
+            {
+                return lhs + rhs;
+            }
+        };
+
+        template <class T>
+        class SubstractionOperator
+        {
+          public:
+            T operator()(const T &lhs, const T &rhs)
+            {
+                return lhs - rhs;
+            }
+        };
+
     }  // namespace detail
 
-    template <class M1, class M2>
-    class Sum : public BinaryExpression<Sum<M1, M2>, M1, M2, typename detail::SumType<M1, M2>::Type>
+    template <class M1, class M2, template <class V> class Operation>
+    class Sum : public BinaryExpression<Sum<M1, M2, Operation>, M1, M2, typename detail::SumType<M1, M2>::Type>
     {
       public:
       private:
@@ -56,53 +79,50 @@ namespace gafro
         constexpr static auto bits = Type::bits;
         constexpr static auto has = Type::has;
 
-        using Base = BinaryExpression<Sum<M1, M2>, M1, M2, typename detail::SumType<M1, M2>::Type>;
+        using Base = BinaryExpression<Sum<M1, M2, Operation>, M1, M2, typename detail::SumType<M1, M2>::Type>;
 
-        Sum(const M1 &m1, const M2 &m2) : Base(m1, m2) {}
+        Sum(const M1 &m1, const M2 &m2)  //
+          : Base(m1, m2)
+        {}
+
+        Sum(M1 &&m1, M2 &&m2)  //
+          : Base(std::move(m1), std::move(m2))
+        {}
+
+        Sum(const M1 &m1, M2 &&m2)  //
+          : Base(m1, std::move(m2))
+        {}
+
+        Sum(M1 &&m1, const M2 &m2)  //
+          : Base(std::move(m1), m2)
+        {}
 
         virtual ~Sum() = default;
 
         template <int blade>
-        requires(has(blade))  //
-          Vtype get()
-        const
+            requires(has(blade))  //
+        Vtype get() const
         {
             if constexpr (M1::has(blade) && M2::has(blade))
             {
-                return this->getLeftOperand().template get<blade>() + this->getRightOperand().template get<blade>();
+                return Operation<Vtype>()(this->getLeftOperand().template get<blade>(), this->getRightOperand().template get<blade>());
             }
             else if constexpr (M1::has(blade) && !M2::has(blade))
             {
-                return this->getLeftOperand().template get<blade>();
+                return Operation<Vtype>()(this->getLeftOperand().template get<blade>(), TypeTraits<Vtype>::Zero());
             }
             else if constexpr (!M1::has(blade) && M2::has(blade))
             {
-                return this->getRightOperand().template get<blade>();
+                return Operation<Vtype>()(TypeTraits<Vtype>::Zero(), this->getRightOperand().template get<blade>());
             }
             else
             {
-                return 0.0;
+                return TypeTraits<Vtype>::Zero();
             }
         }
 
       protected:
       private:
     };
-
-    template <typename E1, typename E2>
-    requires(E1::isExpression() && E2::isExpression())  //
-      Sum<E1, E2>
-    operator+(E1 const &u, E2 const &v)
-    {
-        return Sum<E1, E2>(*static_cast<const E1 *>(&u), *static_cast<const E2 *>(&v));
-    }
-
-    template <typename E1, typename E2>
-    requires(E1::isExpression() && E2::isExpression())  //
-      auto
-      operator-(E1 const &u, E2 const &v)
-    {
-        return u + Scalar<typename E2 ::Vtype>(typename E2 ::Vtype(-1.0)) * v;
-    }
 
 }  // namespace gafro

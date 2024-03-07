@@ -47,9 +47,9 @@ namespace gafro
 
         virtual ~PointPair();
 
-        Point<double> getPoint1() const;
+        Point<T> getPoint1() const;
 
-        Point<double> getPoint2() const;
+        Point<T> getPoint2() const;
 
         // Sphere<T> getSphere() const;
 

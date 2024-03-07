@@ -51,10 +51,4 @@ namespace gafro
       private:
     };
 
-    template <class E1, class E2>
-    Product<E1, E2, OuterProductCayleyTable> operator^(const E1 &u, const E2 &v)
-    {
-        return OuterProduct<E1, E2>(*static_cast<const E1 *>(&u), *static_cast<const E2 *>(&v));
-    }
-
 }  // namespace gafro

@@ -19,63 +19,178 @@
 
 #pragma once
 
+#include <gafro/physics/Twist.hxx>
+#include <gafro/physics/Wrench.hxx>
+//
 #include <gafro/physics/Inertia.hpp>
 
 namespace gafro
 {
 
     template <class T>
-    Inertia<T>::Inertia(const Tensor &tensor) : tensor_(tensor)
-    {}
+    Inertia<T>::Inertia() = default;
 
     template <class T>
-    typename Rotor<T>::Generator Inertia<T>::operator()(const typename Rotor<T>::Generator &bivector) const
+    Inertia<T>::Inertia(const T &mass, const T &ixx, const T &ixy, const T &ixz, const T &iyy, const T &iyz, const T &izz)
     {
-        const T &i00 = tensor_.coeff(0, 0);
-        const T &i10 = tensor_.coeff(1, 0);
-        const T &i20 = tensor_.coeff(2, 0);
-        const T &i01 = tensor_.coeff(0, 1);
-        const T &i11 = tensor_.coeff(1, 1);
-        const T &i21 = tensor_.coeff(2, 1);
-        const T &i02 = tensor_.coeff(0, 2);
-        const T &i12 = tensor_.coeff(1, 2);
-        const T &i22 = tensor_.coeff(2, 2);
+        static T zero = TypeTraits<T>::Zero();
 
-        const T &w0 = bivector.e23();
-        const T &w1 = bivector.e13();
-        const T &w2 = bivector.e12();
-
-        typename Rotor<T>::Generator generator;
-
-        generator.template set<blades::e23>(-1.0 * (i00 * w0 - i01 * w1 + i02 * w2));
-        generator.template set<blades::e13>((i10 * w0 - i11 * w1 + i12 * w2));
-        generator.template set<blades::e12>(-1.0 * (i20 * w0 - i21 * w1 + i22 * w2));
-
-        return generator;
+        this->setCoefficient(0, 0, InertiaElement<T>({ ixx, -ixy, ixz, zero, zero, zero }));
+        this->setCoefficient(0, 1, InertiaElement<T>({ -ixy, iyy, -iyz, zero, zero, zero }));
+        this->setCoefficient(0, 2, InertiaElement<T>({ ixz, -iyz, izz, zero, zero, zero }));
+        this->setCoefficient(0, 3, InertiaElement<T>({ zero, zero, zero, mass, zero, zero }));
+        this->setCoefficient(0, 4, InertiaElement<T>({ zero, zero, zero, zero, mass, zero }));
+        this->setCoefficient(0, 5, InertiaElement<T>({ zero, zero, zero, zero, zero, mass }));
     }
 
     template <class T>
-    Multivector<T, blades::e1, blades::e2, blades::e3> Inertia<T>::operator()(const Multivector<T, blades::e1, blades::e2, blades::e3> &vector) const
+    Inertia<T>::Inertia(const T &mass, const Eigen::Matrix<T, 3, 3> &tensor)
     {
-        return Multivector<T, blades::e1, blades::e2, blades::e3>(tensor_ * vector.vector());
+        static T zero = TypeTraits<T>::Zero();
+
+        this->setCoefficient(0, 0, InertiaElement<T>({ tensor.coeff(0, 0), -tensor.coeff(0, 1), tensor.coeff(0, 2), zero, zero, zero }));
+        this->setCoefficient(0, 1, InertiaElement<T>({ -tensor.coeff(1, 0), tensor.coeff(1, 1), -tensor.coeff(1, 2), zero, zero, zero }));
+        this->setCoefficient(0, 2, InertiaElement<T>({ tensor.coeff(2, 0), -tensor.coeff(2, 1), tensor.coeff(2, 2), zero, zero, zero }));
+        this->setCoefficient(0, 3, InertiaElement<T>({ zero, zero, zero, mass, zero, zero }));
+        this->setCoefficient(0, 4, InertiaElement<T>({ zero, zero, zero, zero, mass, zero }));
+        this->setCoefficient(0, 5, InertiaElement<T>({ zero, zero, zero, zero, zero, mass }));
     }
 
     template <class T>
-    typename Inertia<T>::Tensor Inertia<T>::getRotatedTensor(const Tensor &rotation_matrix) const
+    Inertia<T>::Inertia(const std::array<InertiaElement<T>, 6> &elements)
     {
-        return rotation_matrix * tensor_ * rotation_matrix.transpose();
+        this->setCoefficient(0, 0, elements[0]);
+        this->setCoefficient(0, 1, elements[1]);
+        this->setCoefficient(0, 2, elements[2]);
+        this->setCoefficient(0, 3, elements[3]);
+        this->setCoefficient(0, 4, elements[4]);
+        this->setCoefficient(0, 5, elements[5]);
     }
 
     template <class T>
-    const typename Inertia<T>::Tensor &Inertia<T>::getTensor() const
+    template <class S>
+    Inertia<T>::Inertia(const Inertia<S> &other)
     {
-        return tensor_;
+        this->setCoefficient(0, 0, other.getElement23());
+        this->setCoefficient(0, 1, other.getElement13());
+        this->setCoefficient(0, 2, other.getElement12());
+        this->setCoefficient(0, 3, other.getElement01());
+        this->setCoefficient(0, 4, other.getElement02());
+        this->setCoefficient(0, 5, other.getElement03());
+    }
+
+    template <class T>
+    Inertia<T> &Inertia<T>::operator+=(const Inertia &inertia)
+    {
+        this->getCoefficient(0, 0) = this->getCoefficient(0, 0) + inertia.getElement23();
+        this->getCoefficient(0, 1) = this->getCoefficient(0, 1) + inertia.getElement13();
+        this->getCoefficient(0, 2) = this->getCoefficient(0, 2) + inertia.getElement12();
+        this->getCoefficient(0, 3) = this->getCoefficient(0, 3) + inertia.getElement01();
+        this->getCoefficient(0, 4) = this->getCoefficient(0, 4) + inertia.getElement02();
+        this->getCoefficient(0, 5) = this->getCoefficient(0, 5) + inertia.getElement03();
+
+        return *this;
+    }
+
+    template <class T>
+    Inertia<T> Inertia<T>::operator+(const Inertia<T> &inertia)
+    {
+        Inertia sum = *this;
+        sum += inertia;
+
+        return sum;
+    }
+
+    template <class T>
+    Wrench<T> Inertia<T>::operator()(const Twist<T> &twist) const
+    {
+        return Wrench<T>({ -(getElement23() | twist).template get<blades::scalar>(),  //
+                           -(getElement13() | twist).template get<blades::scalar>(),  //
+                           -(getElement12() | twist).template get<blades::scalar>(),  //
+                           -(getElement01() | twist).template get<blades::scalar>(),  //
+                           -(getElement02() | twist).template get<blades::scalar>(),  //
+                           -(getElement03() | twist).template get<blades::scalar>() });
+    }
+
+    template <class T>
+    Inertia<T> Inertia<T>::transform(const Motor<T> &motor) const
+    {
+        InertiaElement<T> e1 = motor.apply(getElement23());
+        InertiaElement<T> e2 = motor.apply(getElement13());
+        InertiaElement<T> e3 = motor.apply(getElement12());
+        InertiaElement<T> e4 = motor.apply(getElement01());
+        InertiaElement<T> e5 = motor.apply(getElement02());
+        InertiaElement<T> e6 = motor.apply(getElement03());
+
+        return Inertia({
+          motor.apply(InertiaElement<T>({ e1.template get<blades::e23>(), e2.template get<blades::e23>(), e3.template get<blades::e23>(),
+                                          e4.template get<blades::e23>(), e5.template get<blades::e23>(), e6.template get<blades::e23>() })),
+          motor.apply(InertiaElement<T>({ e1.template get<blades::e13>(), e2.template get<blades::e13>(), e3.template get<blades::e13>(),
+                                          e4.template get<blades::e13>(), e5.template get<blades::e13>(), e6.template get<blades::e13>() })),
+          motor.apply(InertiaElement<T>({ e1.template get<blades::e12>(), e2.template get<blades::e12>(), e3.template get<blades::e12>(),
+                                          e4.template get<blades::e12>(), e5.template get<blades::e12>(), e6.template get<blades::e12>() })),
+          motor.apply(InertiaElement<T>({ e1.template get<blades::e01>(), e2.template get<blades::e01>(), e3.template get<blades::e01>(),
+                                          e4.template get<blades::e01>(), e5.template get<blades::e01>(), e6.template get<blades::e01>() })),
+          motor.apply(InertiaElement<T>({ e1.template get<blades::e02>(), e2.template get<blades::e02>(), e3.template get<blades::e02>(),
+                                          e4.template get<blades::e02>(), e5.template get<blades::e02>(), e6.template get<blades::e02>() })),
+          motor.apply(InertiaElement<T>({ e1.template get<blades::e03>(), e2.template get<blades::e03>(), e3.template get<blades::e03>(),
+                                          e4.template get<blades::e03>(), e5.template get<blades::e03>(), e6.template get<blades::e03>() })),
+        });
+    }
+
+    template <class T>
+    Inertia<T> Inertia<T>::inverseTransform(const Motor<T> &motor) const
+    {
+        return transform(motor.reverse());
+    }
+
+    template <class T>
+    const InertiaElement<T> &Inertia<T>::getElement23() const
+    {
+        return this->getCoefficient(0, 0);
+    }
+
+    template <class T>
+    const InertiaElement<T> &Inertia<T>::getElement13() const
+    {
+        return this->getCoefficient(0, 1);
+    }
+
+    template <class T>
+    const InertiaElement<T> &Inertia<T>::getElement12() const
+    {
+        return this->getCoefficient(0, 2);
+    }
+
+    template <class T>
+    const InertiaElement<T> &Inertia<T>::getElement01() const
+    {
+        return this->getCoefficient(0, 3);
+    }
+
+    template <class T>
+    const InertiaElement<T> &Inertia<T>::getElement02() const
+    {
+        return this->getCoefficient(0, 4);
+    }
+
+    template <class T>
+    const InertiaElement<T> &Inertia<T>::getElement03() const
+    {
+        return this->getCoefficient(0, 5);
+    }
+
+    template <class T>
+    typename Inertia<T>::Base::Matrix Inertia<T>::getTensor() const
+    {
+        return this->embed();
     }
 
     template <class T>
     Inertia<T> Inertia<T>::Zero()
     {
-        return Inertia(Inertia::Tensor::Zero());
+        return Inertia(TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(),
+                       TypeTraits<T>::Zero(), TypeTraits<T>::Zero());
     }
 
 }  // namespace gafro

@@ -44,10 +44,15 @@ namespace gafro
         void getGradientAndHessian(const VectorX &state, VectorX &gradient, MatrixXX &hessian) const
         {
             Eigen::Matrix<T, 6, 1> error = getError(state);
-            Eigen::Matrix<T, 6, 8> jacobian_log = Motor(target_.reverse() * arm_->getEEMotor(state)).logJacobian();
-            Eigen::Matrix<T, 8, dof> jacobian_ee = arm_->getEEJacobian(state, target_.reverse());
+            Eigen::Matrix<T, 6, 8> jacobian_log = Motor<T>(target_.reverse() * arm_->getEEMotor(state)).logJacobian();
+            MultivectorMatrix<T, Motor, 1, dof> jacobian_ee = arm_->getEEAnalyticJacobian(state);
 
-            Eigen::Matrix<T, 6, dof> jacobian = jacobian_log * jacobian_ee;
+            for (unsigned i = 0; i < dof; ++i)
+            {
+                jacobian_ee.getCoefficient(0, i) = target_.reverse() * jacobian_ee.getCoefficient(0, i);
+            }
+
+            Eigen::Matrix<T, 6, dof> jacobian = jacobian_log * jacobian_ee.embed();
 
             gradient = VectorX::Zero();
             hessian = MatrixXX::Zero();

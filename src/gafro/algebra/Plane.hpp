@@ -45,6 +45,14 @@ namespace gafro
 
       protected:
       private:
+      public:
+        static Plane XY(const T &z = T(0.0));
+
+        static Plane XZ(const T &y = T(0.0));
+
+        static Plane YZ(const T &x = T(0.0));
+
+        static Plane Random();
     };
 
 }  // namespace gafro

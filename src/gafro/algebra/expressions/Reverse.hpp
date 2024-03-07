@@ -20,13 +20,13 @@
 #pragma once
 
 #include <gafro/algebra/Blades.hpp>
-#include <gafro/algebra/expressions/Expression.hpp>
+#include <gafro/algebra/expressions/UnaryExpression.hpp>
 
 namespace gafro
 {
 
     template <class M>
-    class Reverse : public UnaryExpression<Reverse<M>, M, M>
+    class Reverse : public UnaryExpression<Reverse<M>, M, typename M::Type>
     {
       public:
         using Type = typename M::Type;
@@ -38,14 +38,19 @@ namespace gafro
         // constexpr static auto map = Type::map;
         constexpr static auto has = Type::has;
 
-        Reverse(const M &m1) : UnaryExpression<Reverse<M>, M, M>(m1) {}
+        Reverse(const M &m1)  //
+          : UnaryExpression<Reverse<M>, M, typename M::Type>(m1)
+        {}
+
+        Reverse(M &&m1)  //
+          : UnaryExpression<Reverse<M>, M, typename M::Type>(std::move(m1))
+        {}
 
         virtual ~Reverse() = default;
 
         template <int blade>
-        requires(has(blade))  //
-          Vtype get()
-        const
+            requires(has(blade))  //
+        Vtype get() const
         {
             if constexpr (blade > 5 && blade < 26)
             {

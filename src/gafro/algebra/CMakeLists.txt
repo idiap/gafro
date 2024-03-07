@@ -1,60 +1,78 @@
 target_sources(${PROJECT_NAME}
-	PRIVATE 
+    PRIVATE
 )
 
 add_subdirectory(expressions)
 add_subdirectory(util)
 
-install(
-	FILES 
-		Point.hpp
-		Point.hxx
+# Only do that when using the gafro source code directly, not from a submodule
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    install(
+        FILES
+            Vector.hpp
+            Vector.hxx
 
-		PointPair.hpp
-		PointPair.hxx
+            DirectionVector.hpp
+            DirectionVector.hxx
 
-		Line.hpp
-		Line.hxx
+            TangentVector.hpp
+            TangentVector.hxx
 
-		Circle.hpp
-		Circle.hxx
+            Point.hpp
+            Point.hxx
 
-		Plane.hpp
-		Plane.hxx
+            PointPair.hpp
+            PointPair.hxx
 
-		Sphere.hpp
-		Sphere.hxx
+            Line.hpp
+            Line.hxx
 
-		Motor.hpp
-		Motor.hxx
+            Circle.hpp
+            Circle.hxx
 
-		MotorGenerator.hpp
-		MotorGenerator.hxx
-		
-		Rotor.hpp
-		Rotor.hxx
+            Plane.hpp
+            Plane.hxx
 
-		RotorGenerator.hpp
-		RotorGenerator.hxx
+            Sphere.hpp
+            Sphere.hxx
 
-		Translator.hpp
-		Translator.hxx
+            Versor.hpp
+            Versor.hxx
 
-		TranslatorGenerator.hpp
-		TranslatorGenerator.hxx
+            Motor.hpp
+            Motor.hxx
 
-		Multivector.hpp
-		Multivector.hxx
-		
-		Blades.hpp
-		
-		MultivectorMatrix.hpp
+            MotorGenerator.hpp
+            MotorGenerator.hxx
 
-		# Vector.hpp
-		# Grade.hpp
-		# Meet.hpp
-	DESTINATION 
-		${GAFRO_PREFIX_INCLUDE}/gafro/algebra
-	COMPONENT
-		Devel
-)
+            Rotor.hpp
+            Rotor.hxx
+
+            RotorGenerator.hpp
+            RotorGenerator.hxx
+
+            Translator.hpp
+            Translator.hxx
+
+            TranslatorGenerator.hpp
+            TranslatorGenerator.hxx
+
+            Dilator.hpp
+            Dilator.hxx
+
+            AbstractMultivector.hpp
+            AbstractMultivector.hxx
+            Multivector.hpp
+            Multivector.hxx
+
+            Blades.hpp
+
+            Operators.hxx
+
+            MultivectorMatrix.hpp
+        DESTINATION
+            ${GAFRO_PREFIX_INCLUDE}/gafro/algebra
+        COMPONENT
+            Devel
+    )
+endif()

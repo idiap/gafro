@@ -19,13 +19,16 @@
 
 #pragma once
 
+#include <iostream>
 #include <ostream>
+//
+#include <gafro/algebra/expressions/AbstractExpression.hpp>
 
 namespace gafro
 {
 
     template <class Derived, class Result>
-    class Expression
+    class Expression : public AbstractExpression<Derived>
     {
       public:
         Expression() = default;
@@ -40,17 +43,22 @@ namespace gafro
         constexpr static auto bits = Type::bits;
 
         template <int blade>
-        requires(Type::has(blade))  //
-          typename Result::Vtype get() const
+            requires(Type::has(blade))  //
+        typename Result::Vtype get() const
         {
             return static_cast<const Derived &>(*this).template get<blade>();
         }
 
         template <int blade>
-        requires(Type::has(blade))  //
-          constexpr static int map()
+            requires(Type::has(blade))  //
+        constexpr static int map()
         {
             return Type::template map<blade>();
+        }
+
+        constexpr static int has(const int &blade)
+        {
+            return Type::has(blade);
         }
 
         Result evaluate() const
@@ -58,75 +66,19 @@ namespace gafro
             return Result(*this);
         }
 
-        constexpr static bool isExpression()
+        typename Result::Parameters vector() const
         {
-            return true;
+            return evaluate().vector();
+        }
+
+        template <class R>
+        R evaluateAs() const
+        {
+            return R(*this);
         }
 
       protected:
       private:
-    };
-
-    template <class Derived, class Operand, class Result>
-    class UnaryExpression : public Expression<UnaryExpression<Derived, Operand, Result>, Result>
-    {
-      public:
-        UnaryExpression(const Operand &operand) : operand_(operand) {}
-
-        virtual ~UnaryExpression() = default;
-
-        using Type = Result;
-
-        template <int blade>
-        requires(Type::has(blade))  //
-          typename Result::Vtype get() const
-        {
-            return static_cast<const Derived &>(*this).template get<blade>();
-        }
-
-      protected:
-        const Operand &operand() const
-        {
-            return operand_;
-        }
-
-      private:
-        const Operand operand_;
-    };
-
-    template <class Derived, class LeftOperand, class RightOperand, class Result>
-    class BinaryExpression : public Expression<BinaryExpression<Derived, LeftOperand, RightOperand, Result>, Result>
-    {
-      public:
-        BinaryExpression(const LeftOperand &left_operand, const RightOperand &right_operand)
-          : left_operand_(left_operand), right_operand_(right_operand)
-        {}
-
-        virtual ~BinaryExpression() = default;
-
-        using Type = Result;
-
-        template <int blade>
-        requires(Type::has(blade))  //
-          typename Result::Vtype get() const
-        {
-            return static_cast<const Derived &>(*this).template get<blade>();
-        }
-
-        const LeftOperand &getLeftOperand() const
-        {
-            return left_operand_;
-        }
-
-        const RightOperand &getRightOperand() const
-        {
-            return right_operand_;
-        }
-
-      protected:
-      private:
-        const LeftOperand left_operand_;
-        const RightOperand right_operand_;
     };
 
     template <class Derived, class Result>

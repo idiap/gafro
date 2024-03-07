@@ -19,14 +19,12 @@
 
 #pragma once
 
-// #include <gafro/gafro_package_config.hpp>
+#include <gafro/gafro_package_config.hpp>
 //
 #include <gafro/algebra.hpp>
 //
 #include <gafro/physics.hpp>
 //
-// #include <gafro/motion.hpp>
-//
 #include <gafro/robot.hpp>
 //
-// #include <gafro/optimal_control.hpp>
+#include <gafro/optimization.hpp>

@@ -32,13 +32,15 @@ namespace gafro
 
         using Parameters = typename Base::Parameters;
 
+        using Base::Base;
+
         Generator() = default;
 
         Generator(const Generator &other);
 
         Generator(const Base &other);
 
-        Generator(const Parameters &magnitude, bool normalize = true);
+        Generator(const Parameters &parameters);
 
         template <class E>
         Generator(const Expression<E, Base> &expression);
@@ -59,26 +61,3 @@ namespace gafro
     };
 
 }  // namespace gafro
-
-namespace Eigen
-{
-    template <class T>
-    struct NumTraits<gafro::Multivector<T, gafro::blades::e23, gafro::blades::e13, gafro::blades::e12>>
-      : NumTraits<T>  // permits to get the epsilon, dummy_precision, lowest, highest functions
-    {
-        typedef gafro::Multivector<T, gafro::blades::e23, gafro::blades::e13, gafro::blades::e12> Real;
-        typedef gafro::Multivector<T, gafro::blades::e23, gafro::blades::e13, gafro::blades::e12> NonInteger;
-        typedef gafro::Multivector<T, gafro::blades::e23, gafro::blades::e13, gafro::blades::e12> Nested;
-
-        enum
-        {
-            IsComplex = 0,
-            IsInteger = 0,
-            IsSigned = 1,
-            RequireInitialization = 1,
-            ReadCost = 1,
-            AddCost = 3,
-            MulCost = 3
-        };
-    };
-}  // namespace Eigen

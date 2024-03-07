@@ -35,9 +35,21 @@ namespace gafro
     class InnerProduct : public Product<M1, M2, InnerProductCayleyTable>
     {
       public:
-        InnerProduct(const M1 &m1, const M2 &m2) : Product<M1, M2, InnerProductCayleyTable>(m1, m2) {}
+        InnerProduct(const M1 &m1, const M2 &m2)  //
+          : Product<M1, M2, InnerProductCayleyTable>(m1, m2)
+        {}
 
-        InnerProduct(const Product<M1, M2, InnerProductCayleyTable> &other) {}
+        InnerProduct(M1 &&m1, M2 &&m2)  //
+          : Product<M1, M2, InnerProductCayleyTable>(std::move(m1), std::move(m2))
+        {}
+
+        InnerProduct(const M1 &m1, M2 &&m2)  //
+          : Product<M1, M2, InnerProductCayleyTable>(m1, std::move(m2))
+        {}
+
+        InnerProduct(M1 &&m1, const M2 &m2)  //
+          : Product<M1, M2, InnerProductCayleyTable>(std::move(m1), m2)
+        {}
 
         virtual ~InnerProduct() = default;
 
@@ -50,13 +62,5 @@ namespace gafro
       protected:
       private:
     };
-
-    template <class E1, class E2>
-    requires(E1::isExpression() && E2::isExpression())  //
-      Product<E1, E2, InnerProductCayleyTable>
-    operator|(const E1 &u, const E2 &v)
-    {
-        return InnerProduct<E1, E2>(*static_cast<const E1 *>(&u), *static_cast<const E2 *>(&v));
-    }
 
 }  // namespace gafro

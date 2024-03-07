@@ -26,6 +26,8 @@
 namespace gafro
 {
 
+    // CONSTRUCTORS
+
     template <class T>
     Motor<T>::Motor() : Base(Unit())
     {}
@@ -35,40 +37,16 @@ namespace gafro
     {}
 
     template <class T>
-    Motor<T>::Motor(const Base &other) : Base(other)
-    {}
-
-    template <class T>
     Motor<T>::Motor(Motor &&other) : Base(std::move(other))
     {}
 
     template <class T>
-    Motor<T>::Motor(const Generator &generator)
-    {
-        // if (generator[blades::e23] * generator[blades::e23]      //
-        //       + generator[blades::e13] * generator[blades::e13]  //
-        //       + generator[blades::e12] * generator[blades::e12] >
-        //     T(0.0))
-        // {
-        //     Multivector<T> b = dual_line[0] * blades::E23<T>() + dual_line[1] * blades::E13<T>() + dual_line[2] * blades::E12<T>();
+    Motor<T>::Motor(const Generator &generator) : Base(Motor::exp(generator))
+    {}
 
-        //     T theta = b.norm();
-
-        //     Multivector<T> t = dual_line[3] * blades::E1<T>() + dual_line[4] * blades::E2<T>() + dual_line[5] * blades::E3<T>();
-
-        //     b.normalize();
-
-        //     *this = Motor<T>::exp(DualLine<T>(theta, b, t));
-        // }
-        // else
-        // {
-        //     Parameters parameters = Parameters::Zero();
-
-        //     parameters.middleRows(1, 6) = generator.vector();
-
-        //     this->setParameters(parameters);
-        // }
-    }
+    template <class T>
+    Motor<T>::Motor(const Translator<T> &translator) : Motor(translator, Rotor<T>())
+    {}
 
     template <class T>
     Motor<T>::Motor(const Translator<T> &translator, const Rotor<T> &rotor) : Motor<T>(translator * rotor)
@@ -82,23 +60,7 @@ namespace gafro
     Motor<T>::Motor(const Rotor<T> &rotor) : Motor(Translator<T>(), rotor)
     {}
 
-    template <class T>
-    Motor<T>::Motor(const Parameters &parameters) : Base(parameters)
-    {}
-
-    template <class T>
-    template <class E>
-    Motor<T>::Motor(const Expression<E, Motor> &expression)
-    {
-        this->template set<blades::scalar>(expression.template get<blades::scalar>());
-        this->template set<blades::e23>(expression.template get<blades::e23>());
-        this->template set<blades::e13>(expression.template get<blades::e13>());
-        this->template set<blades::e12>(expression.template get<blades::e12>());
-        this->template set<blades::e1i>(expression.template get<blades::e1i>());
-        this->template set<blades::e2i>(expression.template get<blades::e2i>());
-        this->template set<blades::e3i>(expression.template get<blades::e3i>());
-        this->template set<blades::e123i>(expression.template get<blades::e123i>());
-    }
+    // OPERATORS
 
     template <class T>
     Motor<T> &Motor<T>::operator=(const Motor &other)
@@ -117,30 +79,25 @@ namespace gafro
     }
 
     template <class T>
-    template <class Object>
-    SandwichProduct<Object, Motor<T>> Motor<T>::apply(const Object &object)
+    Motor<T> &Motor<T>::operator*=(const Motor &other)
     {
-        return SandwichProduct(*static_cast<const Object *>(&object), *static_cast<const Motor *>(this));
-    }
-
-    template <class T>
-    Motor<T>::Motor(Base &&other) : Base(std::forward<Base>(other))
-    {
-        this->setParameters(std::move(other.vector()));
-    }
-
-    template <class T>
-    Motor<T> &Motor<T>::operator=(Base &&other)
-    {
-        this->setParameters(std::move(other.vector()));
+        *this = Motor(Motor(*this) * other);
 
         return *this;
     }
 
+    // MOTOR SPECIFIC FUNCTIONS
+
     template <class T>
     Rotor<T> Motor<T>::getRotor() const
     {
-        return (E0<T>(-1.0) | (*this) * Ei<T>(1.0));
+        return Rotor<T>(this->vector().topRows(4));
+    }
+
+    template <class T>
+    Translator<T> Motor<T>::getTranslator() const
+    {
+        return (*this) * getRotor().reverse();
     }
 
     template <class T>
@@ -212,11 +169,54 @@ namespace gafro
     }
 
     template <class T>
+    Eigen::Matrix<T, 4, 4> Motor<T>::toTransformationMatrix() const
+    {
+        Eigen::Matrix<T, 4, 4> transformation_matrix = Eigen::Matrix<T, 4, 4>::Zero();
+
+        transformation_matrix.block(0, 0, 3, 3) = getRotor().toRotationMatrix();
+        transformation_matrix.block(0, 3, 3, 1) = getTranslator().toTranslationVector();
+        transformation_matrix.coeffRef(3, 3) = 1.0;
+
+        return transformation_matrix;
+    }
+
+    template <class T>
+    Eigen::Matrix<T, 6, 6> Motor<T>::toAdjointMatrix() const
+    {
+        Eigen::Matrix<T, 6, 6> adjoint_matrix = Eigen::Matrix<T, 6, 6>::Zero();
+
+        adjoint_matrix.block(0, 0, 3, 3) = getRotor().toRotationMatrix();
+        adjoint_matrix.block(3, 3, 3, 3) = getRotor().toRotationMatrix();
+        adjoint_matrix.block(3, 0, 3, 3) = getTranslator().toSkewSymmetricMatrix() * getRotor().toRotationMatrix();
+
+        return adjoint_matrix;
+    }
+
+    template <class T>
+    Eigen::Matrix<T, 6, 6> Motor<T>::toDualAdjointMatrix() const
+    {
+        Eigen::Matrix<T, 6, 6> adjoint_matrix = Eigen::Matrix<T, 6, 6>::Zero();
+
+        adjoint_matrix.block(0, 0, 3, 3) = getRotor().toRotationMatrix().transpose();
+        adjoint_matrix.block(3, 3, 3, 3) = getRotor().toRotationMatrix().transpose();
+        adjoint_matrix.block(0, 3, 3, 3) = getRotor().toRotationMatrix().transpose() * getTranslator().toSkewSymmetricMatrix().transpose();
+
+        return adjoint_matrix;
+    }
+
+    // STATIC FUNCTIONS
+
+    template <class T>
     Motor<T> Motor<T>::Unit()
     {
-        Parameters parameters({ 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 });
+        return Motor<T>({ TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(),
+                          TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() });
+    }
 
-        return Motor<T>(parameters);
+    template <class T>
+    Motor<T> Motor<T>::Random()
+    {
+        return Motor<T>::exp(Motor<T>::Generator::Random());
     }
 
     template <class T>

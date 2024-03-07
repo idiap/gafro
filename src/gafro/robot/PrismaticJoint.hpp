@@ -19,34 +19,40 @@
 
 #pragma once
 
-#include <gafro/algebra.hpp>
+#include <gafro/robot/Joint.hpp>
 
 namespace gafro
 {
 
     template <class T>
-    class PrismaticJoint
+    class PrismaticJoint : public Joint<T>
     {
       public:
+        using Axis = typename Translator<T>::Generator;
+
+        PrismaticJoint();
+
         PrismaticJoint(const std::array<T, 3> &parameters);
 
         PrismaticJoint(const std::array<T, 6> &parameters, int axis);
 
-        virtual ~PrismaticJoint() = default;
+        virtual ~PrismaticJoint();
+
+        void setAxis(const Axis &axis);
+
+        const Axis &getAxis() const;
 
         Motor<T> getMotor(const T &displacement) const;
 
+        Motor<T> getMotorDerivative(const T &angle) const;
+
         Translator<T> getTranslator(const T &displacement) const;
 
-        const Motor<T> &getFrame() const;
-
-        const typename Translator<T>::Generator &getAxis() const;
+        typename Motor<T>::Generator getCurrentAxis(const Motor<T> &motor) const;
 
       protected:
       private:
-        Motor<T> frame_;
-
-        typename Translator<T>::Generator axis_;
+        Axis axis_;
     };
 
 }  // namespace gafro

@@ -1,20 +1,30 @@
-configure_file(${CMAKE_CURRENT_LIST_DIR}/gafro_package_config.h.in "${CMAKE_CURRENT_BINARY_DIR}/gafro/gafro_package_config.hpp")
+configure_file(${CMAKE_CURRENT_LIST_DIR}/gafro_package_config.h.in "${CMAKE_CURRENT_BINARY_DIR}/gafro_package_config.hpp")
 
 add_library(${PROJECT_NAME})
 
-target_compile_options(${PROJECT_NAME}
-	PUBLIC
-    "-march=native"
-    "-msse2"
-    "-O3"
-)
 
+include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag("-march=native" MARCH_NATIVE_SUPPORTED)
+check_cxx_compiler_flag("-msse4" MSSE2_SUPPORTED)
+
+if (MARCH_NATIVE_SUPPORTED)
+    target_compile_options(${PROJECT_NAME} PUBLIC "-march=native")
+endif()
+
+if (MSSE2_SUPPORTED)
+    target_compile_options(${PROJECT_NAME} PUBLIC "-msse4")
+endif()
+
+
+target_compile_options(${PROJECT_NAME} PUBLIC "-O3")
+target_compile_options(${PROJECT_NAME} PUBLIC "-Wall")
+target_compile_options(${PROJECT_NAME} PUBLIC "-Wpedantic")
+# target_compile_options(${PROJECT_NAME} PUBLIC "-Werror")
 
 add_subdirectory(algebra)
 add_subdirectory(physics)
-# add_subdirectory(motion)
 add_subdirectory(robot)
-add_subdirectory(optimal_control)
+add_subdirectory(optimization)
 
 include(GenerateExportHeader)
 generate_export_header(${PROJECT_NAME})
@@ -25,49 +35,50 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
   INTERFACE_GAFRO_MAJOR_VERSION 1
 )
 
-find_package(Eigen3 REQUIRED)
-
-message(${CMAKE_CURRENT_BINARY_DIR})
-
 target_include_directories(${PROJECT_NAME}
-	PUBLIC
-		$<INSTALL_INTERFACE:${${PROJECT_NAME}_PREFIX_INCLUDE}>
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}>
-		$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
+    PUBLIC
+        $<INSTALL_INTERFACE:${${PROJECT_NAME}_PREFIX_INCLUDE}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>/..
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
 
-		$<BUILD_INTERFACE:${EIGEN3_INCLUDE_DIRS}>
-	PRIVATE
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>/..
+        $<BUILD_INTERFACE:${EIGEN3_INCLUDE_DIRS}>
+        $<INSTALL_INTERFACE:${EIGEN3_INCLUDE_DIRS}>
+
+    PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>/..
 )
 
-target_include_directories(${PROJECT_NAME} 
-	SYSTEM PRIVATE
+target_include_directories(${PROJECT_NAME}
+    SYSTEM PRIVATE
 )
 
 target_link_libraries(${PROJECT_NAME}
-	PRIVATE 
-		$<BUILD_INTERFACE:${EIGEN3_LIBRARIES}>
-	PUBLIC
+    PUBLIC
+        $<BUILD_INTERFACE:${EIGEN3_LIBRARIES}>
+        $<INSTALL_INTERFACE:${EIGEN3_LIBRARIES}>
+    PRIVATE
 )
 
-install(TARGETS ${PROJECT_NAME} EXPORT ${CMAKE_PROJECT_NAME}-config-targets
-	LIBRARY DESTINATION lib/${PROJECT_NAME}/
-	ARCHIVE DESTINATION lib/${PROJECT_NAME}/
-	RUNTIME DESTINATION lib/${PROJECT_NAME}/
-	INCLUDES DESTINATION ${GAFRO_PREFIX_INCLUDE}/
-)
+# Only do that when using the gafro source code directly, not from a submodule
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    install(TARGETS ${PROJECT_NAME} EXPORT ${CMAKE_PROJECT_NAME}-config-targets
+        LIBRARY DESTINATION lib/${PROJECT_NAME}/
+        ARCHIVE DESTINATION lib/${PROJECT_NAME}/
+        RUNTIME DESTINATION lib/${PROJECT_NAME}/
+        INCLUDES DESTINATION ${GAFRO_PREFIX_INCLUDE}/
+    )
 
-install(
-	FILES 
-		"${CMAKE_CURRENT_BINARY_DIR}/gafro/gafro_package_config.hpp" 
-		gafro.hpp
-		algebra.hpp
-		motion.hpp
-		robot.hpp
-		physics.hpp
-		optimal_control.hpp
-	DESTINATION 
-		${GAFRO_PREFIX_INCLUDE}/gafro
-	COMPONENT 
-		Devel
-)
+    install(
+        FILES
+            "${CMAKE_CURRENT_BINARY_DIR}/gafro_package_config.hpp"
+            gafro.hpp
+            algebra.hpp
+            robot.hpp
+            physics.hpp
+            optimization.hpp
+        DESTINATION
+            ${GAFRO_PREFIX_INCLUDE}/gafro
+        COMPONENT
+            Devel
+    )
+endif()

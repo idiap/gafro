@@ -39,4 +39,28 @@ namespace gafro
         return this->dual() - Scalar<T>(T(0.5)) * (this->dual() | E0<T>(T(1.0))) * Ei<T>(T(1.0));
     }
 
+    template <typename T>
+    Plane<T> Plane<T>::XY(const T &z)
+    {
+        return Plane(Point<T>(0.0, 0.0, z), Point<T>(1.0, 0.0, z), Point<T>(0.0, 1.0, z));
+    }
+
+    template <typename T>
+    Plane<T> Plane<T>::XZ(const T &y)
+    {
+        return Plane(Point<T>(0.0, y, 0.0), Point<T>(1.0, y, 0.0), Point<T>(0.0, y, 1.0));
+    }
+
+    template <typename T>
+    Plane<T> Plane<T>::YZ(const T &x)
+    {
+        return Plane(Point<T>(x, 0.0, 0.0), Point<T>(x, 1.0, 0.0), Point<T>(x, 0.0, 1.0));
+    }
+
+    template <class T>
+    Plane<T> Plane<T>::Random()
+    {
+        return Plane(Point<T>::Random(), Point<T>::Random(), Point<T>::Random());
+    }
+
 }  // namespace gafro

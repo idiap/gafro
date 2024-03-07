@@ -26,26 +26,17 @@ namespace gafro
 {
 
     template <class T>
-    static Point<double> split(const PointPair<T> &pp, bool bSecond)
+    static Point<T> split(const PointPair<T> &pp, bool bSecond)
     {
-        if (bSecond)
-        {
-            auto point = pp + Scalar<T>(sqrt(abs(pp.squaredNorm())));
+        auto point = bSecond ? (pp + Scalar<T>(pp.norm())).evaluate() : (pp - Scalar<T>(pp.norm())).evaluate();
 
-            return point * (Ei<T>(T(-1.0)) | pp).evaluate().inverse();
-        }
-        else
-        {
-            auto point = pp - Scalar<T>(sqrt(abs(pp.squaredNorm())));
+        auto inverse = (Ei<T>(T(-1.0)) | pp).evaluate().inverse().evaluate();
 
-            return point * (Ei<T>(T(-1.0)) | pp).evaluate().inverse();
-        }
-
-        return Point<T>();
+        return point * inverse;
     }
 
     template <class T>
-    PointPair<T>::PointPair() : Base()
+    PointPair<T>::PointPair() : PointPair<T>(Point<T>(), Point<T>())
     {}
 
     template <class T>
@@ -65,13 +56,13 @@ namespace gafro
     {}
 
     template <class T>
-    Point<double> PointPair<T>::getPoint1() const
+    Point<T> PointPair<T>::getPoint1() const
     {
         return split(*this, false);
     }
 
     template <class T>
-    Point<double> PointPair<T>::getPoint2() const
+    Point<T> PointPair<T>::getPoint2() const
     {
         return split(*this, true);
     }

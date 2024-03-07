@@ -33,7 +33,7 @@ namespace gafro
     {}
 
     template <class T>
-    Rotor<T>::Generator::Generator(const Parameters &parameters, bool normalize) : Base(normalize ? parameters.normalized() : parameters)
+    Rotor<T>::Generator::Generator(const Parameters &parameters) : Base(parameters)
     {}
 
     template <class T>

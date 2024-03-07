@@ -28,10 +28,15 @@ namespace gafro
     class Point;
 
     template <class T>
+    class Motor;
+
+    template <class T>
     class Line : public Multivector<T, blades::e12i, blades::e13i, blades::e23i, blades::e01i, blades::e02i, blades::e03i>
     {
       public:
         using Base = Multivector<T, blades::e12i, blades::e13i, blades::e23i, blades::e01i, blades::e02i, blades::e03i>;
+
+        using Base::Base;
 
         Line(const Base &other);
 
@@ -39,8 +44,18 @@ namespace gafro
 
         virtual ~Line() = default;
 
+        Motor<T> getMotor(const Line &other) const;
+
       protected:
       private:
+      public:
+        static Line X();
+
+        static Line Y();
+
+        static Line Z();
+
+        static Line Random();
     };
 
 }  // namespace gafro

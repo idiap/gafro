@@ -31,6 +31,8 @@ namespace gafro
 
         using Parameters = typename Base::Parameters;
 
+        using Base::Base;
+
         Generator() = default;
 
         Generator(const Base &other);

@@ -35,10 +35,11 @@ namespace gafro
     class SandwichProduct;
 
     template <class T>
-    class Motor : public Multivector<T, blades::scalar, blades::e23, blades::e13, blades::e12, blades::e1i, blades::e2i, blades::e3i, blades::e123i>
+    class Motor
+      : public Versor<Motor<T>, T, blades::scalar, blades::e23, blades::e13, blades::e12, blades::e1i, blades::e2i, blades::e3i, blades::e123i>
     {
       public:
-        using Base = Multivector<T, blades::scalar, blades::e23, blades::e13, blades::e12, blades::e1i, blades::e2i, blades::e3i, blades::e123i>;
+        using Base = Versor<Motor<T>, T, blades::scalar, blades::e23, blades::e13, blades::e12, blades::e1i, blades::e2i, blades::e3i, blades::e123i>;
 
         using Type = typename Base::Type;
 
@@ -48,7 +49,11 @@ namespace gafro
         class Logarithm;
         class Exponential;
 
+        // BASE FUNCTIONS
+
         using Base::Base;
+
+        // CONSTRUCTORS
 
         Motor();
 
@@ -56,55 +61,48 @@ namespace gafro
 
         Motor(Motor &&other);
 
-        Motor(const Parameters &parameters);
-
         Motor(const Generator &generator);
+
+        Motor(const Translator<T> &translator);
+
+        Motor(const Rotor<T> &rotor);
 
         Motor(const Translator<T> &translator, const Rotor<T> &rotor);
 
         Motor(const Rotor<T> &rotor, const Translator<T> &translator);
 
-        Motor(const Rotor<T> &rotor);
-
-        Motor(const Base &other);
-
-        Motor(Base &&other);
-
-        template <class E>
-        Motor(const Expression<E, Motor> &expression);
-
         virtual ~Motor() = default;
 
+        // OPERATORS
+
+        Motor &operator=(const Motor &other);
+
+        Motor &operator=(Motor &&other);
+
+        Motor &operator*=(const Motor &other);
+
+        // MOTOR SPECIFIC FUNCTIONS
+
         Rotor<T> getRotor() const;
+
+        Translator<T> getTranslator() const;
 
         Logarithm log() const;
 
         Eigen::Matrix<T, 6, 8> logJacobian() const;
 
-      protected:
-      private:
-      public:
-        Motor &operator=(const Motor &other);
+        Eigen::Matrix<T, 4, 4> toTransformationMatrix() const;
 
-        Motor &operator=(Motor &&other);
+        Eigen::Matrix<T, 6, 6> toAdjointMatrix() const;
 
-        Motor &operator=(Base &&other);
-
-        template <class Object>
-        SandwichProduct<Object, Motor> apply(const Object &object);
-
-        template <class M>
-        Motor &operator*=(const M &other)
-        {
-            *this = Motor(Motor(*this) * other);
-
-            return *this;
-        }
-
-        using Base::operator=;
+        Eigen::Matrix<T, 6, 6> toDualAdjointMatrix() const;
 
       public:
+        // STATIC FUNCTIONS
+
         static Motor<T> Unit();
+
+        static Motor<T> Random();
 
         static Exponential exp(const Generator &generator);
 
@@ -112,25 +110,3 @@ namespace gafro
     };
 
 }  // namespace gafro
-
-namespace Eigen
-{
-    template <class T>
-    struct NumTraits<gafro::Motor<T>> : NumTraits<T>  // permits to get the epsilon, dummy_precision, lowest, highest functions
-    {
-        typedef gafro::Motor<T> Real;
-        typedef gafro::Motor<T> NonInteger;
-        typedef gafro::Motor<T> Nested;
-
-        enum
-        {
-            IsComplex = 0,
-            IsInteger = 0,
-            IsSigned = 1,
-            RequireInitialization = 1,
-            ReadCost = 1,
-            AddCost = 3,
-            MulCost = 3
-        };
-    };
-}  // namespace Eigen

@@ -41,20 +41,36 @@ namespace gafro
       : Motor<T>::Generator::Generator((Parameters() << p1[0], p1[1], p1[2], p2[0], p2[1], p2[2]).finished())
     {}
 
+    // template <class T>
+    // template <class E>
+    // Motor<T>::Generator::Generator(const Expression<E, Generator> &expression)
+    // {
+    //     Parameters parameters;
+
+    //     parameters.coeffRef(0, 0) = expression.template get<blades::e23>();
+    //     parameters.coeffRef(1, 0) = expression.template get<blades::e13>();
+    //     parameters.coeffRef(2, 0) = expression.template get<blades::e12>();
+    //     parameters.coeffRef(3, 0) = expression.template get<blades::e1i>();
+    //     parameters.coeffRef(4, 0) = expression.template get<blades::e2i>();
+    //     parameters.coeffRef(5, 0) = expression.template get<blades::e3i>();
+
+    //     this->setParameters(std::move(parameters));
+    // }
+
     template <class T>
-    template <class E>
-    Motor<T>::Generator::Generator(const Expression<E, Generator> &expression)
+    typename Rotor<T>::Generator Motor<T>::Generator::getRotorGenerator() const
     {
-        Parameters parameters;
+        return typename Rotor<T>::Generator({ this->template get<blades::e23>(),  //
+                                              this->template get<blades::e13>(),  //
+                                              this->template get<blades::e12>() });
+    }
 
-        parameters.coeffRef(0, 0) = expression.template get<blades::e23>();
-        parameters.coeffRef(1, 0) = expression.template get<blades::e13>();
-        parameters.coeffRef(2, 0) = expression.template get<blades::e12>();
-        parameters.coeffRef(3, 0) = expression.template get<blades::e1i>();
-        parameters.coeffRef(4, 0) = expression.template get<blades::e2i>();
-        parameters.coeffRef(5, 0) = expression.template get<blades::e3i>();
-
-        this->setParameters(std::move(parameters));
+    template <class T>
+    typename Translator<T>::Generator Motor<T>::Generator::getTranslatorGenerator() const
+    {
+        return typename Translator<T>::Generator({ this->template get<blades::e1i>(),  //
+                                                   this->template get<blades::e2i>(),  //
+                                                   this->template get<blades::e3i>() });
     }
 
 }  // namespace gafro

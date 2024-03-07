@@ -54,6 +54,8 @@ namespace gafro
 
       protected:
       private:
+      public:
+        static Circle Random();
     };
 
 }  // namespace gafro

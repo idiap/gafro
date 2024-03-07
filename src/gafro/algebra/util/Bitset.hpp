@@ -53,7 +53,7 @@ namespace gafro
 
             for (unsigned k = 0; k < 32; ++k)
             {
-                bits[k] = Bitset<i0>().bits[k] | Bitset<i...>().bits[k];
+                bits[k] = Bitset<i0>().bits[k] || Bitset<i...>().bits[k];
             }
 
             return bits;
@@ -134,7 +134,7 @@ namespace gafro
 
         constexpr static std::array<int, 0> blades()
         {
-            std::array<int, 0> array;
+            std::array<int, 0> array{};
 
             return array;
         }
