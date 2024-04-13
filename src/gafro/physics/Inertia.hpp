@@ -31,7 +31,7 @@ namespace gafro
     class Wrench;
 
     template <class T>
-    using InertiaElement = Multivector<T, blades::e23, blades::e13, blades::e12, blades::e01, blades::e02, blades::e03>;
+    using InertiaElement = Multivector<T, blades::e01, blades::e02, blades::e12, blades::e03, blades::e13, blades::e23>;
 
     template <class T>
     class Inertia : private MultivectorMatrix<T, InertiaElement, 1, 6>
@@ -90,8 +90,6 @@ namespace gafro
       private:
       public:
         static Inertia Zero();
-
-        // friend std::ostream &operator<<(std::ostream &ostream, const Inertia &inertia);
     };
 
 }  // namespace gafro

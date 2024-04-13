@@ -46,9 +46,9 @@ namespace gafro
     {
         Translator<T> t(typename Translator<T>::Generator({ parameters[0], parameters[1], parameters[2] }));
 
-        Rotor<T> r1(typename Rotor<T>::Generator({ TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() }), parameters[3]);
+        Rotor<T> r1(typename Rotor<T>::Generator({ TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::One() }), parameters[5]);
         Rotor<T> r2(typename Rotor<T>::Generator({ TypeTraits<T>::Zero(), TypeTraits<T>::One(), TypeTraits<T>::Zero() }), parameters[4]);
-        Rotor<T> r3(typename Rotor<T>::Generator({ TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::One() }), parameters[5]);
+        Rotor<T> r3(typename Rotor<T>::Generator({ TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() }), parameters[3]);
 
         this->setFrame(t * r1 * r2 * r3);
 

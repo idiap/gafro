@@ -37,9 +37,9 @@ namespace gafro
     template <class T>
     typename Twist<T>::Angular Twist<T>::getAngular() const
     {
-        return Angular({ this->template get<blades::e23>(),  //
+        return Angular({ this->template get<blades::e12>(),  //
                          this->template get<blades::e13>(),  //
-                         this->template get<blades::e12>() });
+                         this->template get<blades::e23>() });
     }
 
     template <class T>

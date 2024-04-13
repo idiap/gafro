@@ -30,10 +30,10 @@ namespace gafro
     // class Circle;
 
     template <typename T>
-    class Sphere : public Multivector<T, blades::e123i, blades::e0123, blades::e012i, blades::e023i, blades::e013i>
+    class Sphere : public Multivector<T, blades::e0123, blades::e012i, blades::e013i, blades::e023i, blades::e123i>
     {
       public:
-        using Base = Multivector<T, blades::e123i, blades::e0123, blades::e012i, blades::e023i, blades::e013i>;
+        using Base = Multivector<T, blades::e0123, blades::e012i, blades::e013i, blades::e023i, blades::e123i>;
 
         using Base::Base;
 

@@ -27,11 +27,14 @@ namespace gafro
     template <class T>
     class Point;
 
+    template <class T>
+    class Vector;
+
     template <typename T>
-    class Plane : public Multivector<T, blades::e123i, blades::e012i, blades::e023i, blades::e013i>
+    class Plane : public Multivector<T, blades::e012i, blades::e013i, blades::e023i, blades::e123i>
     {
       public:
-        using Base = Multivector<T, blades::e123i, blades::e012i, blades::e023i, blades::e013i>;
+        using Base = Multivector<T, blades::e012i, blades::e013i, blades::e023i, blades::e123i>;
 
         using Base::Base;
 
@@ -41,7 +44,7 @@ namespace gafro
 
         virtual ~Plane() = default;
 
-        Multivector<T, blades::e1, blades::e2, blades::e3> getNormal() const;
+        Vector<T> getNormal() const;
 
       protected:
       private:

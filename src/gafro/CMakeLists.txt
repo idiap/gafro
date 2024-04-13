@@ -20,6 +20,7 @@ target_compile_options(${PROJECT_NAME} PUBLIC "-O3")
 target_compile_options(${PROJECT_NAME} PUBLIC "-Wall")
 target_compile_options(${PROJECT_NAME} PUBLIC "-Wpedantic")
 # target_compile_options(${PROJECT_NAME} PUBLIC "-Werror")
+target_compile_options(${PROJECT_NAME} PUBLIC "-fno-builtin")
 
 add_subdirectory(algebra)
 add_subdirectory(physics)

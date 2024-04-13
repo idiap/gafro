@@ -25,10 +25,10 @@ namespace gafro
 {
 
     template <class T>
-    class Wrench : public Multivector<T, blades::e23, blades::e13, blades::e12, blades::e01, blades::e02, blades::e03>
+    class Wrench : public Multivector<T, blades::e01, blades::e02, blades::e12, blades::e03, blades::e13, blades::e23>
     {
       public:
-        using Base = Multivector<T, blades::e23, blades::e13, blades::e12, blades::e01, blades::e02, blades::e03>;
+        using Base = Multivector<T, blades::e01, blades::e02, blades::e12, blades::e03, blades::e13, blades::e23>;
         using Parameters = typename Base::Parameters;
 
         using Base::Base;
@@ -38,7 +38,7 @@ namespace gafro
 
         Wrench(const Base &multivector);
 
-        Wrench(const Parameters &multivector);
+        Wrench(const T &tx, const T &ty, const T &tz, const T &fx, const T &fy, const T &fz);
 
         virtual ~Wrench();
 

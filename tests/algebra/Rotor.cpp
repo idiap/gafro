@@ -16,7 +16,7 @@ TEST_CASE("Rotor creation", "[Rotor]")
 
 TEST_CASE("Rotor creation from multivector (no angle)", "[Rotor]")
 {
-    Multivector<double, blades::scalar, blades::e23, blades::e13, blades::e12> mv({ 1.0, 1.0, 0.0, 0.0 });
+    gafro::Multivector<double, blades::scalar, blades::e12, blades::e13, blades::e23> mv({ 1.0, 0.0, 0.0, 1.0 });
 
     Rotor<double> rotor(mv);
 
@@ -29,7 +29,7 @@ TEST_CASE("Rotor creation from multivector (no angle)", "[Rotor]")
 
 TEST_CASE("Rotor creation from multivector (with angle)", "[Rotor]")
 {
-    Multivector<double, blades::scalar, blades::e23, blades::e13, blades::e12> mv({ 0.7071067812, -0.7071067812, 0.0, 0.0 });
+    gafro::Multivector<double, blades::scalar, blades::e12, blades::e13, blades::e23> mv({ 0.7071067812, 0.0, 0.0, -0.7071067812 });
 
     Rotor<double> rotor(mv);
 
@@ -42,7 +42,7 @@ TEST_CASE("Rotor creation from multivector (with angle)", "[Rotor]")
 
 TEST_CASE("Rotor creation from generator", "[Rotor]")
 {
-    Rotor<double>::Generator generator({ 1.0, 0.0, 0.0 });
+    Rotor<double>::Generator generator({ 0.0, 0.0, 1.0 });
     Rotor<double> rotor(generator, M_PI / 2.0);
 
     REQUIRE(rotor.get<blades::scalar>() == Approx(0.7071067812));
@@ -54,7 +54,7 @@ TEST_CASE("Rotor creation from generator", "[Rotor]")
 
 TEST_CASE("Rotor creation from parameters (no angle)", "[Rotor]")
 {
-    Rotor<double> rotor({ 1.0, 1.0, 0.0, 0.0 });
+    Rotor<double> rotor({ 1.0, 0.0, 0.0, 1.0 });
 
     REQUIRE(rotor.get<blades::scalar>() == Approx(1.0));
     REQUIRE(rotor.get<blades::e23>() == Approx(1.0));
@@ -65,7 +65,7 @@ TEST_CASE("Rotor creation from parameters (no angle)", "[Rotor]")
 
 TEST_CASE("Rotor creation from parameters (with angle)", "[Rotor]")
 {
-    Rotor<double> rotor({ 0.7071067812, -0.7071067812, 0.0, 0.0 });
+    Rotor<double> rotor({ 0.7071067812, 0.0, 0.0, -0.7071067812 });
 
     REQUIRE(rotor.get<blades::scalar>() == Approx(0.7071067812));
     REQUIRE(rotor.get<blades::e23>() == Approx(-0.7071067812));
@@ -76,8 +76,8 @@ TEST_CASE("Rotor creation from parameters (with angle)", "[Rotor]")
 
 TEST_CASE("Rotor creation from expression", "[RotorGenerator]")
 {
-    Multivector<double, blades::scalar, blades::e23, blades::e13, blades::e12> mv1({ 0.5, -0.5, 0.0, 0.0 });
-    Multivector<double, blades::scalar, blades::e23, blades::e13, blades::e12> mv2({ 0.2071067812, -0.2071067812, 0.0, 0.0 });
+    gafro::Multivector<double, blades::scalar, blades::e12, blades::e13, blades::e23> mv1({ 0.5, 0.0, 0.0, -0.5 });
+    gafro::Multivector<double, blades::scalar, blades::e12, blades::e13, blades::e23> mv2({ 0.2071067812, 0.0, 0.0, -0.2071067812 });
 
     Sum<Rotor<double>::Base, Rotor<double>::Base, detail::AdditionOperator> sum(mv1, mv2);
 
@@ -117,7 +117,7 @@ TEST_CASE("Rotor get log (no angle)", "[Rotor]")
 
 TEST_CASE("Rotor get log (with angle)", "[Rotor]")
 {
-    Rotor<double>::Generator generator({ 1.0, 0.0, 0.0 });
+    Rotor<double>::Generator generator({ 0.0, 0.0, 1.0 });
     Rotor<double> rotor(generator, M_PI / 2.0);
 
     Rotor<double>::Generator log = rotor.log();
@@ -142,7 +142,7 @@ TEST_CASE("Rotor get quaternion (no angle)", "[Rotor]")
 
 TEST_CASE("Rotor get quaternion (with angle)", "[Rotor]")
 {
-    Rotor<double>::Generator generator({ 1.0, 0.0, 0.0 });
+    Rotor<double>::Generator generator({ 0.0, 0.0, 1.0 });
     Rotor<double> rotor(generator, M_PI / 2.0);
 
     Eigen::Quaternion<double> quaternion = rotor.quaternion();
@@ -173,7 +173,7 @@ TEST_CASE("Rotor to matrix (no angle)", "[Rotor]")
 
 TEST_CASE("Rotor to matrix (with angle)", "[Rotor]")
 {
-    Rotor<double>::Generator generator({ 1.0, 0.0, 0.0 });
+    Rotor<double>::Generator generator({ 0.0, 0.0, 1.0 });
     Rotor<double> rotor(generator, M_PI / 2.0);
 
     Eigen::Matrix<double, 3, 3> matrix = rotor.toRotationMatrix();
@@ -191,7 +191,7 @@ TEST_CASE("Rotor to matrix (with angle)", "[Rotor]")
 
 TEST_CASE("Rotor apply", "[Rotor]")
 {
-    Rotor<double>::Generator generator({ 0.0, 0.0, 1.0 });
+    Rotor<double>::Generator generator({ 1.0, 0.0, 0.0 });
     Rotor<double> rotor(generator, M_PI / 2.0);
 
     SECTION("to point")
@@ -301,7 +301,7 @@ TEST_CASE("Rotor apply", "[Rotor]")
 
 TEST_CASE("Rotor exponential", "[Rotor]")
 {
-    Rotor<double>::Generator generator({ 1.0, 0.0, 0.0 });
+    Rotor<double>::Generator generator({ 0.0, 0.0, 1.0 });
 
     auto exp = Rotor<double>::exp(generator);
 

@@ -6,23 +6,21 @@
 namespace gafro
 {
 
-    template <class Derived, class Result, class T, int... index>
+    template <class Derived, class Result, class T, class M, int... index>
     class Assign
     {
       public:
-        static void run(Multivector<T, index...> &multivector, const Expression<Derived, Result> &expression)
+        static void run(typename Algebra<M>::template Multivector<T, index...> &multivector, const Expression<Derived, Result> &expression)
         {
-            [&multivector, &expression ]<std::size_t... i>(std::index_sequence<i...>)
-            {
+            [&multivector, &expression]<std::size_t... i>(std::index_sequence<i...>) {
                 (
                   [&multivector, &expression] {
-                      constexpr int blade = Multivector<T, index...>::blades()[i];
+                      constexpr int blade = Algebra<M>::template Multivector<T, index...>::blades()[i];
 
                       multivector.template set<blade>(expression.template get<blade>());
                   }(),
                   ...);
-            }
-            (std::make_index_sequence<Multivector<T, index...>::size>());
+            }(std::make_index_sequence<Algebra<M>::template Multivector<T, index...>::size>());
         }
     };
 

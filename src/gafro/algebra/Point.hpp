@@ -25,10 +25,10 @@
 namespace gafro
 {
     template <class T>
-    class Point : public Multivector<T, blades::e1, blades::e2, blades::e3, blades::ei, blades::e0>
+    class Point : public Multivector<T, blades::e0, blades::e1, blades::e2, blades::e3, blades::ei>
     {
       public:
-        using Base = Multivector<T, blades::e1, blades::e2, blades::e3, blades::ei, blades::e0>;
+        using Base = Multivector<T, blades::e0, blades::e1, blades::e2, blades::e3, blades::ei>;
 
         using Parameters = typename Base::Parameters;
 

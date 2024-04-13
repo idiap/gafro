@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <gafro/algebra/ConformalGeometricAlgebra.hpp>
 #include <gafro/algebra/Multivector.hpp>
 #include <gafro/algebra/expressions/Expression.hpp>
 
@@ -27,49 +28,50 @@ namespace gafro
 
     namespace blades
     {
-        constexpr short scalar = 0;
-        constexpr short e1 = 1;
-        constexpr short e2 = 2;
-        constexpr short e3 = 3;
-        constexpr short ei = 4;
-        constexpr short e0 = 5;
+        constexpr short scalar = 0b00000;
         //
-        constexpr short e23 = 6;
-        constexpr short e13 = 7;
-        constexpr short e12 = 8;
-        constexpr short e1i = 9;
-        constexpr short e2i = 10;
-        constexpr short e3i = 11;
-        constexpr short e01 = 12;
-        constexpr short e02 = 13;
-        constexpr short e03 = 14;
-        constexpr short e0i = 15;
+        constexpr short e0 = 0b00001;
+        constexpr short e1 = 0b00010;
+        constexpr short e2 = 0b00100;
+        constexpr short e3 = 0b01000;
+        constexpr short ei = 0b10000;
         //
-        constexpr short e123 = 16;
-        constexpr short e12i = 17;
-        constexpr short e13i = 18;
-        constexpr short e23i = 19;
-        constexpr short e012 = 20;
-        constexpr short e013 = 21;
-        constexpr short e023 = 22;
-        constexpr short e01i = 23;
-        constexpr short e02i = 24;
-        constexpr short e03i = 25;
+        constexpr short e23 = 0b01100;
+        constexpr short e13 = 0b01010;
+        constexpr short e12 = 0b00110;
+        constexpr short e1i = 0b10010;
+        constexpr short e2i = 0b10100;
+        constexpr short e3i = 0b11000;
+        constexpr short e01 = 0b00011;
+        constexpr short e02 = 0b00101;
+        constexpr short e03 = 0b01001;
+        constexpr short e0i = 0b10001;
         //
-        constexpr short e123i = 26;
-        constexpr short e0123 = 27;
-        constexpr short e012i = 28;
-        constexpr short e023i = 29;
-        constexpr short e013i = 30;
+        constexpr short e123 = 0b01110;
+        constexpr short e12i = 0b10110;
+        constexpr short e13i = 0b11010;
+        constexpr short e23i = 0b11100;
+        constexpr short e012 = 0b00111;
+        constexpr short e013 = 0b01011;
+        constexpr short e023 = 0b01101;
+        constexpr short e01i = 0b10011;
+        constexpr short e02i = 0b10101;
+        constexpr short e03i = 0b11001;
         //
-        constexpr short e0123i = 31;
-    }   // namespace blades
+        constexpr short e123i = 0b11110;
+        constexpr short e0123 = 0b01111;
+        constexpr short e012i = 0b10111;
+        constexpr short e023i = 0b11101;
+        constexpr short e013i = 0b11011;
+        //
+        constexpr short e0123i = 0b11111;
+    }  // namespace blades
 
     template <class T, int index>
-    class Blade : public Multivector<T, index>
+    class Blade : public ConformalGeometricAlgebra::template Multivector<T, index>
     {
       public:
-        using Base = Multivector<T, index>;
+        using Base = typename ConformalGeometricAlgebra::template Multivector<T, index>;
 
         using Base::Base;
 
@@ -79,7 +81,7 @@ namespace gafro
 
         virtual ~Blade() = default;
 
-        using Multivector<T, index>::blades;
+        using ConformalGeometricAlgebra::template Multivector<T, index>::blades;
 
         const T &value() const
         {

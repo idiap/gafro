@@ -37,7 +37,7 @@ namespace gafro
             template <std::size_t... idx>
             constexpr static auto makeType(std::index_sequence<idx...>)
             {
-                return Multivector<Vtype, (M1::bits() | M2::bits()).blades()[idx]...>();
+                return typename M1::MAlgebra::template Multivector<Vtype, (M1::bits() | M2::bits()).blades()[idx]...>();
             }
 
             using Type = decltype(makeType(std::make_index_sequence<(M1::bits() | M2::bits()).size()>{}));
@@ -101,7 +101,7 @@ namespace gafro
 
         template <int blade>
             requires(has(blade))  //
-        Vtype get() const
+        inline Vtype get() const
         {
             if constexpr (M1::has(blade) && M2::has(blade))
             {

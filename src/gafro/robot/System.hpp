@@ -91,9 +91,6 @@ namespace gafro
         template <int dof>
         Motor<T> computeLinkMotor(const std::string &name, const Eigen::Vector<T, dof> &position) const;
 
-        template <int dof>
-        std::vector<Motor<T>> computeJointMotors(const Eigen::Vector<T, dof> &position) const;
-
         //
 
         template <int dof>

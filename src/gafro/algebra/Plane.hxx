@@ -21,6 +21,7 @@
 
 #include <gafro/algebra/Plane.hpp>
 #include <gafro/algebra/Point.hpp>
+#include <gafro/algebra/Vector.hpp>
 
 namespace gafro
 {
@@ -34,7 +35,7 @@ namespace gafro
     {}
 
     template <typename T>
-    Multivector<T, blades::e1, blades::e2, blades::e3> Plane<T>::getNormal() const
+    Vector<T> Plane<T>::getNormal() const
     {
         return this->dual() - Scalar<T>(T(0.5)) * (this->dual() | E0<T>(T(1.0))) * Ei<T>(T(1.0));
     }
