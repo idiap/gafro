@@ -26,18 +26,12 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 set(GAFRO_PREFIX_PACKAGE share/${CMAKE_PROJECT_NAME}/cmake)
 set(GAFRO_PREFIX_INCLUDE include/gafro)
 
-# set(DEBUG_MODE FALSE)
-# set(GAFRO_ASSETS_DIRECTORY "${CMAKE_INSTALL_PREFIX}/share/${CMAKE_PROJECT_NAME}/assets/")
-
-# file(COPY "assets/" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/assets/")
-
 find_package(Eigen3 3.4 REQUIRED)
 
-
-add_subdirectory(src)
+add_subdirectory(src/${PROJECT_NAME})
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    # add_subdirectory(tests)
+    add_subdirectory(tests)
 
     export(EXPORT ${CMAKE_PROJECT_NAME}-config-targets
         FILE "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}-config-targets.cmake"
@@ -70,13 +64,4 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
         COMPONENT
             Devel
     )
-
-    # install(
-    #     DIRECTORY
-    #         "${CMAKE_CURRENT_BINARY_DIR}/assets/"
-    #     DESTINATION
-    #         "share/${CMAKE_PROJECT_NAME}/assets/"
-    #     COMPONENT
-    #         Devel
-    # )
 endif()
