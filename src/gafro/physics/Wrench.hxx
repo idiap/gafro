@@ -14,7 +14,7 @@ namespace gafro
     {}
 
     template <class T>
-    Wrench<T>::Wrench(const Parameters &multivector) : Base(multivector)
+    Wrench<T>::Wrench(const T &tx, const T &ty, const T &tz, const T &fx, const T &fy, const T &fz) : Base({ fx, fy, tz, fz, ty, tx })
     {}
 
     template <class T>
@@ -73,8 +73,8 @@ namespace gafro
     template <class T>
     Wrench<T> Wrench<T>::Zero()
     {
-        return Wrench<T>({ TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(),
-                           TypeTraits<T>::Zero() });
+        return Wrench<T>(TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(),
+                         TypeTraits<T>::Zero());
     }
 
 }  // namespace gafro

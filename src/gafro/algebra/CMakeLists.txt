@@ -9,6 +9,9 @@ add_subdirectory(util)
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     install(
         FILES
+            Algebra.hpp
+            ConformalGeometricAlgebra.hpp
+            
             Vector.hpp
             Vector.hxx
 

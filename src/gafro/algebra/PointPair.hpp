@@ -28,12 +28,12 @@ namespace gafro
     class Point;
 
     template <class T>
-    class PointPair : public Multivector<T, blades::e23, blades::e13, blades::e12, blades::e1i, blades::e2i, blades::e3i, blades::e01, blades::e02,
-                                         blades::e03, blades::e0i>
+    class PointPair : public Multivector<T, blades::e01, blades::e02, blades::e12, blades::e03, blades::e13, blades::e23, blades::e0i, blades::e1i,
+                                         blades::e2i, blades::e3i>
     {
       public:
-        using Base = Multivector<T, blades::e23, blades::e13, blades::e12, blades::e1i, blades::e2i, blades::e3i, blades::e01, blades::e02,
-                                 blades::e03, blades::e0i>;
+        using Base = Multivector<T, blades::e01, blades::e02, blades::e12, blades::e03, blades::e13, blades::e23, blades::e0i, blades::e1i,
+                                 blades::e2i, blades::e3i>;
 
         using Base::Base;
 

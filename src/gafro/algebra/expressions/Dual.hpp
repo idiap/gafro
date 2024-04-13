@@ -27,13 +27,15 @@ namespace gafro
 {
 
     template <class M>
-    class Dual : public UnaryExpression<Dual<M>, M, typename GeometricProduct<M, E0123i<typename M::Vtype>>::Type>
+    class Dual
+      : public UnaryExpression<Dual<M>, M, typename GeometricProduct<M, typename M::MAlgebra::template Pseudoscalar<typename M::Vtype>>::Type>
     {
       public:
-        using Base = UnaryExpression<Dual<M>, M, typename GeometricProduct<M, E0123i<typename M::Vtype>>::Type>;
+        using Base = UnaryExpression<Dual<M>, M, typename GeometricProduct<M, typename M::MAlgebra::template Pseudoscalar<typename M::Vtype>>::Type>;
 
-        using Type = typename GeometricProduct<M, E0123i<typename M::Vtype>>::Type;
         using Vtype = typename M::Vtype;
+
+        using Type = typename GeometricProduct<M, typename M::MAlgebra::template Pseudoscalar<typename M::Vtype>>::Type;
 
         constexpr static int size = Type::size;
         constexpr static auto blades = Type::blades;
@@ -50,7 +52,7 @@ namespace gafro
             requires(has(blade))  //
         Vtype get() const
         {
-            return (this->operand() * E0123i<Vtype>(Vtype(1.0))).template get<blade>();
+            return (this->operand() * typename M::MAlgebra::template Pseudoscalar<Vtype>(Vtype(1.0))).template get<blade>();
         }
 
       protected:

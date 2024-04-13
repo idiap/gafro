@@ -31,10 +31,10 @@ namespace gafro
     class Motor;
 
     template <class T>
-    class Line : public Multivector<T, blades::e12i, blades::e13i, blades::e23i, blades::e01i, blades::e02i, blades::e03i>
+    class Line : public Multivector<T, blades::e01i, blades::e02i, blades::e12i, blades::e03i, blades::e13i, blades::e23i>
     {
       public:
-        using Base = Multivector<T, blades::e12i, blades::e13i, blades::e23i, blades::e01i, blades::e02i, blades::e03i>;
+        using Base = Multivector<T, blades::e01i, blades::e02i, blades::e12i, blades::e03i, blades::e13i, blades::e23i>;
 
         using Base::Base;
 

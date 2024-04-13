@@ -31,12 +31,12 @@ namespace gafro
     class Plane;
 
     template <class T>
-    class Circle : public Multivector<T, blades::e123, blades::e12i, blades::e13i, blades::e23i, blades::e012, blades::e013, blades::e023,
-                                      blades::e01i, blades::e02i, blades::e03i>
+    class Circle : public Multivector<T, blades::e012, blades::e013, blades::e023, blades::e123, blades::e01i, blades::e02i, blades::e12i,
+                                      blades::e03i, blades::e13i, blades::e23i>
     {
       public:
-        using Base = Multivector<T, blades::e123, blades::e12i, blades::e13i, blades::e23i, blades::e012, blades::e013, blades::e023, blades::e01i,
-                                 blades::e02i, blades::e03i>;
+        using Base = Multivector<T, blades::e012, blades::e013, blades::e023, blades::e123, blades::e01i, blades::e02i, blades::e12i, blades::e03i,
+                                 blades::e13i, blades::e23i>;
 
         using Base::Base;
 

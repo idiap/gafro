@@ -77,6 +77,11 @@ namespace gafro
             return R(*this);
         }
 
+        Type operator-() const
+        {
+            return -evaluate();
+        }
+
       protected:
       private:
     };

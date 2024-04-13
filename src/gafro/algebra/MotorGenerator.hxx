@@ -60,9 +60,9 @@ namespace gafro
     template <class T>
     typename Rotor<T>::Generator Motor<T>::Generator::getRotorGenerator() const
     {
-        return typename Rotor<T>::Generator({ this->template get<blades::e23>(),  //
+        return typename Rotor<T>::Generator({ this->template get<blades::e12>(),  //
                                               this->template get<blades::e13>(),  //
-                                              this->template get<blades::e12>() });
+                                              this->template get<blades::e23>() });
     }
 
     template <class T>

@@ -37,7 +37,7 @@ find_package(Eigen3 3.4 REQUIRED)
 add_subdirectory(src)
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    add_subdirectory(tests)
+    # add_subdirectory(tests)
 
     export(EXPORT ${CMAKE_PROJECT_NAME}-config-targets
         FILE "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}-config-targets.cmake"

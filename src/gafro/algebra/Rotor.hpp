@@ -31,10 +31,10 @@ namespace gafro
     class SandwichProduct;
 
     template <class T>
-    class Rotor : public Versor<Rotor<T>, T, blades::scalar, blades::e23, blades::e13, blades::e12>
+    class Rotor : public Versor<Rotor<T>, T, blades::scalar, blades::e12, blades::e13, blades::e23>
     {
       public:
-        using Base = Versor<Rotor<T>, T, blades::scalar, blades::e23, blades::e13, blades::e12>;
+        using Base = Versor<Rotor<T>, T, blades::scalar, blades::e12, blades::e13, blades::e23>;
 
         using Parameters = typename Base::Parameters;
 

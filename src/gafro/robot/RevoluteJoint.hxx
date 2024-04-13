@@ -32,10 +32,10 @@ namespace gafro
     template <class T>
     RevoluteJoint<T>::RevoluteJoint(const std::array<T, 3> &parameters) : Joint<T>(Joint<T>::Type::REVOLUTE)
     {
-        Rotor<T> rotor(typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() })),
+        Rotor<T> rotor(typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::One() })),
                        parameters[2]);
 
-        axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::One() }));
+        axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() }));
 
         this->setFrame(Motor<T>(
           rotor, Translator<T>(typename Translator<T>::Generator(Eigen::Matrix<T, 3, 1>({ parameters[0], TypeTraits<T>::Zero(), parameters[1] })))));
@@ -46,37 +46,37 @@ namespace gafro
     {
         Translator<T> t(typename Translator<T>::Generator({ parameters[0], parameters[1], parameters[2] }));
 
-        Rotor<T> r1(typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() })),
-                    parameters[3]);
+        Rotor<T> r1(typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::One() })),
+                    parameters[5]);
         Rotor<T> r2(typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::Zero(), TypeTraits<T>::One(), TypeTraits<T>::Zero() })),
                     parameters[4]);
-        Rotor<T> r3(typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::One() })),
-                    parameters[5]);
+        Rotor<T> r3(typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() })),
+                    parameters[3]);
 
         this->setFrame(Motor<T>(t) * Motor<T>(r1) * Motor<T>(r2) * Motor<T>(r3));
 
         switch (axis)
         {
         case 1:
-            axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() }));
+            axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::One() }));
             break;
         case 2:
             axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::Zero(), TypeTraits<T>::One(), TypeTraits<T>::Zero() }));
             break;
         case 3:
-            axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::One() }));
+            axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() }));
             break;
         case -1:
-            axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ -TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() }));
+            axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), -TypeTraits<T>::One() }));
             break;
         case -2:
             axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::Zero(), -TypeTraits<T>::One(), TypeTraits<T>::Zero() }));
             break;
         case -3:
-            axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), -TypeTraits<T>::One() }));
+            axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ -TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() }));
             break;
         default:
-            axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::One() }));
+            axis_ = typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() }));
         }
     }
 
@@ -113,9 +113,9 @@ namespace gafro
         T s = -sin(half_angle);
 
         return this->getFrame() * gafro::Rotor<T>({ cos(half_angle),                        //
-                                                    s * axis_.template get<blades::e23>(),  //
+                                                    s * axis_.template get<blades::e12>(),  //
                                                     s * axis_.template get<blades::e13>(),  //
-                                                    s * axis_.template get<blades::e12>() });
+                                                    s * axis_.template get<blades::e23>() });
     }
 
     template <class T>

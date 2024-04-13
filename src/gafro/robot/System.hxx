@@ -342,38 +342,6 @@ namespace gafro
 
     template <class T>
     template <int dof>
-    std::vector<Motor<T>> System<T>::computeJointMotors(const Eigen::Vector<T, dof> &position) const
-    {
-        std::vector<Motor<T>> joint_motors;
-
-        Motor<T> motor;
-
-        int j = 0;
-
-        for (const auto &joint : joints_)
-        {
-            if (j == dof)
-            {
-                break;
-            }
-
-            if (joint->isActuated())
-            {
-                motor = motor * joint->getMotor(position[j++]);
-            }
-            else
-            {
-                motor = motor * joint->getMotor(0.0);
-            }
-
-            joint_motors.push_back(motor);
-        }
-
-        return joint_motors;
-    }
-
-    template <class T>
-    template <int dof>
     Motor<T> System<T>::computeKinematicChainMotor(const std::string &name, const Eigen::Vector<T, dof> &position) const
     {
         return getKinematicChain(name)->computeMotor(position);
@@ -511,7 +479,7 @@ namespace gafro
 
         if (kinematic_chain_name.empty())
         {
-            for (auto &chain : kinematic_chains_)
+            for (auto& chain : kinematic_chains_)
             {
                 if (chain->getDoF() == dof)
                 {
@@ -556,7 +524,7 @@ namespace gafro
 
         if (kinematic_chain_name.empty())
         {
-            for (auto &chain : kinematic_chains_)
+            for (auto& chain : kinematic_chains_)
             {
                 if (chain->getDoF() == dof)
                 {
@@ -614,12 +582,12 @@ namespace gafro
                 const auto &axis = joints[j + 1]->getCurrentAxis(gafro::Motor<T>());
 
                 articulated_body_inertia =
-                  Inertia<T>({ articulated_body_inertia.getElement23() + (axis | articulated_body_inertia.getElement23()) * axis_wrench[j + 1],  //
-                               articulated_body_inertia.getElement13() + (axis | articulated_body_inertia.getElement13()) * axis_wrench[j + 1],  //
-                               articulated_body_inertia.getElement12() + (axis | articulated_body_inertia.getElement12()) * axis_wrench[j + 1],  //
-                               articulated_body_inertia.getElement01() + (axis | articulated_body_inertia.getElement01()) * axis_wrench[j + 1],  //
+                  Inertia<T>({ articulated_body_inertia.getElement01() + (axis | articulated_body_inertia.getElement01()) * axis_wrench[j + 1],  //
                                articulated_body_inertia.getElement02() + (axis | articulated_body_inertia.getElement02()) * axis_wrench[j + 1],  //
-                               articulated_body_inertia.getElement03() + (axis | articulated_body_inertia.getElement03()) * axis_wrench[j + 1] });
+                               articulated_body_inertia.getElement12() + (axis | articulated_body_inertia.getElement12()) * axis_wrench[j + 1],  //
+                               articulated_body_inertia.getElement03() + (axis | articulated_body_inertia.getElement03()) * axis_wrench[j + 1],  //
+                               articulated_body_inertia.getElement13() + (axis | articulated_body_inertia.getElement13()) * axis_wrench[j + 1],  //
+                               articulated_body_inertia.getElement23() + (axis | articulated_body_inertia.getElement23()) * axis_wrench[j + 1] });
 
                 articulated_body_inertia = inertia[j] + articulated_body_inertia.inverseTransform(frames[j + 1]);
 

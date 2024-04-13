@@ -42,7 +42,7 @@ namespace gafro
     template <typename T>
     Rotor<T> Rotor<T>::fromQuaternion(const Eigen::Quaternion<T> &quaternion)
     {
-        Rotor rotor(Parameters({ quaternion.w(), quaternion.x(), -quaternion.y(), quaternion.z() }));
+        Rotor rotor(Parameters({ quaternion.w(), quaternion.z(), -quaternion.y(), quaternion.x() }));
 
         return rotor.reverse();
     }
@@ -64,12 +64,12 @@ namespace gafro
 
         if (abs(acos) < 1e-6)
         {
-            return Rotor<T>::Generator({ e23(), e13(), e12() });
+            return Rotor<T>::Generator({ e12(), e13(), e23() });
         }
 
         acos = -2.0 * acos / (sin(acos));
 
-        return Rotor<T>::Generator({ e23() * TypeTraits<T>::Value(acos), e13() * TypeTraits<T>::Value(acos), e12() * TypeTraits<T>::Value(acos) });
+        return Rotor<T>::Generator({ e12() * TypeTraits<T>::Value(acos), e13() * TypeTraits<T>::Value(acos), e23() * TypeTraits<T>::Value(acos) });
     }
 
     template <typename T>
@@ -81,25 +81,25 @@ namespace gafro
     template <typename T>
     const T &Rotor<T>::scalar() const
     {
-        return this->vector().coeffRef(0, 0);
+        return this->template get<blades::scalar>();
     }
 
     template <typename T>
     const T &Rotor<T>::e23() const
     {
-        return this->vector().coeffRef(1, 0);
+        return this->template get<blades::e23>();
     }
 
     template <typename T>
     const T &Rotor<T>::e13() const
     {
-        return this->vector().coeffRef(2, 0);
+        return this->template get<blades::e13>();
     }
 
     template <typename T>
     const T &Rotor<T>::e12() const
     {
-        return this->vector().coeffRef(3, 0);
+        return this->template get<blades::e12>();
     }
 
     template <typename T>

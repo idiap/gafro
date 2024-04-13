@@ -27,6 +27,7 @@
 #include <Eigen/Core>
 //
 #include <gafro/algebra/AbstractMultivector.hpp>
+#include <gafro/algebra/Algebra.hpp>
 #include <gafro/algebra/util/Bitset.hpp>
 
 namespace gafro
@@ -49,15 +50,20 @@ namespace gafro
     template <class T, template <class S> class M, int rows, int cols>
     class MultivectorMatrix;
 
+    template <class M>
     template <class T, int... index>
-    class Multivector : public AbstractMultivector<Multivector<T, index...>>
+    class Algebra<M>::Multivector : public AbstractMultivector<Multivector<T, index...>>
     {
       public:
-        constexpr static int size = Bitset<index...>().size();
-
         using Vtype = typename std::remove_const<T>::type;
 
         using Type = Multivector;
+
+        using MAlgebra = Algebra<M>;
+
+        using Metric = M;
+
+        constexpr static int size = Bitset<MAlgebra::dim, index...>().size();
 
         using Parameters = Eigen::Matrix<T, size, 1>;
 
@@ -82,7 +88,7 @@ namespace gafro
         Multivector(const Expression<Derived, Other> &expression);
 
         template <class S>
-        Multivector(const Multivector<S, index...> &other);
+        Multivector(const typename Algebra<M>::template Multivector<S, index...> &other);
 
         //
 
@@ -110,6 +116,7 @@ namespace gafro
         template <class Derived, class Other>
         Multivector &operator=(const Expression<Derived, Other> &expression);
 
+        Multivector operator-() const;
         //
 
         void setParameters(Parameters &&parameters);
@@ -132,7 +139,7 @@ namespace gafro
 
         //
 
-        constexpr static const Bitset<index...> &bits();
+        constexpr static const Bitset<MAlgebra::dim, index...> &bits();
 
         constexpr static const std::array<int, size> &blades();
 
@@ -207,17 +214,17 @@ namespace gafro
 
         //
 
-        template <class t>
-        using M = Multivector<t, index...>;
+        // template <class t>
+        // using M = Multivector<t, index...>;
 
-        template <int rows, int cols>
-        using Matrix = MultivectorMatrix<T, M, rows, cols>;
+        // template <int rows, int cols>
+        // using Matrix = MultivectorMatrix<T, M, rows, cols>;
 
-        template <int rows, int cols>
-        static Matrix<rows, cols> CreateMatrix()
-        {
-            return MultivectorMatrix<T, M, rows, cols>();
-        }
+        // template <int rows, int cols>
+        // static Matrix<rows, cols> CreateMatrix()
+        // {
+        //     return MultivectorMatrix<T, M, rows, cols>();
+        // }
 
       public:
         auto getBlades() const;
@@ -231,12 +238,14 @@ namespace gafro
       public:
         static Multivector Random();
 
+        static Multivector One();
+
         static Multivector Zero();
 
       private:
         Parameters parameters_;
 
-        constexpr static Bitset<index...> bits_ = Bitset<index...>();
+        constexpr static Bitset<MAlgebra::dim, index...> bits_ = Bitset<MAlgebra::dim, index...>();
 
         constexpr static const std::array<int, size> blades_ = bits_.blades();
     };

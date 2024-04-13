@@ -70,11 +70,11 @@ TEST_CASE("Default link", "[Link]")
 
         Eigen::Matrix<double, 6, 6> tensor2 = inertia2.getTensor();
 
-        REQUIRE(tensor2.coeff(0, 0) == Approx(1.0).margin(1e-6));
+        REQUIRE(tensor2.coeff(0, 0) == Approx(10.0).margin(1e-6));
         REQUIRE(tensor2.coeff(0, 1) == Approx(0.0).margin(1e-6));
         REQUIRE(tensor2.coeff(0, 2) == Approx(0.0).margin(1e-6));
         REQUIRE(tensor2.coeff(1, 0) == Approx(0.0).margin(1e-6));
-        REQUIRE(tensor2.coeff(1, 1) == Approx(1.0).margin(1e-6));
+        REQUIRE(tensor2.coeff(1, 1) == Approx(10.0).margin(1e-6));
         REQUIRE(tensor2.coeff(1, 2) == Approx(0.0).margin(1e-6));
         REQUIRE(tensor2.coeff(2, 0) == Approx(0.0).margin(1e-6));
         REQUIRE(tensor2.coeff(2, 1) == Approx(0.0).margin(1e-6));
@@ -84,11 +84,11 @@ TEST_CASE("Default link", "[Link]")
         REQUIRE(tensor2.coeff(3, 4) == Approx(0.0).margin(1e-6));
         REQUIRE(tensor2.coeff(3, 5) == Approx(0.0).margin(1e-6));
         REQUIRE(tensor2.coeff(4, 3) == Approx(0.0).margin(1e-6));
-        REQUIRE(tensor2.coeff(4, 4) == Approx(10.0).margin(1e-6));
+        REQUIRE(tensor2.coeff(4, 4) == Approx(1.0).margin(1e-6));
         REQUIRE(tensor2.coeff(4, 5) == Approx(0.0).margin(1e-6));
         REQUIRE(tensor2.coeff(5, 3) == Approx(0.0).margin(1e-6));
         REQUIRE(tensor2.coeff(5, 4) == Approx(0.0).margin(1e-6));
-        REQUIRE(tensor2.coeff(5, 5) == Approx(10.0).margin(1e-6));
+        REQUIRE(tensor2.coeff(5, 5) == Approx(1.0).margin(1e-6));
 
         for (int i = 0; i < 3; ++i)
         {
@@ -199,11 +199,11 @@ TEST_CASE("Link creation from link", "[Link]")
 
     Eigen::Matrix<double, 6, 6> tensor2 = inertia2.getTensor();
 
-    REQUIRE(tensor2.coeff(0, 0) == Approx(1.0).margin(1e-6));
+    REQUIRE(tensor2.coeff(0, 0) == Approx(10.0).margin(1e-6));
     REQUIRE(tensor2.coeff(0, 1) == Approx(0.0).margin(1e-6));
     REQUIRE(tensor2.coeff(0, 2) == Approx(0.0).margin(1e-6));
     REQUIRE(tensor2.coeff(1, 0) == Approx(0.0).margin(1e-6));
-    REQUIRE(tensor2.coeff(1, 1) == Approx(1.0).margin(1e-6));
+    REQUIRE(tensor2.coeff(1, 1) == Approx(10.0).margin(1e-6));
     REQUIRE(tensor2.coeff(1, 2) == Approx(0.0).margin(1e-6));
     REQUIRE(tensor2.coeff(2, 0) == Approx(0.0).margin(1e-6));
     REQUIRE(tensor2.coeff(2, 1) == Approx(0.0).margin(1e-6));
@@ -213,11 +213,11 @@ TEST_CASE("Link creation from link", "[Link]")
     REQUIRE(tensor2.coeff(3, 4) == Approx(0.0).margin(1e-6));
     REQUIRE(tensor2.coeff(3, 5) == Approx(0.0).margin(1e-6));
     REQUIRE(tensor2.coeff(4, 3) == Approx(0.0).margin(1e-6));
-    REQUIRE(tensor2.coeff(4, 4) == Approx(10.0).margin(1e-6));
+    REQUIRE(tensor2.coeff(4, 4) == Approx(1.0).margin(1e-6));
     REQUIRE(tensor2.coeff(4, 5) == Approx(0.0).margin(1e-6));
     REQUIRE(tensor2.coeff(5, 3) == Approx(0.0).margin(1e-6));
     REQUIRE(tensor2.coeff(5, 4) == Approx(0.0).margin(1e-6));
-    REQUIRE(tensor2.coeff(5, 5) == Approx(10.0).margin(1e-6));
+    REQUIRE(tensor2.coeff(5, 5) == Approx(1.0).margin(1e-6));
 
     for (int i = 0; i < 3; ++i)
     {

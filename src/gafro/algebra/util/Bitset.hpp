@@ -17,22 +17,24 @@
     along with gafro. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
+
 #include <array>
 #include <bitset>
 
 namespace gafro
 {
-    template <int... i>
+    template <int dim, int... i>
     struct Bitset;
 
-    template <int i0, int... i>
-    struct Bitset<i0, i...>
+    template <int dim, int i0, int... i>
+    struct Bitset<dim, i0, i...>
     {
         constexpr static int size()
         {
             int s = 0;
 
-            for (unsigned k = 0; k < 32; ++k)
+            for (unsigned k = 0; k < dim; ++k)
             {
                 if (bits[k])
                 {
@@ -48,12 +50,12 @@ namespace gafro
             return bits[k];
         }
 
-        constexpr static std::array<bool, 32> bits = [] {
-            std::array<bool, 32> bits;
+        constexpr static std::array<bool, dim> bits = [] {
+            std::array<bool, dim> bits;
 
-            for (unsigned k = 0; k < 32; ++k)
+            for (unsigned k = 0; k < dim; ++k)
             {
-                bits[k] = Bitset<i0>().bits[k] || Bitset<i...>().bits[k];
+                bits[k] = Bitset<dim, i0>().bits[k] || Bitset<dim, i...>().bits[k];
             }
 
             return bits;
@@ -65,7 +67,7 @@ namespace gafro
 
             int j = 0;
 
-            for (unsigned k = 0; k < 32; ++k)
+            for (unsigned k = 0; k < dim; ++k)
             {
                 if (test(k))
                 {
@@ -77,22 +79,22 @@ namespace gafro
         }
     };
 
-    template <int i>
-    struct Bitset<i>
+    template <int dim, int i>
+    struct Bitset<dim, i>
     {
-        constexpr int size() const
+        constexpr static int size()
         {
             return 1;
         }
 
-        constexpr bool test(int k) const
+        constexpr static bool test(int k)
         {
             return (i == k);
         }
 
-        constexpr static std::array<bool, 32> bits = [] {
-            std::array<bool, 32> bits;
-            for (unsigned k = 0; k < 32; ++k)
+        constexpr static std::array<bool, dim> bits = [] {
+            std::array<bool, dim> bits;
+            for (unsigned k = 0; k < dim; ++k)
             {
                 bits[k] = false;
             }
@@ -110,22 +112,22 @@ namespace gafro
         }
     };
 
-    template <>
-    struct Bitset<>
+    template <int dim>
+    struct Bitset<dim>
     {
-        constexpr int size() const
+        constexpr static int size()
         {
             return 0;
         }
 
-        constexpr bool test(int k) const
+        constexpr static bool test(int k)
         {
             return false;
         }
 
-        constexpr static std::array<bool, 32> bits = [] {
-            std::array<bool, 32> bits;
-            for (unsigned k = 0; k < 32; ++k)
+        constexpr static std::array<bool, dim> bits = [] {
+            std::array<bool, dim> bits;
+            for (unsigned k = 0; k < dim; ++k)
             {
                 bits[k] = false;
             }
@@ -140,10 +142,10 @@ namespace gafro
         }
     };
 
-    template <int... i>
-    std::ostream &operator<<(std::ostream &ostream, const Bitset<i...> &bitset)
+    template <int dim, int... i>
+    std::ostream &operator<<(std::ostream &ostream, const Bitset<dim, i...> &bitset)
     {
-        for (unsigned k = 0; k < 32; ++k)
+        for (unsigned k = 0; k < dim; ++k)
         {
             ostream << bitset.bits[k];
         }
@@ -151,10 +153,10 @@ namespace gafro
         return ostream;
     }
 
-    template <int... i, int... j>
-    constexpr auto operator|(const Bitset<i...> &b1, const Bitset<j...> &b2)
+    template <int dim, int... i, int... j>
+    constexpr auto operator|(const Bitset<dim, i...> &b1, const Bitset<dim, j...> &b2)
     {
-        return Bitset<i..., j...>();
+        return Bitset<dim, i..., j...>();
     }
 
 }  // namespace gafro

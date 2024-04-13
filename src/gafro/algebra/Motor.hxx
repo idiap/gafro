@@ -110,9 +110,9 @@ namespace gafro
     Eigen::Matrix<T, 6, 8> Motor<T>::logJacobian() const
     {
         const T &m1 = this->vector().coeff(0, 0);
-        const T &m2 = this->vector().coeff(1, 0);
+        const T &m2 = this->vector().coeff(3, 0);
         const T &m3 = this->vector().coeff(2, 0);
-        const T &m4 = this->vector().coeff(3, 0);
+        const T &m4 = this->vector().coeff(1, 0);
         const T &m5 = this->vector().coeff(4, 0);
         const T &m6 = this->vector().coeff(5, 0);
         const T &m7 = this->vector().coeff(6, 0);

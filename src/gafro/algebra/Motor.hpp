@@ -36,10 +36,10 @@ namespace gafro
 
     template <class T>
     class Motor
-      : public Versor<Motor<T>, T, blades::scalar, blades::e23, blades::e13, blades::e12, blades::e1i, blades::e2i, blades::e3i, blades::e123i>
+      : public Versor<Motor<T>, T, blades::scalar, blades::e12, blades::e13, blades::e23, blades::e1i, blades::e2i, blades::e3i, blades::e123i>
     {
       public:
-        using Base = Versor<Motor<T>, T, blades::scalar, blades::e23, blades::e13, blades::e12, blades::e1i, blades::e2i, blades::e3i, blades::e123i>;
+        using Base = Versor<Motor<T>, T, blades::scalar, blades::e12, blades::e13, blades::e23, blades::e1i, blades::e2i, blades::e3i, blades::e123i>;
 
         using Type = typename Base::Type;
 

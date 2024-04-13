@@ -54,14 +54,11 @@ namespace gafro
             requires(has(blade))  //
         Vtype get() const
         {
-            if constexpr (blade > 5 && blade < 26)
-            {
-                return -this->operand().template get<blade>() / norm_;
-            }
-            else
-            {
-                return this->operand().template get<blade>() / norm_;
-            }
+            constexpr int grade = M::MAlgebra::BladeBitmap::template getGrade<blade>();
+            constexpr int e = grade * (grade - 1) / 2;
+            constexpr double sign = math::pown<e>();
+
+            return sign * this->operand().template get<blade>() / norm_;
         }
 
       protected:

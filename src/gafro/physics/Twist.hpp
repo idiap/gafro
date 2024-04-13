@@ -28,13 +28,13 @@ namespace gafro
     class Wrench;
 
     template <class T>
-    class Twist : public Multivector<T, blades::e23, blades::e13, blades::e12, blades::e1i, blades::e2i, blades::e3i>
+    class Twist : public Multivector<T, blades::e12, blades::e13, blades::e23, blades::e1i, blades::e2i, blades::e3i>
     {
       public:
-        using Base = Multivector<T, blades::e23, blades::e13, blades::e12, blades::e1i, blades::e2i, blades::e3i>;
+        using Base = Multivector<T, blades::e12, blades::e13, blades::e23, blades::e1i, blades::e2i, blades::e3i>;
         using Parameters = typename Base::Parameters;
 
-        using Angular = Multivector<T, blades::e23, blades::e13, blades::e12>;
+        using Angular = Multivector<T, blades::e12, blades::e13, blades::e23>;
         using Linear = Multivector<T, blades::e1i, blades::e2i, blades::e3i>;
 
         using Base::Base;

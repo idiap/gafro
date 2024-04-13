@@ -18,7 +18,7 @@ TEST_CASE("System", "[System]")
     // Create some joints
     std::unique_ptr<RevoluteJoint<double>> joint1 = std::make_unique<RevoluteJoint<double>>();
     joint1->setName("joint1");
-    joint1->setAxis(RevoluteJoint<double>::Axis({ 0.0, 0.0, 1.0 }));
+    joint1->setAxis(RevoluteJoint<double>::Axis({ 1.0, 0.0, 0.0 }));
 
     Translator<double> t(Translator<double>::Generator({ 0.0, 1.0, 0.0 }));
     joint1->setFrame(Motor<double>(t));
@@ -26,7 +26,7 @@ TEST_CASE("System", "[System]")
 
     std::unique_ptr<RevoluteJoint<double>> joint2 = std::make_unique<RevoluteJoint<double>>();
     joint2->setName("joint2");
-    joint2->setAxis(RevoluteJoint<double>::Axis({ 0.0, 0.0, 1.0 }));
+    joint2->setAxis(RevoluteJoint<double>::Axis({ 1.0, 0.0, 0.0 }));
     joint2->setLimits(Joint<double>::Limits({ -0.8, 0.8, 1.0, 1.0 }));
 
     t = Translator<double>(Translator<double>::Generator({ 0.0, 1.0, 0.0 }));
@@ -182,7 +182,7 @@ TEST_CASE("System", "[System]")
 
         SECTION("Get kinematic chain")
         {
-            const KinematicChain<double>* chain2 = system.getKinematicChain("chain1");
+            const KinematicChain<double> *chain2 = system.getKinematicChain("chain1");
 
             REQUIRE(chain2->getDoF() == 2);
 
@@ -317,19 +317,19 @@ TEST_CASE("System dynamics", "[System]")
 
     std::unique_ptr<RevoluteJoint<double>> joint1 = std::make_unique<RevoluteJoint<double>>();
     joint1->setName("joint1");
-    joint1->setAxis(RevoluteJoint<double>::Axis({ 0.0, 0.0, 1.0 }));
+    joint1->setAxis(RevoluteJoint<double>::Axis({ 1.0, 0.0, 0.0 }));
     joint1->setLimits(Joint<double>::Limits({ -0.5, 0.5, 1.0, 1.0 }));
     joint1->setFrame(Motor<double>(t));
 
     std::unique_ptr<RevoluteJoint<double>> joint2 = std::make_unique<RevoluteJoint<double>>();
     joint2->setName("joint2");
-    joint2->setAxis(RevoluteJoint<double>::Axis({ 0.0, 0.0, 1.0 }));
+    joint2->setAxis(RevoluteJoint<double>::Axis({ 1.0, 0.0, 0.0 }));
     joint2->setLimits(Joint<double>::Limits({ -0.8, 0.8, 1.0, 1.0 }));
     joint2->setFrame(Motor<double>(t));
 
     std::unique_ptr<RevoluteJoint<double>> joint3 = std::make_unique<RevoluteJoint<double>>();
     joint3->setName("joint3");
-    joint3->setAxis(RevoluteJoint<double>::Axis({ 0.0, 0.0, 1.0 }));
+    joint3->setAxis(RevoluteJoint<double>::Axis({ 1.0, 0.0, 0.0 }));
     joint3->setLimits(Joint<double>::Limits({ -0.8, 0.8, 1.0, 1.0 }));
     joint3->setFrame(Motor<double>(t));
 
@@ -448,7 +448,6 @@ TEST_CASE("System dynamics", "[System]")
     }
 }
 
-
 TEST_CASE("System with fixed joints", "[System]")
 {
     // Create the links
@@ -520,19 +519,19 @@ TEST_CASE("System with fixed joints", "[System]")
     // Create the revolute joints
     std::unique_ptr<RevoluteJoint<double>> joint2 = std::make_unique<RevoluteJoint<double>>();
     joint2->setName("joint2");
-    joint2->setAxis(RevoluteJoint<double>::Axis({ 0.0, 0.0, 1.0 }));
+    joint2->setAxis(RevoluteJoint<double>::Axis({ 1.0, 0.0, 0.0 }));
     joint2->setFrame(Motor<double>(Translator<double>::Generator({ 0.0, 1.0, 0.0 })));
     joint2->setLimits(Joint<double>::Limits({ -0.5, 0.5, 1.0, 1.0 }));
 
     std::unique_ptr<RevoluteJoint<double>> joint4 = std::make_unique<RevoluteJoint<double>>();
     joint4->setName("joint4");
-    joint4->setAxis(RevoluteJoint<double>::Axis({ 0.0, 0.0, 1.0 }));
+    joint4->setAxis(RevoluteJoint<double>::Axis({ 1.0, 0.0, 0.0 }));
     joint4->setFrame(Motor<double>(Translator<double>::Generator({ 0.0, 1.0, 0.0 })));
     joint4->setLimits(Joint<double>::Limits({ -0.6, 0.6, 1.0, 1.0 }));
 
     std::unique_ptr<RevoluteJoint<double>> joint7 = std::make_unique<RevoluteJoint<double>>();
     joint7->setName("joint7");
-    joint7->setAxis(RevoluteJoint<double>::Axis({ 0.0, 0.0, 1.0 }));
+    joint7->setAxis(RevoluteJoint<double>::Axis({ 1.0, 0.0, 0.0 }));
     joint7->setFrame(Motor<double>(Translator<double>::Generator({ 1.0, 0.0, 0.0 })));
     joint7->setLimits(Joint<double>::Limits({ -0.7, 0.7, 1.0, 1.0 }));
 
@@ -604,9 +603,10 @@ TEST_CASE("System with fixed joints", "[System]")
 
     SECTION("Link axes")
     {
-        std::vector<std::string> names({"link0", "link1", "link3", "link5", "link6"});
-        for (auto name: names) {
-            const Link<double>* link = system.getLink(name);
+        std::vector<std::string> names({ "link0", "link1", "link3", "link5", "link6" });
+        for (auto name : names)
+        {
+            const Link<double> *link = system.getLink(name);
             const typename Motor<double>::Generator axis = link->getAxis();
 
             REQUIRE(axis.get<blades::e23>() == Approx(0.0));
@@ -617,9 +617,10 @@ TEST_CASE("System with fixed joints", "[System]")
             REQUIRE(axis.get<blades::e3i>() == Approx(0.0));
         }
 
-        names = {"link2", "link4", "link7"};
-        for (auto name: names) {
-            const Link<double>* link = system.getLink(name);
+        names = { "link2", "link4", "link7" };
+        for (auto name : names)
+        {
+            const Link<double> *link = system.getLink(name);
             const typename Motor<double>::Generator axis = link->getAxis();
 
             REQUIRE(axis.get<blades::e23>() == Approx(0.0));
@@ -770,7 +771,6 @@ TEST_CASE("System with fixed joints", "[System]")
     }
 }
 
-
 TEST_CASE("System with 7 joints", "[System]")
 {
     // Create the links
@@ -825,37 +825,37 @@ TEST_CASE("System with 7 joints", "[System]")
     // Create the revolute joints
     std::unique_ptr<RevoluteJoint<double>> joint1 = std::make_unique<RevoluteJoint<double>>();
     joint1->setName("joint1");
-    joint1->setAxis(RevoluteJoint<double>::Axis({ 0.0, 0.0, 1.0 }));
+    joint1->setAxis(RevoluteJoint<double>::Axis({ 1.0, 0.0, 0.0 }));
     joint1->setFrame(Motor<double>(Translator<double>::Generator({ 0.0, 1.0, 0.0 })));
 
     std::unique_ptr<RevoluteJoint<double>> joint2 = std::make_unique<RevoluteJoint<double>>();
     joint2->setName("joint2");
-    joint2->setAxis(RevoluteJoint<double>::Axis({ 0.0, 0.0, 1.0 }));
+    joint2->setAxis(RevoluteJoint<double>::Axis({ 1.0, 0.0, 0.0 }));
     joint2->setFrame(Motor<double>(Translator<double>::Generator({ 0.0, 1.0, 0.0 })));
 
     std::unique_ptr<RevoluteJoint<double>> joint3 = std::make_unique<RevoluteJoint<double>>();
     joint3->setName("joint3");
-    joint3->setAxis(RevoluteJoint<double>::Axis({ 0.0, 0.0, 1.0 }));
+    joint3->setAxis(RevoluteJoint<double>::Axis({ 1.0, 0.0, 0.0 }));
     joint3->setFrame(Motor<double>(Translator<double>::Generator({ 0.0, 1.0, 0.0 })));
 
     std::unique_ptr<RevoluteJoint<double>> joint4 = std::make_unique<RevoluteJoint<double>>();
     joint4->setName("joint4");
-    joint4->setAxis(RevoluteJoint<double>::Axis({ 0.0, 0.0, 1.0 }));
+    joint4->setAxis(RevoluteJoint<double>::Axis({ 1.0, 0.0, 0.0 }));
     joint4->setFrame(Motor<double>(Translator<double>::Generator({ 0.0, 1.0, 0.0 })));
 
     std::unique_ptr<RevoluteJoint<double>> joint5 = std::make_unique<RevoluteJoint<double>>();
     joint5->setName("joint5");
-    joint5->setAxis(RevoluteJoint<double>::Axis({ 0.0, 0.0, 1.0 }));
+    joint5->setAxis(RevoluteJoint<double>::Axis({ 1.0, 0.0, 0.0 }));
     joint5->setFrame(Motor<double>(Translator<double>::Generator({ 1.0, 0.0, 0.0 })));
 
     std::unique_ptr<RevoluteJoint<double>> joint6 = std::make_unique<RevoluteJoint<double>>();
     joint6->setName("joint6");
-    joint6->setAxis(RevoluteJoint<double>::Axis({ 0.0, 0.0, 1.0 }));
+    joint6->setAxis(RevoluteJoint<double>::Axis({ 1.0, 0.0, 0.0 }));
     joint6->setFrame(Motor<double>(Translator<double>::Generator({ 1.0, 0.0, 0.0 })));
 
     std::unique_ptr<RevoluteJoint<double>> joint7 = std::make_unique<RevoluteJoint<double>>();
     joint7->setName("joint7");
-    joint7->setAxis(RevoluteJoint<double>::Axis({ 0.0, 0.0, 1.0 }));
+    joint7->setAxis(RevoluteJoint<double>::Axis({ 1.0, 0.0, 0.0 }));
     joint7->setFrame(Motor<double>(Translator<double>::Generator({ 1.0, 0.0, 0.0 })));
 
     // Create the system
@@ -926,9 +926,10 @@ TEST_CASE("System with 7 joints", "[System]")
 
     SECTION("Link axes")
     {
-        std::vector<std::string> names({"link0"});
-        for (auto name: names) {
-            const Link<double>* link = system.getLink(name);
+        std::vector<std::string> names({ "link0" });
+        for (auto name : names)
+        {
+            const Link<double> *link = system.getLink(name);
             const typename Motor<double>::Generator axis = link->getAxis();
 
             REQUIRE(axis.get<blades::e23>() == Approx(0.0));
@@ -939,9 +940,10 @@ TEST_CASE("System with 7 joints", "[System]")
             REQUIRE(axis.get<blades::e3i>() == Approx(0.0));
         }
 
-        names = {"link1", "link2", "link3", "link4", "link5", "link6", "link7"};
-        for (auto name: names) {
-            const Link<double>* link = system.getLink(name);
+        names = { "link1", "link2", "link3", "link4", "link5", "link6", "link7" };
+        for (auto name : names)
+        {
+            const Link<double> *link = system.getLink(name);
             const typename Motor<double>::Generator axis = link->getAxis();
 
             REQUIRE(axis.get<blades::e23>() == Approx(0.0));
@@ -963,7 +965,7 @@ TEST_CASE("System with 7 joints", "[System]")
 
     SECTION("Compute end-effector position 1")
     {
-        Eigen::Vector<double, 7> position({ 0.0, 0.0, 0.0,0.0, 0.0, 0.0, 0.0 });
+        Eigen::Vector<double, 7> position({ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 });
         Motor<double> motor = system.computeKinematicChainMotor("joint7", position);
 
         Point<double> point = motor.apply(Point<double>(0.0, 0.0, 0.0));
@@ -1010,7 +1012,7 @@ TEST_CASE("System with 7 joints", "[System]")
     {
         Eigen::Vector<double, 7> position({ 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0 });
         Eigen::Vector<double, 7> velocity({ 0.0, 0.1, 0.0, 0.4, 0.0, 0.0, 0.0 });
-        Eigen::Vector<double, 7> torques({ 11.157, 10.161, 9.11698, 7.87299, 4.86949, 2.15616,0.332998 });
+        Eigen::Vector<double, 7> torques({ 11.157, 10.161, 9.11698, 7.87299, 4.86949, 2.15616, 0.332998 });
 
         Eigen::Vector<double, 7> acceleration = system.computeForwardDynamics(position, velocity, torques);
 

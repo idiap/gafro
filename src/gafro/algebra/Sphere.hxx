@@ -56,7 +56,7 @@ namespace gafro
     {
         auto dual_sphere = this->dual().evaluate();
 
-        const typename Point<T>::Base ei({ 0.0, 0.0, 0.0, 1.0, 0.0 });
+        const typename Point<T>::Base ei({ 0.0, 0.0, 0.0, 0.0, 1.0 });
 
         Point<T> center = Reflection<typename Point<T>::Base, typename Dual<Sphere>::Type>(ei, dual_sphere).evaluate();
         center = (center * Scalar<T>(1.0 / center.template get<blades::e0>())).evaluate();

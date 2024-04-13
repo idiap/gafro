@@ -21,8 +21,8 @@
 
 #include <numeric>
 //
-#include <gafro/algebra/Blades.hpp>
-#include <gafro/algebra/Multivector.hxx>
+// #include <gafro/algebra/Blades.hpp>
+// #include <gafro/algebra/Multivector.hxx>
 #include <gafro/algebra/expressions/BinaryExpression.hpp>
 #include <gafro/algebra/expressions/Sum.hpp>
 #include <gafro/algebra/util/TypeTraits.hpp>
@@ -32,11 +32,12 @@ namespace gafro
 
     namespace detail
     {
-        template <class M1, class M2, template <typename T, int, int> class Table>
+        template <class M1, class M2, template <class T, int, int> class Table>
         class ProductType
         {
           public:
             using Vtype = typename std::common_type<typename M1::Vtype, typename M2::Vtype>::type;
+            using Algebra = typename M1::MAlgebra;
 
             template <int k, int... j>
             struct ProductSum;
@@ -51,23 +52,24 @@ namespace gafro
             template <int k>
             struct ProductSum<k>
             {
-                using Type = Multivector<Vtype>;
+                using Type = typename Algebra::template Multivector<Vtype>;
             };
 
             template <std::size_t... i, std::size_t... j>
             constexpr static auto makeType(std::index_sequence<i...>, std::index_sequence<j...>)
             {
-                return Multivector<Vtype>() + (typename ProductSum<i, j...>::Result() + ...);
+                return typename Algebra::template Multivector<Vtype>() + (typename ProductSum<i, j...>::Result() + ...);
             }
 
             using Type = typename decltype(makeType(std::make_index_sequence<M1::size>(), std::make_index_sequence<M2::size>()))::Type;
         };
 
-        template <class M1, class M2, template <typename T, int, int> class Table>
+        template <class M1, class M2, template <class T, int, int> class Table>
         class ProductValue
         {
           public:
             using Vtype = typename std::common_type<typename M1::Vtype, typename M2::Vtype>::type;
+            using Algebra = typename M1::MAlgebra;
 
             template <int blade>
             struct Element
@@ -123,7 +125,7 @@ namespace gafro
 
     }  // namespace detail
 
-    template <class M1, class M2, template <typename T, int, int> class Table>
+    template <class M1, class M2, template <class T, int, int> class Table>
     class Product : public BinaryExpression<Product<M1, M2, Table>, M1, M2, typename detail::ProductType<M1, M2, Table>::Type>
     {
       public:
@@ -158,7 +160,7 @@ namespace gafro
 
         template <int blade>
             requires(has(blade))  //
-        Vtype get() const
+        inline Vtype get() const
         {
             return detail::ProductValue<M1, M2, Table>::template Element<blade>::value(this->getLeftOperand(),                //
                                                                                        this->getRightOperand(),               //
