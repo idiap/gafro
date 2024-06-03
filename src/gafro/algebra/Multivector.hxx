@@ -261,10 +261,11 @@ namespace gafro
     template <class M>
     template <class T, int... index>
     template <class M2>
-    CommutatorProduct<typename Algebra<M>::template Multivector<T, index...>, M2> Algebra<M>::Multivector<T, index...>::commutatorProduct(
+    CommutatorProduct<typename Algebra<M>::template Multivector<T, index...>, M2> Algebra<M>::Multivector<T, index...>::commute(
       const M2 &multivector) const
     {
-        return CommutatorProduct<typename Algebra<M>::template Multivector<T, index...>, M2>(*this, multivector);
+        return (*this) * multivector - multivector * (*this);
+        // return CommutatorProduct<typename Algebra<M>::template Multivector<T, index...>, M2>(*this, multivector);
     }
 
     //
@@ -313,6 +314,15 @@ namespace gafro
         other.normalize();
 
         return other;
+    }
+
+    //
+
+    template <class M>
+    template <class T, int... index>
+    auto Algebra<M>::Multivector<T, index...>::square() const
+    {
+        return (*this) * (*this);
     }
 
     //

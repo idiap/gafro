@@ -206,11 +206,15 @@ namespace gafro
 
         //
 
+        auto square() const;
+
+        //
+
         template <class Other>
         Other cast() const;
 
         template <class M2>
-        CommutatorProduct<Multivector, M2> commutatorProduct(const M2 &multivector) const;
+        CommutatorProduct<Multivector, M2> commute(const M2 &multivector) const;
 
         //
 
