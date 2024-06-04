@@ -68,4 +68,28 @@ namespace gafro
         return Point(p.x(), p.y(), p.z());
     }
 
+    template <class T>
+    Eigen::Matrix<T, 5, 3> Point<T>::getEmbeddingJacobian() const
+    {
+        Eigen::Matrix<T, 5, 3> jacobian = Eigen::Matrix<T, 5, 3>::Zero();
+
+        jacobian.middleRows(1, 3) = Eigen::Matrix<T, 3, 3>::Identity();
+
+        jacobian.bottomRows(1) = this->getEuclideanPoint().transpose();
+
+        return jacobian;
+    }
+
+    template <class T>
+    Eigen::Matrix<T, 3, 1> Point<T>::getEuclideanPoint() const
+    {
+        Eigen::Matrix<T, 3, 1> point;
+
+        point[0] = this->template get<blades::e1>();
+        point[1] = this->template get<blades::e2>();
+        point[2] = this->template get<blades::e3>();
+
+        return point;
+    }
+
 }  // namespace gafro

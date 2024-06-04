@@ -42,6 +42,10 @@ namespace gafro
 
         virtual ~Point() = default;
 
+        Eigen::Matrix<T, 5, 3> getEmbeddingJacobian() const;
+
+        Eigen::Matrix<T, 3, 1> getEuclideanPoint() const;
+
       protected:
       private:
       public:
