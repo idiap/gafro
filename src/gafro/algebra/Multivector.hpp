@@ -28,7 +28,7 @@
 //
 #include <gafro/algebra/AbstractMultivector.hpp>
 #include <gafro/algebra/Algebra.hpp>
-#include <gafro/algebra/util/Bitset.hpp>
+#include <gafro/algebra/Bitset.hpp>
 
 namespace gafro
 {
@@ -117,6 +117,11 @@ namespace gafro
         Multivector &operator=(const Expression<Derived, Other> &expression);
 
         Multivector operator-() const;
+
+        Multivector operator*(const T &scalar) const;
+
+        Multivector operator/(const T &scalar) const;
+
         //
 
         void setParameters(Parameters &&parameters);

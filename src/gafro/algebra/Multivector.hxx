@@ -19,14 +19,12 @@
 
 #pragma once
 
-#include <gafro/algebra/expressions/Assign.hpp>
-#include <gafro/algebra/expressions/Cast.hpp>
-#include <gafro/algebra/expressions/CommutatorProduct.hpp>
-#include <gafro/algebra/expressions/Dual.hpp>
-#include <gafro/algebra/expressions/Inverse.hpp>
-#include <gafro/algebra/expressions/Reverse.hpp>
-//
-#include <gafro/algebra/Blades.hpp>
+#include <gafro/algebra/Assign.hpp>
+#include <gafro/algebra/Cast.hpp>
+#include <gafro/algebra/CommutatorProduct.hpp>
+#include <gafro/algebra/Dual.hpp>
+#include <gafro/algebra/Inverse.hpp>
+#include <gafro/algebra/Reverse.hpp>
 //
 #include <gafro/algebra/Multivector.hpp>
 
@@ -233,6 +231,24 @@ namespace gafro
         return Multivector(-this->vector());
     }
 
+    template <class M>
+    template <class T, int... index>
+    typename Algebra<M>::template Multivector<T, index...> Algebra<M>::Multivector<T, index...>::operator*(const T &scalar) const
+    {
+        Algebra<M>::template Scalar<T> s;
+
+        s.template set<0>(scalar);
+
+        return (*this) * s;
+    }
+
+    template <class M>
+    template <class T, int... index>
+    typename Algebra<M>::template Multivector<T, index...> Algebra<M>::Multivector<T, index...>::operator/(const T &scalar) const
+    {
+        return (*this) * (TypeTraits<T>::Value(1.0) / scalar);
+    }
+
     //
 
     template <class M>
@@ -264,8 +280,8 @@ namespace gafro
     CommutatorProduct<typename Algebra<M>::template Multivector<T, index...>, M2> Algebra<M>::Multivector<T, index...>::commute(
       const M2 &multivector) const
     {
-        return (*this) * multivector - multivector * (*this);
-        // return CommutatorProduct<typename Algebra<M>::template Multivector<T, index...>, M2>(*this, multivector);
+        // return (*this) * multivector - multivector * (*this);
+        return CommutatorProduct<typename Algebra<M>::template Multivector<T, index...>, M2>(*this, multivector);
     }
 
     //
@@ -281,7 +297,7 @@ namespace gafro
     template <class T, int... index>
     T Algebra<M>::Multivector<T, index...>::squaredNorm() const
     {
-        return ((*this) * this->reverse()).template get<blades::scalar>();
+        return ((*this) * this->reverse()).template get<0>();
     }
 
     template <class M>
@@ -301,7 +317,7 @@ namespace gafro
 
         // if (value > 1e-10)
         // {
-        *this = (*this) * Scalar<T>(1.0 / value);
+        *this = (*this) / value;  // Algebra<M>::Scalar<T>(typename Algebra<M>::Scalar<T>::Parameters({ 1.0 / value }));
         // }
     }
 
@@ -373,57 +389,18 @@ namespace gafro
         return Cast<typename Algebra<M>::template Multivector<T, index...>, Other>(*this);
     }
 
-    //
-
-    template <int... index>
-    std::ostream &operator<<(std::ostream &ostream, const ConformalGeometricAlgebra::Multivector<double, index...> &mv)
+    template <class T, class Derived,
+              class = typename std::enable_if<TypeTraits<T>::is_scalar_type>::type>  //
+    Derived operator*(const T &scalar, const AbstractMultivector<Derived> &multivector)
     {
-        static const std::array<std::string, 32> BladeNames = { "",    "e0",   "e1",   "e01",   "e2",   "e02",   "e12",   "e012",
-                                                                "e3",  "e03",  "e13",  "e013",  "e23",  "e023",  "e123",  "e0123",
-                                                                "ei",  "e0i",  "e1i",  "e01i",  "e2i",  "e02i",  "e12i",  "e012i",
-                                                                "e3i", "e03i", "e13i", "e013i", "e23i", "e023i", "e123i", "e0123i" };
+        return multivector.derived() * scalar;
+    }
 
-        if (sizeof...(index) == 0)
-        {
-            ostream << 0;
-
-            return ostream;
-        }
-
-        bool first = true;
-
-        for (unsigned int k = 0; k < mv.vector().rows(); ++k)
-        {
-            if (abs(mv.vector().coeff(k, 0)) < 1e-10)
-            {
-                continue;
-            }
-
-            if (!first)
-            {
-                ostream << (mv.vector().coeff(k, 0) >= 0 ? " + " : " - ");
-
-                ostream << abs(mv.vector().coeff(k, 0));
-            }
-            else
-            {
-                ostream << mv.vector().coeff(k, 0);
-
-                first = false;
-            }
-
-            if (ConformalGeometricAlgebra::Multivector<double, index...>::blades()[k] > 0)
-            {
-                ostream << "*" << BladeNames[ConformalGeometricAlgebra::Multivector<double, index...>::blades()[k]];
-            }
-        }
-
-        if (first)
-        {
-            ostream << 0;
-        }
-
-        return ostream;
+    template <class T, class Derived,
+              class = typename std::enable_if<TypeTraits<T>::is_scalar_type>::type>  //
+    Derived operator/(const T &scalar, const AbstractMultivector<Derived> &multivector)
+    {
+        return multivector.derived() / scalar;
     }
 
 }  // namespace gafro
