@@ -91,7 +91,14 @@ namespace gafro
     template <class T>
     Rotor<T> Motor<T>::getRotor() const
     {
-        return Rotor<T>(this->vector().topRows(4));
+        Rotor<T> rotor;
+
+        rotor.template set<blades::scalar>(this->template get<blades::scalar>());
+        rotor.template set<blades::e23>(this->template get<blades::e23>());
+        rotor.template set<blades::e13>(this->template get<blades::e13>());
+        rotor.template set<blades::e12>(this->template get<blades::e12>());
+
+        return rotor;
     }
 
     template <class T>
