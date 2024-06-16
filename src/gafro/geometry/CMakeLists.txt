@@ -8,6 +8,8 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
             EuclideanPointcloud.hxx
             ConformalPointcloud.hpp
             ConformalPointcloud.hxx
+            Orbit.hpp
+            Orbit.hxx
         DESTINATION 
             ${GAFRO_PREFIX_INCLUDE}/gafro/geometry
         COMPONENT

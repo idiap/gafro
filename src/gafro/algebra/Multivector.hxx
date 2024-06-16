@@ -286,6 +286,17 @@ namespace gafro
 
     //
 
+    // template <class M>
+    // template <class T, int... index>
+    // template <int blade>
+    //     requires(Algebra<M>::template Multivector<T, index...>::has(blade))  //
+    // typename Algebra<M>::template Multivector<T, blade> Algebra<M>::template Multivector<T, index...>::getBlade() const
+    // {
+    //     return typename Algebra<M>::template Multivector<T, blade>(this->template get<blade>());
+    // }
+
+    //
+
     template <class M>
     template <class T, int... index>
     T Algebra<M>::Multivector<T, index...>::norm() const

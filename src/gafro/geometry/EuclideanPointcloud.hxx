@@ -1,6 +1,8 @@
 #pragma once
 
 #include <gafro/geometry/EuclideanPointcloud.hpp>
+//
+#include <gafro/geometry/ConformalPointcloud.hpp>
 
 namespace gafro::geometry
 {

@@ -26,10 +26,8 @@
 #include <gafro/physics/Twist.hxx>
 #include <gafro/physics/Wrench.hxx>
 //
-#include <gafro/robot/Manipulator.hpp>
-
 #include <algorithm>
-
+#include <gafro/robot/Manipulator.hpp>
 
 namespace gafro
 {
@@ -83,11 +81,11 @@ namespace gafro
         auto system_configuration = System<T>::getRandomConfiguration();
         auto kinematic_chain = getEEKinematicChain();
         auto joints = kinematic_chain->getActuatedJoints();
-        auto& system_joints = System<T>::getJoints();
+        auto &system_joints = System<T>::getJoints();
 
         std::vector<std::string> names;
 
-        for (const std::unique_ptr<gafro::Joint<double>>& joint : system_joints)
+        for (const std::unique_ptr<gafro::Joint<double>> &joint : system_joints)
         {
             if (joint->isActuated())
                 names.push_back(joint->getName());
@@ -107,13 +105,13 @@ namespace gafro
     }
 
     template <class T, int dof>
-    KinematicChain<double>* Manipulator<T, dof>::getEEKinematicChain()
+    KinematicChain<double> *Manipulator<T, dof>::getEEKinematicChain()
     {
         return getSystem().getKinematicChain(ee_joint_name_);
     }
 
     template <class T, int dof>
-    const KinematicChain<double>* Manipulator<T, dof>::getEEKinematicChain() const
+    const KinematicChain<double> *Manipulator<T, dof>::getEEKinematicChain() const
     {
         return getSystem().getKinematicChain(ee_joint_name_);
     }
@@ -158,15 +156,13 @@ namespace gafro
 
     template <class T, int dof>
     template <class Primitive>
-    typename SandwichProduct<Primitive, Motor<T>>::Type::template Matrix<1, dof> Manipulator<T, dof>::getEEPrimitiveJacobian(
-      const Vector &position, const Primitive &primitive) const
+    typename Primitive::Type::template Matrix<1, dof> Manipulator<T, dof>::getEEPrimitiveJacobian(const Vector &position,
+                                                                                                  const Primitive &primitive) const
     {
-        using Result = typename SandwichProduct<Primitive, Motor<T>>::Type;
-
         Motor<double> ee_motor = getEEMotor(position);
         auto ee_jacobian = getEEAnalyticJacobian(position);
 
-        auto jacobian = Result::template CreateMatrix<1, dof>();
+        typename Primitive::Type::template Matrix<1, dof> jacobian;
 
         for (unsigned i = 0; i < dof; ++i)
         {
