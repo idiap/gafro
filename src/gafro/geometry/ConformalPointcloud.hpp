@@ -3,6 +3,7 @@
 #include <gafro/geometry/EuclideanPointcloud.hpp>
 #include <gafro/geometry/Pointcloud.hpp>
 //
+#include <gafro/algebra/cga/Motor.hpp>
 #include <gafro/algebra/cga/Point.hpp>
 
 namespace gafro::geometry
@@ -19,6 +20,8 @@ namespace gafro::geometry
         virtual ~ConformalPointcloud();
 
         Eigen::VectorXd getPointAsVector(const int &i) const;
+
+        ConformalPointcloud transform(const Motor<T> &motor) const;
 
       protected:
       private:
