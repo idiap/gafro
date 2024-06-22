@@ -30,6 +30,9 @@ namespace gafro
     template <class T>
     class Vector;
 
+    template <class T>
+    class Motor;
+
     template <typename T>
     class Plane : public Multivector<T, blades::e012i, blades::e013i, blades::e023i, blades::e123i>
     {
@@ -46,6 +49,8 @@ namespace gafro
 
         Vector<T> getNormal() const;
 
+        Motor<T> computeMotor(const Plane &other) const;
+
       protected:
       private:
       public:
@@ -56,6 +61,10 @@ namespace gafro
         static Plane YZ(const T &x = T(0.0));
 
         static Plane Random();
+
+        static Plane estimateFromPoints(const std::vector<Point<T>> &points);
+
+        static Plane estimateFromPoints(const std::vector<Point<T>> &points, const std::vector<unsigned> &indices);
     };
 
 }  // namespace gafro

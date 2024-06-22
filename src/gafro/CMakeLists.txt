@@ -26,7 +26,6 @@ add_subdirectory(algebra)
 add_subdirectory(physics)
 add_subdirectory(robot)
 add_subdirectory(optimization)
-add_subdirectory(geometry)
 
 include(GenerateExportHeader)
 generate_export_header(${PROJECT_NAME})
@@ -78,7 +77,6 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
             robot.hpp
             physics.hpp
             optimization.hpp
-            geometry.hpp
         DESTINATION
             ${GAFRO_PREFIX_INCLUDE}/gafro
         COMPONENT

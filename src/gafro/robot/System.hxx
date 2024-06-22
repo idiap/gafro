@@ -44,7 +44,9 @@ namespace gafro
     System<T>::System(System &&other)
     {
         if (other.dof_ == 0)
+        {
             other.finalize();
+        }
 
         *this = std::move(other);
     }
@@ -53,7 +55,9 @@ namespace gafro
     System<T> &System<T>::operator=(System &&other)
     {
         if (other.dof_ == 0)
+        {
             other.finalize();
+        }
 
         links_ = std::move(other.links_);
         joints_ = std::move(other.joints_);
@@ -128,7 +132,7 @@ namespace gafro
 
             if (joint->isActuated())
             {
-                dof_++;
+                joint->setIndex(dof_++);
             }
         }
 
@@ -148,6 +152,12 @@ namespace gafro
     std::vector<std::unique_ptr<Joint<T>>> &System<T>::getJoints()
     {
         return joints_;
+    }
+
+    template <class T>
+    const int &System<T>::getDoF() const
+    {
+        return dof_;
     }
 
     template <class T>
@@ -288,16 +298,9 @@ namespace gafro
 
         auto joint = link->getParentJoint();
 
-        int actuated_joints = 0;
-
         while (joint)
         {
             joints.push_back(joint);
-
-            if (joint->isActuated())
-            {
-                actuated_joints++;
-            }
 
             if (joint->getParentLink())
             {
@@ -311,9 +314,10 @@ namespace gafro
     }
 
     template <class T>
-    template <int dof>
-    Motor<T> System<T>::computeLinkMotor(const std::string &name, const Eigen::Vector<T, dof> &position) const
+    Motor<T> System<T>::computeLinkMotor(const std::string &name, const Eigen::Vector<T, Eigen::Dynamic> &position) const
     {
+        assert(dof_ == position.rows());
+
         std::vector<const Joint<T> *> joints = getJointChain(name);
 
         if (joints.empty())
@@ -323,13 +327,11 @@ namespace gafro
 
         Motor<T> motor;
 
-        int j = 0;
-
         for (const Joint<T> *joint : joints)
         {
             if (joint->isActuated())
             {
-                motor = motor * joint->getMotor(position[j++]);
+                motor = motor * joint->getMotor(position[joint->getIndex()]);
             }
             else
             {

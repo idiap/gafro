@@ -81,6 +81,8 @@ namespace gafro
 
         void setChildLink(const Link<T> *child_link);
 
+        void setIndex(const int &index);
+
         // getter functions
         const std::string &getName() const;
 
@@ -93,6 +95,8 @@ namespace gafro
         const Link<T> *getParentLink() const;
 
         const Link<T> *getChildLink() const;
+
+        const int &getIndex() const;
 
         //
 
@@ -118,6 +122,8 @@ namespace gafro
         const Link<T> *parent_link_ = nullptr;
 
         const Link<T> *child_link_ = nullptr;
+
+        int index_;
     };
 
 }  // namespace gafro
