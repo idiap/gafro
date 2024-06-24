@@ -64,7 +64,7 @@ namespace gafro
 
         static Plane estimateFromPoints(const std::vector<Point<T>> &points);
 
-        static Plane estimateFromPoints(const std::vector<Point<T>> &points, const std::vector<unsigned> &indices);
+        static Plane estimateFromPoints(const std::vector<Point<T>> &points, const Eigen::VectorXi &indices);
     };
 
 }  // namespace gafro

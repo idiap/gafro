@@ -78,7 +78,7 @@ namespace gafro
     }
 
     template <class T>
-    Plane<T> Plane<T>::estimateFromPoints(const std::vector<Point<T>> &points, const std::vector<unsigned> &indices)
+    Plane<T> Plane<T>::estimateFromPoints(const std::vector<Point<T>> &points, const Eigen::VectorXi &indices)
     {
         auto weight = [&](unsigned k, const Point<double> &p) {
             switch (k)
@@ -98,9 +98,9 @@ namespace gafro
 
         Eigen::MatrixXd weights = Eigen::MatrixXd::Zero(4, 4);
 
-        for (const unsigned &index : indices)
+        for (unsigned i = 0; i < indices.rows(); ++i)
         {
-            const auto &point = points[index];
+            const auto &point = points[indices[i]];
 
             for (unsigned j = 0; j < 4; ++j)
             {
@@ -122,8 +122,7 @@ namespace gafro
         dual_plane.set<blades::e3>(solver.eigenvectors().coeffRef(2, min).real());
         dual_plane.set<blades::ei>(solver.eigenvectors().coeffRef(3, min).real());
 
-        return Plane<T>::Random();
-        // return dual_plane.dual();
+        return dual_plane.dual();
     }
 
     template <class T>
