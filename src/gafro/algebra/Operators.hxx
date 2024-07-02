@@ -149,6 +149,19 @@ namespace gafro
         return GeometricProduct<E1, E2>(std::move(u.derived()), std::move(v.derived()));
     }
 
+    // DIVISION
+
+    template <typename E1, typename E2>
+    GeometricProduct<E1, E2> operator/(const AbstractMultivector<E1> &u, const AbstractMultivector<E2> &v)
+    {
+        return GeometricProduct<E1, E2>(u.derived(), v.derived().inverse());
+    }
+
+    template <typename E1, typename E2>
+    GeometricProduct<typename E1::Type, E2> operator/(AbstractExpression<E1> &&u, const AbstractMultivector<E2> &v)
+    {
+        return GeometricProduct<typename E1::Type, E2>(std::move(u.derived().evaluate()), v.derived().inverse());
+    }
 
     // SUM
 
@@ -191,7 +204,8 @@ namespace gafro
     template <typename E1, typename E2>
     Sum<typename E1::Type, typename E2::Type, detail::AdditionOperator> operator+(AbstractExpression<E1> &&u, AbstractExpression<E2> &&v)
     {
-        return Sum<typename E1::Type, typename E2::Type, detail::AdditionOperator>(std::move(u.derived().evaluate()), std::move(v.derived().evaluate()));
+        return Sum<typename E1::Type, typename E2::Type, detail::AdditionOperator>(std::move(u.derived().evaluate()),
+                                                                                   std::move(v.derived().evaluate()));
     }
 
     //-- expression&& + const multivector&
@@ -264,12 +278,12 @@ namespace gafro
         return Sum<E1, E2, detail::AdditionOperator>(std::move(u.derived()), std::move(v.derived()));
     }
 
-
     // DIFFERENCE
 
     //-- const expression& - const expression&
     template <typename E1, typename E2>
-    Sum<typename E1::Type, typename E2::Type, detail::SubstractionOperator> operator-(const AbstractExpression<E1> &u, const AbstractExpression<E2> &v)
+    Sum<typename E1::Type, typename E2::Type, detail::SubstractionOperator> operator-(const AbstractExpression<E1> &u,
+                                                                                      const AbstractExpression<E2> &v)
     {
         return Sum<typename E1::Type, typename E2::Type, detail::SubstractionOperator>(u.derived().evaluate(), v.derived().evaluate());
     }
@@ -306,7 +320,8 @@ namespace gafro
     template <typename E1, typename E2>
     Sum<typename E1::Type, typename E2::Type, detail::SubstractionOperator> operator-(AbstractExpression<E1> &&u, AbstractExpression<E2> &&v)
     {
-        return Sum<typename E1::Type, typename E2::Type, detail::SubstractionOperator>(std::move(u.derived().evaluate()), std::move(v.derived().evaluate()));
+        return Sum<typename E1::Type, typename E2::Type, detail::SubstractionOperator>(std::move(u.derived().evaluate()),
+                                                                                       std::move(v.derived().evaluate()));
     }
 
     //-- expression&& - const multivector&
@@ -378,7 +393,6 @@ namespace gafro
     {
         return Sum<E1, E2, detail::SubstractionOperator>(std::move(u.derived()), std::move(v.derived()));
     }
-
 
     // INNER PRODUCT
 
@@ -493,7 +507,6 @@ namespace gafro
     {
         return InnerProduct<E1, E2>(std::move(u.derived()), std::move(v.derived()));
     }
-
 
     // OUTER PRODUCT
 

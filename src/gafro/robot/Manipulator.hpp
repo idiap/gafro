@@ -79,9 +79,9 @@ namespace gafro
 
         //
 
-        KinematicChain<double>* getEEKinematicChain();
+        KinematicChain<double> *getEEKinematicChain();
 
-        const KinematicChain<double>* getEEKinematicChain() const;
+        const KinematicChain<double> *getEEKinematicChain() const;
 
         //
 
@@ -91,7 +91,7 @@ namespace gafro
 
         MultivectorMatrix<T, MotorGenerator, 1, dof> getEEGeometricJacobian(const Vector &position) const;
 
-        MultivectorMatrix<T, MotorGenerator, 1, dof> getGeometricJacobian(const Vector &position, const Translator<T> &reference) const;
+        MultivectorMatrix<T, MotorGenerator, 1, dof> getGeometricJacobian(const Vector &position, const Motor<T> &reference) const;
 
         MultivectorMatrix<T, MotorGenerator, 1, dof> getEEFrameJacobian(const Vector &position) const;
 
