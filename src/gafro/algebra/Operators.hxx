@@ -19,18 +19,13 @@
 
 #pragma once
 
-// #include <gafro/algebra/expressions/Dual.hpp>
-// #include <gafro/algebra/expressions/Inverse.hpp>
-// #include <gafro/algebra/expressions/Reverse.hpp>
+#include <gafro/algebra/GeometricProduct.hpp>
+#include <gafro/algebra/InnerProduct.hpp>
+#include <gafro/algebra/OuterProduct.hpp>
+#include <gafro/algebra/Sum.hpp>
 //
-#include <gafro/algebra/expressions/GeometricProduct.hpp>
-#include <gafro/algebra/expressions/InnerProduct.hpp>
-#include <gafro/algebra/expressions/OuterProduct.hpp>
-#include <gafro/algebra/expressions/Sum.hpp>
-//
+#include <gafro/algebra/AbstractExpression.hpp>
 #include <gafro/algebra/AbstractMultivector.hpp>
-#include <gafro/algebra/expressions/AbstractExpression.hpp>
-// #include <gafro/algebra/Multivector.hxx>
 
 namespace gafro
 {

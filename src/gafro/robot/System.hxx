@@ -479,7 +479,7 @@ namespace gafro
 
         if (kinematic_chain_name.empty())
         {
-            for (auto& chain : kinematic_chains_)
+            for (auto &chain : kinematic_chains_)
             {
                 if (chain->getDoF() == dof)
                 {
@@ -524,7 +524,7 @@ namespace gafro
 
         if (kinematic_chain_name.empty())
         {
-            for (auto& chain : kinematic_chains_)
+            for (auto &chain : kinematic_chains_)
             {
                 if (chain->getDoF() == dof)
                 {
@@ -558,7 +558,7 @@ namespace gafro
 
             frames[j] = joints[j]->getMotor(position[j]).reverse();
             twist = frames[j].apply(twist) + Scalar<T>(velocity[j]) * axis;
-            twist_dt = frames[j].apply(twist_dt) + Scalar<T>(velocity[j]) * axis.commutatorProduct(twist);
+            twist_dt = frames[j].apply(twist_dt) + Scalar<T>(velocity[j]) * axis.commute(twist);
 
             bias_wrench[j] = inertia[j](twist_dt) - twist.commute(inertia[j](twist));
         }
