@@ -38,6 +38,8 @@ namespace gafro
 
         Point(const Base &other);
 
+        Point(const Eigen::Vector3<T> &point);
+
         Point(const T &x, const T &y, const T &z);
 
         virtual ~Point() = default;

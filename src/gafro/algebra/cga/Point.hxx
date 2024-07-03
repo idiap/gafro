@@ -43,6 +43,10 @@ namespace gafro
     {}
 
     template <class T>
+    Point<T>::Point(const Eigen::Vector3<T> &point) : Point(point.x(), point.y(), point.z())
+    {}
+
+    template <class T>
     Point<T> Point<T>::X(const T &x)
     {
         return Point(x, T(0.0), T(0.0));

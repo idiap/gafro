@@ -99,8 +99,7 @@ namespace gafro
         MultivectorMatrix<T, MotorGenerator, 1, dof> getEEFrameJacobian(const Vector &position) const;
 
         template <class Primitive>
-        typename SandwichProduct<Primitive, Motor<T>>::Type::template Matrix<1, dof> getEEPrimitiveJacobian(const Vector &position,
-                                                                                                            const Primitive &primitive) const;
+        typename Primitive::Type::template Matrix<1, dof> getEEPrimitiveJacobian(const Vector &position, const Primitive &primitive) const;
 
         //
 

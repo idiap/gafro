@@ -196,6 +196,13 @@ namespace gafro
             return parameters_.coeff(map<blade>());
         }
 
+        template <int blade>
+            requires(has(blade))  //
+        Multivector<T, blade> getBlade() const
+        {
+            return typename Algebra<M>::template Multivector<T, blade>((Eigen::Matrix<T, 1, 1>() << this->template get<blade>()).finished());
+        }
+
       public:
         //
 
@@ -223,11 +230,11 @@ namespace gafro
 
         //
 
-        // template <class t>
-        // using M = Multivector<t, index...>;
+        template <class t>
+        using MV = Multivector<t, index...>;
 
-        // template <int rows, int cols>
-        // using Matrix = MultivectorMatrix<T, M, rows, cols>;
+        template <int rows, int cols>
+        using Matrix = MultivectorMatrix<T, MV, rows, cols>;
 
         // template <int rows, int cols>
         // static Matrix<rows, cols> CreateMatrix()

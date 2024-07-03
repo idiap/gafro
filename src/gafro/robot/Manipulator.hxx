@@ -163,15 +163,13 @@ namespace gafro
 
     template <class T, int dof>
     template <class Primitive>
-    typename SandwichProduct<Primitive, Motor<T>>::Type::template Matrix<1, dof> Manipulator<T, dof>::getEEPrimitiveJacobian(
-      const Vector &position, const Primitive &primitive) const
+    typename Primitive::Type::template Matrix<1, dof> Manipulator<T, dof>::getEEPrimitiveJacobian(const Vector &position,
+                                                                                                  const Primitive &primitive) const
     {
-        using Result = typename SandwichProduct<Primitive, Motor<T>>::Type;
-
         Motor<double> ee_motor = getEEMotor(position);
         auto ee_jacobian = getEEAnalyticJacobian(position);
 
-        auto jacobian = Result::template CreateMatrix<1, dof>();
+        typename Primitive::Type::template Matrix<1, dof> jacobian;
 
         for (unsigned i = 0; i < dof; ++i)
         {

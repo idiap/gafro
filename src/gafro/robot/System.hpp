@@ -57,6 +57,8 @@ namespace gafro
 
         void setName(const std::string &name);
 
+        const int &getDoF() const;
+
         const Link<T> &getBaseLink() const;
 
         Link<T> *getLink(const std::string &name);
@@ -88,8 +90,7 @@ namespace gafro
 
         //
 
-        template <int dof>
-        Motor<T> computeLinkMotor(const std::string &name, const Eigen::Vector<T, dof> &position) const;
+        Motor<T> computeLinkMotor(const std::string &name, const Eigen::Vector<T, Eigen::Dynamic> &position) const;
 
         //
 
@@ -124,10 +125,10 @@ namespace gafro
         Eigen::Vector<T, dof> computeForwardDynamics(const Eigen::Vector<T, dof> &position, const Eigen::Vector<T, dof> &velocity,
                                                      const Eigen::Vector<T, dof> &torque, const std::string &kinematic_chain_name = "") const;
 
+        std::vector<const Joint<T> *> getJointChain(const std::string &name) const;
+
       protected:
         void createKinematicChain(const std::string &joint_name);
-
-        std::vector<const Joint<T> *> getJointChain(const std::string &name) const;
 
       public:
         using Vector = Eigen::VectorX<T>;
