@@ -148,6 +148,14 @@ namespace gafro
     }
 
     template <class T, int dof>
+    MultivectorMatrix<T, MotorGenerator, 1, dof> Manipulator<T, dof>::getGeometricJacobianTimeDerivative(const Vector &position,
+                                                                                                         const Vector &velocity,
+                                                                                                         const Motor<T> &reference) const
+    {
+        return getSystem().computeKinematicChainGeometricJacobianTimeDerivative(ee_joint_name_, position, velocity, reference);
+    }
+
+    template <class T, int dof>
     MultivectorMatrix<T, MotorGenerator, 1, dof> Manipulator<T, dof>::getEEFrameJacobian(const Vector &position) const
     {
         return getSystem().computeKinematicChainGeometricJacobianBody(ee_joint_name_, position);

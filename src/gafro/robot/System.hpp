@@ -109,6 +109,12 @@ namespace gafro
                                                                                                 const Eigen::Vector<T, dof> &position) const;
 
         template <int dof>
+        MultivectorMatrix<T, MotorGenerator, 1, dof> computeKinematicChainGeometricJacobianTimeDerivative(const std::string &name,
+                                                                                                          const Eigen::Vector<T, dof> &position,
+                                                                                                          const Eigen::Vector<T, dof> &velocity,
+                                                                                                          const Motor<T> &reference) const;
+
+        template <int dof>
         Eigen::Vector<T, dof> computeInverseDynamics(const Eigen::Vector<T, dof> &position, const Eigen::Vector<T, dof> &velocity,
                                                      const Eigen::Vector<T, dof> &acceleration, const T &gravity = 9.81,
                                                      const Wrench<T> ee_wrench = Wrench<T>::Zero(),

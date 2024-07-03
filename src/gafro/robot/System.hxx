@@ -372,6 +372,14 @@ namespace gafro
     }
 
     template <class T>
+    template <int dof>
+    MultivectorMatrix<T, MotorGenerator, 1, dof> System<T>::computeKinematicChainGeometricJacobianTimeDerivative(
+      const std::string &name, const Eigen::Vector<T, dof> &position, const Eigen::Vector<T, dof> &velocity, const Motor<T> &reference) const
+    {
+        return getKinematicChain(name)->computeKinematicChainGeometricJacobianTimeDerivative(position, velocity, reference);
+    }
+
+    template <class T>
     Joint<T> *System<T>::getJoint(const std::string &name)
     {
         auto joint = joints_map_.find(name);

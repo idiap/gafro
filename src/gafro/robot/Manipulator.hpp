@@ -93,6 +93,9 @@ namespace gafro
 
         MultivectorMatrix<T, MotorGenerator, 1, dof> getGeometricJacobian(const Vector &position, const Motor<T> &reference) const;
 
+        MultivectorMatrix<T, MotorGenerator, 1, dof> getGeometricJacobianTimeDerivative(const Vector &position, const Vector &velocity,
+                                                                                        const Motor<T> &reference) const;
+
         MultivectorMatrix<T, MotorGenerator, 1, dof> getEEFrameJacobian(const Vector &position) const;
 
         template <class Primitive>

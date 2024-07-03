@@ -50,6 +50,8 @@ namespace gafro
         template <class S>
         Inertia(const Inertia<S> &other);
 
+        Inertia(const Base &base);
+
         virtual ~Inertia() = default;
 
         //
@@ -86,10 +88,14 @@ namespace gafro
 
         typename Base::Matrix getTensor() const;
 
+        const Base &getMultivectorMatrix() const;
+
       protected:
       private:
       public:
         static Inertia Zero();
+
+        static Inertia Random();
     };
 
 }  // namespace gafro

@@ -60,6 +60,10 @@ namespace gafro
     }
 
     template <class T>
+    Inertia<T>::Inertia(const Base &base) : Base(base)
+    {}
+
+    template <class T>
     template <class S>
     Inertia<T>::Inertia(const Inertia<S> &other)
     {
@@ -179,10 +183,24 @@ namespace gafro
     }
 
     template <class T>
+    const typename Inertia<T>::Base &Inertia<T>::getMultivectorMatrix() const
+    {
+        return *this;
+    }
+
+    template <class T>
     Inertia<T> Inertia<T>::Zero()
     {
         return Inertia(TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(),
                        TypeTraits<T>::Zero(), TypeTraits<T>::Zero());
+    }
+
+    template <class T>
+    Inertia<T> Inertia<T>::Random()
+    {
+        Eigen::Vector<T, 7> values = Eigen::Vector<T, 7>::Random().array().abs();
+
+        return Inertia<T>(values[0], values[1], values[2], values[3], values[4], values[5], values[6]);
     }
 
     template <class T>

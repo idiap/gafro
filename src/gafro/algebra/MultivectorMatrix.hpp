@@ -154,3 +154,19 @@ std::ostream &operator<<(std::ostream &ostream, const gafro::MultivectorMatrix<T
 
     return ostream;
 }
+
+template <class T, template <class S> class M, int rows, int cols>
+gafro::MultivectorMatrix<T, M, rows, cols> operator*(const T &value, const gafro::MultivectorMatrix<T, M, rows, cols> &matrix)
+{
+    gafro::MultivectorMatrix<T, M, rows, cols> result;
+
+    for (int r = 0; r < rows; ++r)
+    {
+        for (int c = 0; c < cols; ++c)
+        {
+            result.setCoefficient(r, c, value * matrix.getCoefficient(r, c));
+        }
+    }
+
+    return result;
+}
