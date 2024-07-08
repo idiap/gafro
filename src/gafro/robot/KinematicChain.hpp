@@ -222,15 +222,19 @@ namespace gafro
                                                                                                           const Eigen::Vector<T, dof> &velocity,
                                                                                                           const Motor<T> &reference) const
         {
-            MultivectorMatrix<T, MotorGenerator, 1, dof> jacobian = computeGeometricJacobian(position);
+            MultivectorMatrix<T, MotorGenerator, 1, dof> jacobian = computeGeometricJacobianBody(position);
             MultivectorMatrix<T, MotorGenerator, 1, dof> jacobian_time_derivative;
 
-            for (unsigned i = 1; i < dof; ++i)
-            {
-                MotorGenerator<T> b1 = reference.reverse() * jacobian.getCoefficient(0, i) * reference;
-                MotorGenerator<T> b2 = reference.reverse() * jacobian.getCoefficient(0, i - 1) * reference;
+            MotorGenerator<T> twist = Scalar<T>(velocity[dof - 1]) * jacobian.getCoefficient(0, dof - 1);
 
-                jacobian_time_derivative.setCoefficient(0, i, (Scalar<T>(velocity[i]) * b1.commute(b2)));
+            for (int i = dof - 2; i > -1; --i)
+            {
+                MotorGenerator<T> b1 = jacobian.getCoefficient(0, i);
+                MotorGenerator<T> b2 = twist;
+
+                jacobian_time_derivative.setCoefficient(0, i, b1.commute(b2));
+
+                twist = twist + Scalar<T>(velocity[i]) * jacobian.getCoefficient(0, i);
             }
 
             return jacobian_time_derivative;
