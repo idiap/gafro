@@ -25,8 +25,8 @@ namespace gafro::algorithm
                 twist[j] = twist[j - 1].transform(frame[j])  //
                            + Scalar<T>(velocity[j]) * joints[j]->getChildLink()->getAxis();
 
-                twist_dt[j] = twist_dt[j - 1].transform(frame[j])                                                          //
-                              + Scalar<T>(velocity[j]) * joints[j]->getChildLink()->getAxis().commutatorProduct(twist[j])  //
+                twist_dt[j] = twist_dt[j - 1].transform(frame[j])                                                //
+                              + Scalar<T>(velocity[j]) * joints[j]->getChildLink()->getAxis().commute(twist[j])  //
                               + Scalar<T>(acceleration[j]) * joints[j]->getChildLink()->getAxis();
 
                 ForwardIteration<T, dof, j + 1>::compute(joints, position, velocity, acceleration, joints[j]->getChildLink()->getCenterOfMass(),
@@ -50,8 +50,8 @@ namespace gafro::algorithm
 
                 twist[0] = Scalar<T>(velocity[0]) * joints[0]->getChildLink()->getAxis();
 
-                twist_dt[0] = E3i<T>(9.81)                                                                                 //
-                              + Scalar<T>(velocity[0]) * joints[0]->getChildLink()->getAxis().commutatorProduct(twist[0])  //
+                twist_dt[0] = E3i<T>(9.81)                                                                       //
+                              + Scalar<T>(velocity[0]) * joints[0]->getChildLink()->getAxis().commute(twist[0])  //
                               + Scalar<T>(acceleration[0]) * joints[0]->getChildLink()->getAxis();
 
                 ForwardIteration<T, dof, 1>::compute(joints, position, velocity, acceleration, joints[0]->getChildLink()->getCenterOfMass(), frame,

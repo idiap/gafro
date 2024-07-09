@@ -49,6 +49,19 @@ namespace gafro
     {}
 
     template <class T>
+    Inertia<T>::Inertia(const Eigen::Matrix<T, 3, 3> &t, const Eigen::Matrix<T, 3, 3> &r)
+    {
+        static T zero = TypeTraits<T>::Zero();
+
+        this->getCoefficient(0, 0) = InertiaElement<T>({ t.coeff(0, 0), t.coeff(0, 1), zero, t.coeff(0, 2), zero, zero });    // 01
+        this->getCoefficient(0, 1) = InertiaElement<T>({ t.coeff(1, 0), t.coeff(1, 1), zero, t.coeff(1, 2), zero, zero });    // 02
+        this->getCoefficient(0, 2) = InertiaElement<T>({ zero, zero, r.coeff(2, 2), zero, -r.coeff(1, 2), r.coeff(0, 2) });   // 12
+        this->getCoefficient(0, 3) = InertiaElement<T>({ t.coeff(2, 0), t.coeff(2, 1), zero, t.coeff(2, 2), zero, zero });    // 03
+        this->getCoefficient(0, 4) = InertiaElement<T>({ zero, zero, -r.coeff(2, 1), zero, r.coeff(1, 1), -r.coeff(0, 1) });  // 13
+        this->getCoefficient(0, 5) = InertiaElement<T>({ zero, zero, r.coeff(2, 0), zero, -r.coeff(1, 0), r.coeff(0, 0) });   // 23
+    }
+
+    template <class T>
     Inertia<T>::Inertia(const std::array<InertiaElement<T>, 6> &elements)
     {
         this->setCoefficient(0, 0, elements[0]);
@@ -58,6 +71,10 @@ namespace gafro
         this->setCoefficient(0, 4, elements[4]);
         this->setCoefficient(0, 5, elements[5]);
     }
+
+    template <class T>
+    Inertia<T>::Inertia(const Base &base) : Base(base)
+    {}
 
     template <class T>
     template <class S>
@@ -102,6 +119,25 @@ namespace gafro
                          -(getElement01() | twist).template get<blades::scalar>(),  //
                          -(getElement02() | twist).template get<blades::scalar>(),  //
                          -(getElement03() | twist).template get<blades::scalar>());
+    }
+
+    template <class T>
+    Twist<T> Inertia<T>::operator()(const Wrench<T> &wrench) const
+    {
+        typename Base::Matrix inverse_matrix = getTensor().inverse();
+
+        Wrench<T> transformed_wrench = typename Wrench<T>::Parameters(inverse_matrix * wrench.vector());
+
+        Twist<T> twist;
+
+        twist.template set<blades::e23>(transformed_wrench.template get<blades::e23>());
+        twist.template set<blades::e13>(transformed_wrench.template get<blades::e13>());
+        twist.template set<blades::e12>(transformed_wrench.template get<blades::e12>());
+        twist.template set<blades::e1i>(transformed_wrench.template get<blades::e01>());
+        twist.template set<blades::e2i>(transformed_wrench.template get<blades::e02>());
+        twist.template set<blades::e3i>(transformed_wrench.template get<blades::e03>());
+
+        return twist;
     }
 
     template <class T>
@@ -179,10 +215,32 @@ namespace gafro
     }
 
     template <class T>
+    const typename Inertia<T>::Base &Inertia<T>::getMultivectorMatrix() const
+    {
+        return *this;
+    }
+
+    template <class T>
     Inertia<T> Inertia<T>::Zero()
     {
         return Inertia(TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(),
                        TypeTraits<T>::Zero(), TypeTraits<T>::Zero());
+    }
+
+    template <class T>
+    Inertia<T> Inertia<T>::Random()
+    {
+        Eigen::Vector<T, 7> values = Eigen::Vector<T, 7>::Random().array().abs();
+
+        return Inertia<T>(values[0], values[1], values[2], values[3], values[4], values[5], values[6]);
+    }
+
+    template <class T>
+    Inertia<T> Inertia<T>::RandomDiagonal()
+    {
+        Eigen::Vector<T, 4> values = Eigen::Vector<T, 4>::Random().array().abs();
+
+        return Inertia<T>(values[0], values[1], 0.0, 0.0, values[2], 0.0, values[3]);
     }
 
     template <class T>

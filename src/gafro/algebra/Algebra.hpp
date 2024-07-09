@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cmath>
-#include <gafro/algebra/util/Bitset.hpp>
+#include <gafro/algebra/Bitset.hpp>
 
 namespace gafro
 {
@@ -172,11 +172,14 @@ namespace gafro
         class InnerProduct;
 
         template <class T>
+        using Scalar = Multivector<T, 0>;
+
+        template <class T>
         using Pseudoscalar = Multivector<T, dim - 1>;
     };
 
 }  // namespace gafro
 
-#include <gafro/algebra/expressions/GeometricProductCayleyTable.hpp>
-#include <gafro/algebra/expressions/InnerProductCayleyTable.hpp>
-#include <gafro/algebra/expressions/OuterProductCayleyTable.hpp>
+#include <gafro/algebra/GeometricProductCayleyTable.hpp>
+#include <gafro/algebra/InnerProductCayleyTable.hpp>
+#include <gafro/algebra/OuterProductCayleyTable.hpp>

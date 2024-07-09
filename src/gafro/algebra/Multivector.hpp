@@ -28,7 +28,7 @@
 //
 #include <gafro/algebra/AbstractMultivector.hpp>
 #include <gafro/algebra/Algebra.hpp>
-#include <gafro/algebra/util/Bitset.hpp>
+#include <gafro/algebra/Bitset.hpp>
 
 namespace gafro
 {
@@ -117,6 +117,11 @@ namespace gafro
         Multivector &operator=(const Expression<Derived, Other> &expression);
 
         Multivector operator-() const;
+
+        Multivector operator*(const T &scalar) const;
+
+        Multivector operator/(const T &scalar) const;
+
         //
 
         void setParameters(Parameters &&parameters);
@@ -191,6 +196,13 @@ namespace gafro
             return parameters_.coeff(map<blade>());
         }
 
+        template <int blade>
+            requires(has(blade))  //
+        Multivector<T, blade> getBlade() const
+        {
+            return typename Algebra<M>::template Multivector<T, blade>((Eigen::Matrix<T, 1, 1>() << this->template get<blade>()).finished());
+        }
+
       public:
         //
 
@@ -206,19 +218,23 @@ namespace gafro
 
         //
 
+        auto square() const;
+
+        //
+
         template <class Other>
         Other cast() const;
 
         template <class M2>
-        CommutatorProduct<Multivector, M2> commutatorProduct(const M2 &multivector) const;
+        CommutatorProduct<Multivector, M2> commute(const M2 &multivector) const;
 
         //
 
-        // template <class t>
-        // using M = Multivector<t, index...>;
+        template <class t>
+        using MV = Multivector<t, index...>;
 
-        // template <int rows, int cols>
-        // using Matrix = MultivectorMatrix<T, M, rows, cols>;
+        template <int rows, int cols>
+        using Matrix = MultivectorMatrix<T, MV, rows, cols>;
 
         // template <int rows, int cols>
         // static Matrix<rows, cols> CreateMatrix()

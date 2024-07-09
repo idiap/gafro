@@ -25,7 +25,7 @@ namespace gafro
 {
 
     template <class T>
-    Joint<T>::Joint(Type type) : type_(type), parent_link_(nullptr), child_link_(nullptr)
+    Joint<T>::Joint(Type type) : type_(type), parent_link_(nullptr), child_link_(nullptr), index_(-1)
     {}
 
     template <class T>
@@ -43,6 +43,7 @@ namespace gafro
         limits_ = std::move(other.limits_);
         parent_link_ = std::move(other.parent_link_);
         child_link_ = std::move(other.child_link_);
+        index_ = other.index_;
 
         return *this;
     }
@@ -82,6 +83,12 @@ namespace gafro
     }
 
     template <class T>
+    void Joint<T>::setIndex(const int &index)
+    {
+        index_ = index;
+    }
+
+    template <class T>
     const std::string &Joint<T>::getName() const
     {
         return name_;
@@ -115,6 +122,12 @@ namespace gafro
     const Link<T> *Joint<T>::getChildLink() const
     {
         return child_link_;
+    }
+
+    template <class T>
+    const int &Joint<T>::getIndex() const
+    {
+        return index_;
     }
 
     template <class T>
