@@ -40,6 +40,10 @@ namespace gafro_control
         inertia_ = loadTensor("inertia");
         damping_ = loadTensor("damping");
         stiffness_ = loadTensor("stiffness");
+
+        residual_bivector_ = gafro::Motor<double>::Generator::Zero();
+        residual_twist_ = gafro::Twist<double>::Zero();
+        external_wrench_ = gafro::Wrench<double>::Zero();
     }
 
     template <int dof, class Reference>
