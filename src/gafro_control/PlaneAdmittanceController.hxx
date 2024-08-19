@@ -19,34 +19,37 @@
 
 #pragma once
 
-#include <gafro_control/LineImpedanceController.hpp>
-#include <gafro_control/RobotModel.hpp>
+#include <gafro_control/PlaneAdmittanceController.hpp>
 
 namespace gafro_control
 {
 
     template <int dof>
-    LineImpedanceController<dof>::LineImpedanceController(const sackmesser::Interface::Ptr &interface, const std::string &name)
-      : orwell::CartesianImpedanceController<dof, gafro::Line<double>>(interface, name)
+    PlaneAdmittanceController<dof>::PlaneAdmittanceController(const sackmesser::Interface::Ptr &interface, const std::string &name)
+      : AdmittanceController<dof, gafro::Plane<double>>(interface, name)
     {}
 
     template <int dof>
-    LineImpedanceController<dof>::~LineImpedanceController() = default;
-
-    template <int dof>
-    void LineImpedanceController<dof>::computeStateError()
+    void PlaneAdmittanceController<dof>::computeResiduals()
     {
         auto robot_model = std::dynamic_pointer_cast<gafro_control::RobotModel<dof>>(this->getRobotModel());
 
         gafro::Motor<double> ee_motor = robot_model->getEEMotor().reverse();
 
-        gafro::Line<double> target_line = ee_motor.apply(this->getReference());
+        gafro::Plane<double> target_plane = ee_motor.apply(this->getReference());
 
-        gafro::Motor<double> residual_motor = gafro::Line<double>::Z().getMotor(target_line);
+        gafro::Motor<double> residual_motor = target_plane.computeMotor(gafro::Plane<double>::XZ());
 
-        this->setPositionError(residual_motor.log().vector());
-        this->setVelocityError(-robot_model->getEETwist().vector());
-        // this->setAccelerationError(gafro::Line<double>::Z().vector());
+        this->setResidualBivector(residual_motor.log());
+        this->setResidualTwist(robot_model->getEETwist());
+
+        reference_frame_ = robot_model->getEEMotor();
+    }
+
+    template <int dof>
+    gafro::Motor<double> PlaneAdmittanceController<dof>::getReferenceFrame()
+    {
+        return reference_frame_;
     }
 
 }  // namespace gafro_control

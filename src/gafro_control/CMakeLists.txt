@@ -35,10 +35,14 @@ if (${orwell_FOUND})
                 RobotModel.hxx
                 LineImpedanceController.hpp
                 LineImpedanceController.hxx
-                MotorAdmittanceController.hpp
-                MotorAdmittanceController.hxx
                 AdmittanceController.hpp
                 AdmittanceController.hxx
+                MotorAdmittanceController.hpp
+                MotorAdmittanceController.hxx
+                LineAdmittanceController.hpp
+                LineAdmittanceController.hxx
+                PlaneAdmittanceController.hpp
+                PlaneAdmittanceController.hxx
             DESTINATION
                 ${GAFRO_PREFIX_INCLUDE}/gafro_control
             COMPONENT
