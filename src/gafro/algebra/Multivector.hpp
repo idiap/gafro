@@ -39,10 +39,19 @@ namespace gafro
     class Reverse;
 
     template <class M>
+    class Conjugate;
+
+    template <class M>
+    class SharpConjugate;
+
+    template <class M>
     class Inverse;
 
     template <class M>
     class Dual;
+
+    template <class M>
+    class DualPoincare;
 
     template <class M1, class M2>
     class CommutatorProduct;
@@ -66,6 +75,8 @@ namespace gafro
         constexpr static int size = Bitset<MAlgebra::dim, index...>().size();
 
         using Parameters = Eigen::Matrix<T, size, 1>;
+
+        using PoincareDual = Algebra<M>::Multivector<T, MAlgebra::BladeBitmap::template getPoincareDual<index>()...>;
 
         //
 
@@ -138,9 +149,15 @@ namespace gafro
 
         Reverse<Multivector> reverse() const;
 
+        Conjugate<Multivector> conjugate() const;
+
+        SharpConjugate<Multivector> sharpConjugate() const;
+
         Inverse<Multivector> inverse() const;
 
         Dual<Multivector> dual() const;
+
+        DualPoincare<Multivector> dualPoincare() const;
 
         //
 
@@ -226,7 +243,10 @@ namespace gafro
         Other cast() const;
 
         template <class M2>
-        CommutatorProduct<Multivector, M2> commute(const M2 &multivector) const;
+        auto commute(const M2 &multivector) const;
+
+        template <class M2>
+        auto anticommute(const M2 &multivector) const;
 
         //
 
