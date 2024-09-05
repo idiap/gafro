@@ -304,7 +304,6 @@ namespace gafro
     auto Algebra<M>::Multivector<T, index...>::commute(const M2 &multivector) const
     {
         return 0.5 * ((*this) * multivector - multivector * (*this)).evaluate();
-        // return CommutatorProduct<typename Algebra<M>::template Multivector<T, index...>, M2>(*this, multivector);
     }
 
     template <class M>
