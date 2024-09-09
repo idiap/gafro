@@ -87,6 +87,42 @@ namespace gafro
                 return 0;
             }
 
+            template <int i, int d = M::dim - 1>
+            constexpr static int getNegativeGrade()
+            {
+                if constexpr (d > -1 && i != 0)
+                {
+                    if constexpr (i & (1 << d) && Metric::template get<d, d>() == -1.0)
+                    {
+                        return 1 + getZeroGrade<i, d - 1>();
+                    }
+                    else
+                    {
+                        return getZeroGrade<i, d - 1>();
+                    }
+                }
+
+                return 0;
+            }
+
+            template <int i, int d = M::dim - 1>
+            constexpr static int getZeroGrade()
+            {
+                if constexpr (d > -1 && i != 0)
+                {
+                    if constexpr (i & (1 << d) && Metric::template get<d, d>() == 0.0)
+                    {
+                        return 1 + getZeroGrade<i, d - 1>();
+                    }
+                    else
+                    {
+                        return getZeroGrade<i, d - 1>();
+                    }
+                }
+
+                return 0;
+            }
+
             template <int b1, int b2>
             constexpr static int getGrade()
             {
@@ -167,6 +203,12 @@ namespace gafro
                 // even number of swaps -> return 1
                 // odd number of swaps -> return -1
                 return ((sum & 1) == 0) ? 1.0 : -1.0;
+            }
+
+            template <int blade>
+            constexpr static int getPoincareDual()
+            {
+                return blade ^ (dim - 1);
             }
         };
 

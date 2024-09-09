@@ -52,9 +52,8 @@ function(register_target TARGET INCLUDES_VAR LIBRARIES_VAR)
     # Export to caller.
     set(${LIBRARIES_VAR} ${${LIBRARIES_VAR}} PARENT_SCOPE)
 
-  else(TARGET ${TARGET})
-    message(SEND_ERROR "${TARGET} not found")
   endif(TARGET ${TARGET})
 endfunction(register_target)
 
 register_target(gafro::gafro gafro_INCLUDE_DIRS gafro_LIBRARIES)
+register_target(gafro::gafro_control gafro_control_INCLUDE_DIRS gafro_control_LIBRARIES)

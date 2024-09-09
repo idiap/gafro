@@ -5,6 +5,8 @@ default:
   tags:
     - linux
     - docker
+    - gitlab-org
+    - gitlab-org-docker
 
 
 stages:

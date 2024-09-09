@@ -3,6 +3,8 @@ target_sources(${PROJECT_NAME}
 )
 
 add_subdirectory(cga)
+add_subdirectory(dqa)
+add_subdirectory(pga)
 
 # Only do that when using the gafro source code directly, not from a submodule
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
@@ -43,8 +45,11 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
             OuterProductCayleyTable.hpp
 
             Reverse.hpp
+            Conjugate.hpp
+            SharpConjugate.hpp
             Inverse.hpp
             Dual.hpp
+            DualPoincare.hpp
 
             SandwichProduct.hpp
             CommutatorProduct.hpp
@@ -52,6 +57,9 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
             TypeTraits.hpp
             Bitset.hpp
+
+            dqa.hpp
+            pga.hpp
         DESTINATION
             ${GAFRO_PREFIX_INCLUDE}/gafro/algebra
         COMPONENT

@@ -120,7 +120,7 @@ namespace gafro
             return 0;
         }
 
-        constexpr static bool test(int k)
+        constexpr static bool test(int /*k*/)
         {
             return false;
         }
@@ -154,7 +154,7 @@ namespace gafro
     }
 
     template <int dim, int... i, int... j>
-    constexpr auto operator|(const Bitset<dim, i...> &b1, const Bitset<dim, j...> &b2)
+    constexpr auto operator|(const Bitset<dim, i...> &, const Bitset<dim, j...> &)
     {
         return Bitset<dim, i..., j...>();
     }

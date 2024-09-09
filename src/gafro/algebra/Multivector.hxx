@@ -22,9 +22,12 @@
 #include <gafro/algebra/Assign.hpp>
 #include <gafro/algebra/Cast.hpp>
 #include <gafro/algebra/CommutatorProduct.hpp>
+#include <gafro/algebra/Conjugate.hpp>
 #include <gafro/algebra/Dual.hpp>
+#include <gafro/algebra/DualPoincare.hpp>
 #include <gafro/algebra/Inverse.hpp>
 #include <gafro/algebra/Reverse.hpp>
+#include <gafro/algebra/SharpConjugate.hpp>
 //
 #include <gafro/algebra/Multivector.hpp>
 
@@ -125,6 +128,20 @@ namespace gafro
 
     template <class M>
     template <class T, int... index>
+    Conjugate<typename Algebra<M>::template Multivector<T, index...>> Algebra<M>::Multivector<T, index...>::conjugate() const
+    {
+        return Conjugate<typename Algebra<M>::template Multivector<T, index...>>(*this);
+    }
+
+    template <class M>
+    template <class T, int... index>
+    SharpConjugate<typename Algebra<M>::template Multivector<T, index...>> Algebra<M>::Multivector<T, index...>::sharpConjugate() const
+    {
+        return SharpConjugate<typename Algebra<M>::template Multivector<T, index...>>(*this);
+    }
+
+    template <class M>
+    template <class T, int... index>
     Inverse<typename Algebra<M>::template Multivector<T, index...>> Algebra<M>::Multivector<T, index...>::inverse() const
     {
         return Inverse<typename Algebra<M>::template Multivector<T, index...>>(*this);
@@ -135,6 +152,13 @@ namespace gafro
     Dual<typename Algebra<M>::template Multivector<T, index...>> Algebra<M>::Multivector<T, index...>::dual() const
     {
         return Dual<typename Algebra<M>::template Multivector<T, index...>>(*this);
+    }
+
+    template <class M>
+    template <class T, int... index>
+    DualPoincare<typename Algebra<M>::template Multivector<T, index...>> Algebra<M>::Multivector<T, index...>::dualPoincare() const
+    {
+        return DualPoincare<typename Algebra<M>::template Multivector<T, index...>>(*this);
     }
 
     // OPERATORS
@@ -277,11 +301,17 @@ namespace gafro
     template <class M>
     template <class T, int... index>
     template <class M2>
-    CommutatorProduct<typename Algebra<M>::template Multivector<T, index...>, M2> Algebra<M>::Multivector<T, index...>::commute(
-      const M2 &multivector) const
+    auto Algebra<M>::Multivector<T, index...>::commute(const M2 &multivector) const
     {
-        // return (*this) * multivector - multivector * (*this);
-        return CommutatorProduct<typename Algebra<M>::template Multivector<T, index...>, M2>(*this, multivector);
+        return 0.5 * ((*this) * multivector - multivector * (*this)).evaluate();
+    }
+
+    template <class M>
+    template <class T, int... index>
+    template <class M2>
+    auto Algebra<M>::Multivector<T, index...>::anticommute(const M2 &multivector) const
+    {
+        return 0.5 * ((*this) * multivector + multivector * (*this)).evaluate();
     }
 
     //
