@@ -27,6 +27,7 @@
 #include <gafro/algebra/AbstractExpression.hxx>
 #include <gafro/algebra/CommutatorProduct.hpp>
 #include <gafro/algebra/GeometricProduct.hpp>
+#include <gafro/algebra/Grade.hpp>
 #include <gafro/algebra/InnerProduct.hpp>
 #include <gafro/algebra/OuterProduct.hpp>
 #include <gafro/algebra/Reflection.hpp>
@@ -44,6 +45,7 @@
 #include <gafro/algebra/cga/Point.hxx>
 #include <gafro/algebra/cga/PointPair.hxx>
 #include <gafro/algebra/cga/Sphere.hxx>
+#include <gafro/algebra/cga/TangentVector.hxx>
 #include <gafro/algebra/cga/Vector.hxx>
 //
 #include <gafro/algebra/cga/Motor.hxx>

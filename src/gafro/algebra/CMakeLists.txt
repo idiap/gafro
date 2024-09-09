@@ -9,6 +9,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     install(
         FILES
             Algebra.hpp
+            Grade.hpp
 
             AbstractMultivector.hpp
             AbstractMultivector.hxx

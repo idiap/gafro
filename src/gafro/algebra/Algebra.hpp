@@ -63,6 +63,14 @@ namespace gafro
         template <class T, int... index>
         class Multivector;
 
+      private:
+        template <class T, int grade>
+        class GradeConstructor;
+
+      public:
+        template <class T, int grade>
+        using Grade = typename GradeConstructor<T, grade>::Type;
+
         constexpr static int dim = math::pow2<M::dim>();
 
         class BladeBitmap
