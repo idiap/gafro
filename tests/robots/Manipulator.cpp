@@ -220,59 +220,59 @@ TEST_CASE("Manipulator configuration 1", "[Manipulator]")
         {
             SECTION("Point")
             {
-                // Eigen::Vector<double, 3> position({ 0.0, M_PI / 2.0, 0.0 });
+                Eigen::Vector<double, 3> position({ 0.0, M_PI / 2.0, 0.0 });
 
-                // Point<double> primitive(1.0, 0.0, 0.0);
-                // SandwichProduct<Point<double>, Motor<double>>::Type::template Matrix<1, 3> jacobian =
-                //   manipulator.getEEPrimitiveJacobian(position, primitive);
+                Point<double> primitive(1.0, 0.0, 0.0);
+                SandwichProduct<Point<double>, Motor<double>>::Type::template Matrix<1, 3> jacobian =
+                  manipulator.getEEPrimitiveJacobian(position, primitive);
 
-                // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e1>() == Approx(-2.0));
-                // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e2>() == Approx(-1.0));
-                // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e3>() == Approx(0.0).margin(1e-6));
-                // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::ei>() == Approx(-1.0));
-                // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e0>() == Approx(0.0).margin(1e-6));
+                REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e1>() == Approx(-2.0));
+                REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e2>() == Approx(-1.0));
+                REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e3>() == Approx(0.0).margin(1e-6));
+                REQUIRE(jacobian.getCoefficient(0, 0).get<blades::ei>() == Approx(-1.0));
+                REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e0>() == Approx(0.0).margin(1e-6));
 
-                // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e1>() == Approx(-1.0));
-                // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e2>() == Approx(-1.0));
-                // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e3>() == Approx(0.0).margin(1e-6));
-                // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::ei>() == Approx(-2.0));
-                // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e0>() == Approx(0.0).margin(1e-6));
+                REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e1>() == Approx(-1.0));
+                REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e2>() == Approx(-1.0));
+                REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e3>() == Approx(0.0).margin(1e-6));
+                REQUIRE(jacobian.getCoefficient(0, 1).get<blades::ei>() == Approx(-2.0));
+                REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e0>() == Approx(0.0).margin(1e-6));
 
-                // REQUIRE(jacobian.getCoefficient(0, 2).get<blades::e1>() == Approx(-1.0));
-                // REQUIRE(jacobian.getCoefficient(0, 2).get<blades::e2>() == Approx(0.0).margin(1e-6));
-                // REQUIRE(jacobian.getCoefficient(0, 2).get<blades::e3>() == Approx(0.0).margin(1e-6));
-                // REQUIRE(jacobian.getCoefficient(0, 2).get<blades::ei>() == Approx(1.0));
-                // REQUIRE(jacobian.getCoefficient(0, 2).get<blades::e0>() == Approx(0.0).margin(1e-6));
+                REQUIRE(jacobian.getCoefficient(0, 2).get<blades::e1>() == Approx(-1.0));
+                REQUIRE(jacobian.getCoefficient(0, 2).get<blades::e2>() == Approx(0.0).margin(1e-6));
+                REQUIRE(jacobian.getCoefficient(0, 2).get<blades::e3>() == Approx(0.0).margin(1e-6));
+                REQUIRE(jacobian.getCoefficient(0, 2).get<blades::ei>() == Approx(1.0));
+                REQUIRE(jacobian.getCoefficient(0, 2).get<blades::e0>() == Approx(0.0).margin(1e-6));
             }
 
             SECTION("Line")
             {
-                // Eigen::Vector<double, 3> position({ 0.0, M_PI / 2.0, 0.0 });
+                Eigen::Vector<double, 3> position({ 0.0, M_PI / 2.0, 0.0 });
 
-                // Line<double> primitive(Point<double>(0.0, 0.0, 0.0), Point<double>(1.0, 0.0, 0.0));
-                // SandwichProduct<Line<double>, Motor<double>>::Type::template Matrix<1, 3> jacobian =
-                //   manipulator.getEEPrimitiveJacobian(position, primitive);
+                Line<double> primitive(Point<double>(0.0, 0.0, 0.0), Point<double>(1.0, 0.0, 0.0));
+                SandwichProduct<Line<double>, Motor<double>>::Type::template Matrix<1, 3> jacobian =
+                  manipulator.getEEPrimitiveJacobian(position, primitive);
 
-                // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e12i>() == Approx(1.0));
-                // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e13i>() == Approx(0.0).margin(1e-6));
-                // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e23i>() == Approx(0.0).margin(1e-6));
-                // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e01i>() == Approx(-1.0));
-                // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e02i>() == Approx(0.0).margin(1e-6));
-                // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e03i>() == Approx(0.0).margin(1e-6));
+                REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e12i>() == Approx(1.0));
+                REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e13i>() == Approx(0.0).margin(1e-6));
+                REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e23i>() == Approx(0.0).margin(1e-6));
+                REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e01i>() == Approx(-1.0));
+                REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e02i>() == Approx(0.0).margin(1e-6));
+                REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e03i>() == Approx(0.0).margin(1e-6));
 
-                // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e12i>() == Approx(2.0));
-                // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e13i>() == Approx(0.0).margin(1e-6));
-                // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e23i>() == Approx(0.0).margin(1e-6));
-                // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e01i>() == Approx(-1.0));
-                // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e02i>() == Approx(0.0).margin(1e-6));
-                // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e03i>() == Approx(0.0).margin(1e-6));
+                REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e12i>() == Approx(2.0));
+                REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e13i>() == Approx(0.0).margin(1e-6));
+                REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e23i>() == Approx(0.0).margin(1e-6));
+                REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e01i>() == Approx(-1.0));
+                REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e02i>() == Approx(0.0).margin(1e-6));
+                REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e03i>() == Approx(0.0).margin(1e-6));
 
-                // REQUIRE(jacobian.getCoefficient(0, 2).get<blades::e12i>() == Approx(2.0));
-                // REQUIRE(jacobian.getCoefficient(0, 2).get<blades::e13i>() == Approx(0.0).margin(1e-6));
-                // REQUIRE(jacobian.getCoefficient(0, 2).get<blades::e23i>() == Approx(0.0).margin(1e-6));
-                // REQUIRE(jacobian.getCoefficient(0, 2).get<blades::e01i>() == Approx(-1.0));
-                // REQUIRE(jacobian.getCoefficient(0, 2).get<blades::e02i>() == Approx(0.0).margin(1e-6));
-                // REQUIRE(jacobian.getCoefficient(0, 2).get<blades::e03i>() == Approx(0.0).margin(1e-6));
+                REQUIRE(jacobian.getCoefficient(0, 2).get<blades::e12i>() == Approx(2.0));
+                REQUIRE(jacobian.getCoefficient(0, 2).get<blades::e13i>() == Approx(0.0).margin(1e-6));
+                REQUIRE(jacobian.getCoefficient(0, 2).get<blades::e23i>() == Approx(0.0).margin(1e-6));
+                REQUIRE(jacobian.getCoefficient(0, 2).get<blades::e01i>() == Approx(-1.0));
+                REQUIRE(jacobian.getCoefficient(0, 2).get<blades::e02i>() == Approx(0.0).margin(1e-6));
+                REQUIRE(jacobian.getCoefficient(0, 2).get<blades::e03i>() == Approx(0.0).margin(1e-6));
             }
         }
 
@@ -623,44 +623,44 @@ TEST_CASE("Manipulator configuration 2", "[Manipulator]")
         {
             Eigen::Vector<double, 2> position({ 0.0, M_PI / 2.0 });
 
-            // Point<double> primitive(1.0, 0.0, 0.0);
-            // SandwichProduct<Point<double>, Motor<double>>::Type::template Matrix<1, 2> jacobian =
-            //   manipulator.getEEPrimitiveJacobian(position, primitive);
+            Point<double> primitive(1.0, 0.0, 0.0);
+            SandwichProduct<Point<double>, Motor<double>>::Type::template Matrix<1, 2> jacobian =
+              manipulator.getEEPrimitiveJacobian(position, primitive);
 
-            // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e1>() == Approx(-2.0));
-            // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e2>() == Approx(-1.0));
-            // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e3>() == Approx(0.0));
-            // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::ei>() == Approx(-1.0));
-            // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e0>() == Approx(0.0));
+            REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e1>() == Approx(-2.0));
+            REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e2>() == Approx(-1.0));
+            REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e3>() == Approx(0.0));
+            REQUIRE(jacobian.getCoefficient(0, 0).get<blades::ei>() == Approx(-1.0));
+            REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e0>() == Approx(0.0));
 
-            // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e1>() == Approx(-1.0));
-            // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e2>() == Approx(-1.0));
-            // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e3>() == Approx(0.0));
-            // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::ei>() == Approx(-2.0));
-            // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e0>() == Approx(0.0));
+            REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e1>() == Approx(-1.0));
+            REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e2>() == Approx(-1.0));
+            REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e3>() == Approx(0.0));
+            REQUIRE(jacobian.getCoefficient(0, 1).get<blades::ei>() == Approx(-2.0));
+            REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e0>() == Approx(0.0));
         }
 
         SECTION("Line")
         {
-            // Eigen::Vector<double, 2> position({ 0.0, M_PI / 2.0 });
+            Eigen::Vector<double, 2> position({ 0.0, M_PI / 2.0 });
 
-            // Line<double> primitive(Point<double>(0.0, 0.0, 0.0), Point<double>(1.0, 0.0, 0.0));
-            // SandwichProduct<Line<double>, Motor<double>>::Type::template Matrix<1, 2> jacobian =
-            //   manipulator.getEEPrimitiveJacobian(position, primitive);
+            Line<double> primitive(Point<double>(0.0, 0.0, 0.0), Point<double>(1.0, 0.0, 0.0));
+            SandwichProduct<Line<double>, Motor<double>>::Type::template Matrix<1, 2> jacobian =
+              manipulator.getEEPrimitiveJacobian(position, primitive);
 
-            // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e12i>() == Approx(1.0));
-            // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e13i>() == Approx(0.0).margin(1e-6));
-            // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e23i>() == Approx(0.0).margin(1e-6));
-            // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e01i>() == Approx(-1.0));
-            // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e02i>() == Approx(0.0).margin(1e-6));
-            // REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e03i>() == Approx(0.0).margin(1e-6));
+            REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e12i>() == Approx(1.0));
+            REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e13i>() == Approx(0.0).margin(1e-6));
+            REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e23i>() == Approx(0.0).margin(1e-6));
+            REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e01i>() == Approx(-1.0));
+            REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e02i>() == Approx(0.0).margin(1e-6));
+            REQUIRE(jacobian.getCoefficient(0, 0).get<blades::e03i>() == Approx(0.0).margin(1e-6));
 
-            // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e12i>() == Approx(2.0));
-            // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e13i>() == Approx(0.0).margin(1e-6));
-            // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e23i>() == Approx(0.0).margin(1e-6));
-            // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e01i>() == Approx(-1.0));
-            // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e02i>() == Approx(0.0).margin(1e-6));
-            // REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e03i>() == Approx(0.0).margin(1e-6));
+            REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e12i>() == Approx(2.0));
+            REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e13i>() == Approx(0.0).margin(1e-6));
+            REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e23i>() == Approx(0.0).margin(1e-6));
+            REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e01i>() == Approx(-1.0));
+            REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e02i>() == Approx(0.0).margin(1e-6));
+            REQUIRE(jacobian.getCoefficient(0, 1).get<blades::e03i>() == Approx(0.0).margin(1e-6));
         }
     }
 

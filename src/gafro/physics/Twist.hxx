@@ -59,7 +59,7 @@ namespace gafro
     template <class T>
     Wrench<T> Twist<T>::commute(const Wrench<T> &wrench) const
     {
-        return Base::commute(wrench);
+        return Base::commute(wrench).template cast<Wrench<T>>();
     }
 
     template <class T>
