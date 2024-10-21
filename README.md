@@ -1,5 +1,8 @@
 # Geometric Algebra For RObotics
 
+![Github actions status](https://github.com/idiap/gafro/actions/workflows/build.yaml/badge.svg)
+![Gitlab status](https://gitlab.com/gafro/gafro/badges/main/pipeline.svg?ignore_skipped=true&key_text=Gitlab%20build&key_width=80)
+
 This library provides a geometric algebra tools targeted towards robotics applications. It includes various computations for the kinematics and dynamics of serial manipulators as well as optimal control.  
 
 Please visit https://gitlab.com/gafro in order to find the entire *gafro* software stack.

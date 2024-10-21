@@ -259,7 +259,7 @@ namespace gafro
     template <class T, int... index>
     typename Algebra<M>::template Multivector<T, index...> Algebra<M>::Multivector<T, index...>::operator*(const T &scalar) const
     {
-        Algebra<M>::template Scalar<T> s;
+        typename Algebra<M>::template Scalar<T> s;
 
         s.template set<0>(scalar);
 

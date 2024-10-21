@@ -1,12 +1,9 @@
-image: docker:latest
-
-
 default:
   tags:
-    - linux
-    - docker
-    - gitlab-org
     - gitlab-org-docker
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
 
 
 stages:
@@ -14,44 +11,13 @@ stages:
   - build
 
 
-
 variables:
   IMAGES_PREFIX: $CI_REGISTRY_IMAGE/env_
-
-
-.generate-minimal-dockerfile:
-  variables:
-    DOCKERFILE: "ci/Dockerfile"
-  services:
-    - docker:dind
-  before_script:
-    - mkdir -p ci
-    - |
-        cat <<EOT >> $DOCKERFILE
-          ARG BASE_IMAGE=gcc:13-bookworm
-          FROM \$BASE_IMAGE
-
-          RUN set -xe \
-            && apt-get update \
-            && apt-get install -y cmake
-
-          RUN set -xe \
-            && cd /tmp \
-            && wget https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz \
-            && tar xzf eigen-3.4.0.tar.gz \
-            && cd eigen-3.4.0 \
-            && mkdir build \
-            && cd build \
-            && cmake .. \
-            && make install \
-            && cd ../.. \
-            && rm -rf eigen-3.4.0.tar.gz eigen-3.4.0
-        EOT
+  DOCKERFILE: ".github/docker/Dockerfile"
 
 
 build-docker-images-gcc:
   stage: docker-images
-  extends: .generate-minimal-dockerfile
   variables:
     COMPILER: "gcc"
   script:
@@ -69,7 +35,6 @@ build-docker-images-gcc:
 
 build-docker-images-clang:
   stage: docker-images
-  extends: .generate-minimal-dockerfile
   variables:
     COMPILER: "clang"
   script:

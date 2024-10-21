@@ -32,12 +32,12 @@ namespace gafro
         template <int b1, int b2>
         struct Inner
         {
-            template <int i, int j, int lhs, int rhs, int sign>
+            template <int i, int j, int lhs, int rhs, int sign_>
             constexpr static std::pair<int, int> next()
             {
                 if constexpr (j == Metric::dim - 1 && i < Metric::dim - 1)
                 {
-                    return recurse<i + 1, 0, lhs, rhs, sign>();
+                    return recurse<i + 1, 0, lhs, rhs, sign_>();
                 }
                 else if constexpr (j == Metric::dim - 1 && i == Metric::dim - 1)
                 {
@@ -47,15 +47,15 @@ namespace gafro
                         return std::make_pair(lhs ^ rhs, 0);
                     }
 
-                    return std::make_pair(lhs ^ rhs, sign);
+                    return std::make_pair(lhs ^ rhs, sign_);
                 }
                 else
                 {
-                    return recurse<i, j + 1, lhs, rhs, sign>();
+                    return recurse<i, j + 1, lhs, rhs, sign_>();
                 }
             }
 
-            template <int i, int j, int lhs, int rhs, int sign>
+            template <int i, int j, int lhs, int rhs, int sign_>
             constexpr static std::pair<int, int> recurse()
             {
                 if (b1 == 0 || b2 == 0)
@@ -65,7 +65,7 @@ namespace gafro
 
                 if constexpr ((Metric::template get<i, j>() != 0.0) && (((b1 & (1 << i)) != 0) && ((b2 & (1 << j)) != 0)))
                 {
-                    constexpr int s = sign * Metric::template get<i, j>() *
+                    constexpr int s = sign_ * Metric::template get<i, j>() *
                                       math::pown<math::positive<Algebra<Metric>::BladeBitmap::template getRightShifts<(1 << i), lhs>()>() +
                                                  math::positive<Algebra<Metric>::BladeBitmap::template getLeftShifts<(1 << j), rhs>()>()>();
 
@@ -75,7 +75,7 @@ namespace gafro
                     return next<i, j, lhs2, rhs2, s>();
                 }
 
-                return next<i, j, lhs, rhs, sign>();
+                return next<i, j, lhs, rhs, sign_>();
             }
 
             constexpr static std::pair<int, double> result = recurse<0, 0, b1, b2, 1>();
