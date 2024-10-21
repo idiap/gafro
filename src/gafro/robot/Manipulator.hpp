@@ -79,9 +79,9 @@ namespace gafro
 
         //
 
-        KinematicChain<double> *getEEKinematicChain();
+        KinematicChain<T> *getEEKinematicChain();
 
-        const KinematicChain<double> *getEEKinematicChain() const;
+        const KinematicChain<T> *getEEKinematicChain() const;
 
         //
 
@@ -112,6 +112,8 @@ namespace gafro
         Vector getJointAccelerations(const Vector &position,  //
                                      const Vector &velocity,  //
                                      const Vector &torque) const;
+
+        Eigen::Matrix<T, dof, dof> getMassMatrix(const Eigen::Vector<T, dof> &position) const;
 
       private:
         std::string ee_joint_name_;

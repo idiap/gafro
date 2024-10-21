@@ -24,13 +24,13 @@
 namespace gafro_control
 {
 
-    template <int dof>
-    LineAdmittanceController<dof>::LineAdmittanceController(const sackmesser::Interface::Ptr &interface, const std::string &name)
-      : AdmittanceController<dof, gafro::Line<double>>(interface, name)
+    template <int dof, orwell::AdmittanceControllerType type>
+    LineAdmittanceController<dof, type>::LineAdmittanceController(const sackmesser::Interface::Ptr &interface, const std::string &name)
+      : AdmittanceController<dof, gafro::Line<double>, type>(interface, name)
     {}
 
-    template <int dof>
-    void LineAdmittanceController<dof>::computeResiduals()
+    template <int dof, orwell::AdmittanceControllerType type>
+    void LineAdmittanceController<dof, type>::computeResiduals()
     {
         auto robot_model = std::dynamic_pointer_cast<gafro_control::RobotModel<dof>>(this->getRobotModel());
 
@@ -46,8 +46,8 @@ namespace gafro_control
         reference_frame_ = robot_model->getEEMotor();
     }
 
-    template <int dof>
-    gafro::Motor<double> LineAdmittanceController<dof>::getReferenceFrame()
+    template <int dof, orwell::AdmittanceControllerType type>
+    gafro::Motor<double> LineAdmittanceController<dof, type>::getReferenceFrame()
     {
         return reference_frame_;
     }

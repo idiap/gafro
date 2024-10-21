@@ -43,11 +43,15 @@ namespace gafro
 
         void setAxis(const typename Motor<T>::Generator &axis);
 
+        void setMass(const T &mass);
+
         const Translator<T> &getCenterOfMass() const;
 
         const Inertia<T> &getInertia() const;
 
         const typename Motor<T>::Generator &getAxis() const;
+
+        const T &getMass() const;
 
       private:
         Translator<T> center_of_mass_;
@@ -55,5 +59,7 @@ namespace gafro
         Inertia<T> inertia_;
 
         typename Motor<T>::Generator axis_;
+
+        T mass_;
     };
 }  // namespace gafro

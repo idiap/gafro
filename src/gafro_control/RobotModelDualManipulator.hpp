@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <gafro/robot.hpp>
+#include <gafro/robot/DualManipulator.hpp>
 //
 #include <orwell/RobotModel.hpp>
 
@@ -27,12 +27,15 @@ namespace gafro_control
 {
 
     template <int dof>
-    class RobotModel : public orwell::RobotModel<dof>
+    class RobotModelDualManipulator : public orwell::RobotModel<dof>
     {
       public:
-        RobotModel(const std::shared_ptr<gafro::Manipulator<double, dof>> &manipulator);
+        RobotModelDualManipulator(const std::shared_ptr<gafro::DualManipulator<double, dof>> &manipulator);
 
-        virtual ~RobotModel();
+        RobotModelDualManipulator(const gafro::Manipulator<double, dof / 2> &manipulator, const gafro::Motor<double> &first_base_motor,
+                                  const gafro::Motor<double> &second_base_motor);
+
+        virtual ~RobotModelDualManipulator();
 
         using Vector = typename orwell::RobotModel<dof>::Vector;
 
@@ -48,13 +51,13 @@ namespace gafro_control
 
         const gafro::Twist<double> &getEETwist() const;
 
-        std::shared_ptr<gafro::Manipulator<double, dof>> getManipulator();
+        std::shared_ptr<gafro::DualManipulator<double, dof>> getManipulator();
 
         Vector computeForwardDynamics(const Vector &position, const Vector &velocity, const Vector &acceleration, const double &gravity);
 
       protected:
       private:
-        std::shared_ptr<gafro::Manipulator<double, dof>> manipulator_;
+        std::shared_ptr<gafro::DualManipulator<double, dof>> manipulator_;
 
         Eigen::Matrix<double, 6, dof> jacobian_;
 
@@ -63,12 +66,12 @@ namespace gafro_control
         gafro::Twist<double> ee_twist_;
 
       public:
-        using Ptr = std::shared_ptr<RobotModel>;
+        using Ptr = std::shared_ptr<RobotModelDualManipulator>;
 
-        template <template <class> class Manipulator, class... Args>
+        template <class... Args>
         static Ptr create(Args... args);
     };
 
 }  // namespace gafro_control
 
-#include <gafro_control/RobotModel.hxx>
+#include <gafro_control/RobotModelDualManipulator.hxx>
