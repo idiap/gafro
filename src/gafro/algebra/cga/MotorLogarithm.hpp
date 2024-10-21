@@ -85,6 +85,67 @@ namespace gafro
             }
         }
 
+        static Eigen::Matrix<T, 6, 8> getJacobian(const Motor<T> &motor)
+        {
+            T m1 = motor.vector().coeff(0, 0);
+            T m2 = motor.vector().coeff(3, 0);
+            T m3 = motor.vector().coeff(2, 0);
+            T m4 = motor.vector().coeff(1, 0);
+            T m5 = motor.vector().coeff(4, 0);
+            T m6 = motor.vector().coeff(5, 0);
+            T m7 = motor.vector().coeff(6, 0);
+            T m8 = motor.vector().coeff(7, 0);
+
+            Eigen::Matrix<T, 6, 8> jacobian = Eigen::Matrix<T, 6, 8>::Zero();
+
+            T factor1 = 0.0;
+            T factor2 = 0.0;
+
+            if (m1 != 1.0)
+            {
+                factor1 = -2.0 * (1.0 / (m1 * m1 - 1.0) + m1 * acos(m1) / pow(1.0 - m1 * m1, 1.5));
+                factor2 = -(2.0 * acos(m1) / sin(acos(m1)));
+            }
+
+            jacobian.coeffRef(0, 0) = factor1 * m4;
+            jacobian.coeffRef(0, 1) = factor2;
+
+            jacobian.coeffRef(1, 0) = factor1 * m3;
+            jacobian.coeffRef(1, 2) = factor2;
+
+            jacobian.coeffRef(2, 0) = factor1 * m2;
+            jacobian.coeffRef(2, 3) = factor2;
+
+            jacobian.coeffRef(3, 0) = -2.0 * m5;
+            jacobian.coeffRef(3, 1) = -2.0 * m6;
+            jacobian.coeffRef(3, 2) = -2.0 * m7;
+            jacobian.coeffRef(3, 3) = -2.0 * m8;
+            jacobian.coeffRef(3, 4) = -2.0 * m1;
+            jacobian.coeffRef(3, 5) = -2.0 * m4;
+            jacobian.coeffRef(3, 6) = -2.0 * m3;
+            jacobian.coeffRef(3, 7) = -2.0 * m2;
+
+            jacobian.coeffRef(4, 0) = -2.0 * m6;
+            jacobian.coeffRef(4, 1) = 2.0 * m5;
+            jacobian.coeffRef(4, 2) = 2.0 * m8;
+            jacobian.coeffRef(4, 3) = -2.0 * m7;
+            jacobian.coeffRef(4, 4) = 2.0 * m4;
+            jacobian.coeffRef(4, 5) = -2.0 * m1;
+            jacobian.coeffRef(4, 6) = -2.0 * m2;
+            jacobian.coeffRef(4, 7) = 2.0 * m3;
+
+            jacobian.coeffRef(5, 0) = -2.0 * m7;
+            jacobian.coeffRef(5, 1) = -2.0 * m8;
+            jacobian.coeffRef(5, 2) = 2.0 * m5;
+            jacobian.coeffRef(5, 3) = 2.0 * m6;
+            jacobian.coeffRef(5, 4) = 2.0 * m3;
+            jacobian.coeffRef(5, 5) = 2.0 * m2;
+            jacobian.coeffRef(5, 6) = -2.0 * m1;
+            jacobian.coeffRef(5, 7) = -2.0 * m4;
+
+            return jacobian;
+        }
+
       protected:
       private:
     };

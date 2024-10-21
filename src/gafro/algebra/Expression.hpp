@@ -82,6 +82,11 @@ namespace gafro
             return -evaluate();
         }
 
+        Type operator*(const double &scalar) const
+        {
+            return scalar * evaluate();
+        }
+
       protected:
       private:
     };
@@ -92,6 +97,12 @@ namespace gafro
         ostream << expression.evaluate();
 
         return ostream;
+    }
+
+    template <class Derived, class Result>
+    Result operator*(const double &scalar, const Expression<Derived, Result> &expression)
+    {
+        return scalar * expression.evaluate();
     }
 
 }  // namespace gafro

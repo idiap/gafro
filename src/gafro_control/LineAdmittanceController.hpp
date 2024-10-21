@@ -25,8 +25,8 @@
 namespace gafro_control
 {
 
-    template <int dof>
-    class LineAdmittanceController : public AdmittanceController<dof, gafro::Line<double>>
+    template <int dof, orwell::AdmittanceControllerType type>
+    class LineAdmittanceController : public AdmittanceController<dof, gafro::Line<double>, type>
     {
       public:
         LineAdmittanceController(const sackmesser::Interface::Ptr &interface, const std::string &name);
@@ -43,4 +43,7 @@ namespace gafro_control
 
 #include <gafro_control/LineAdmittanceController.hxx>
 
-REGISTER_CLASS(orwell::TorqueController<7>, gafro_control::LineAdmittanceController<7>, "line_admittance_controller")
+// REGISTER_CLASS(orwell::TorqueController<7>, gafro_control::LineAdmittanceController<7, orwell::AdmittanceControllerType::TORQUE>,
+//                "line_admittance_controller")
+// REGISTER_CLASS(orwell::PositionController<7>, gafro_control::LineAdmittanceController<7, orwell::AdmittanceControllerType::POSITION>,
+//                "line_admittance_controller")

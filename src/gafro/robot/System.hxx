@@ -655,9 +655,23 @@ namespace gafro
     }
 
     template <class T>
+    template <int dof>
+    Eigen::Matrix<T, dof, dof> System<T>::computeKinematicChainMassMatrix(const std::string &name, const Eigen::Vector<T, dof> &position) const
+    {
+        auto kinematic_chain = getKinematicChain(name);
+
+        if (dof != kinematic_chain->getDoF())
+        {
+            throw std::runtime_error("Incorrect number of DOF");
+        }
+
+        return kinematic_chain->computeMassMatrix(position);
+    }
+
+    template <class T>
     void System<T>::createKinematicChain(const std::string &joint_name)
     {
-        auto kinematic_chain = std::make_unique<KinematicChain<T>>();
+        auto kinematic_chain = std::make_unique<KinematicChain<T>>(joint_name);
 
         std::vector<const Joint<T> *> joints;
 

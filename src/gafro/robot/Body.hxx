@@ -53,6 +53,12 @@ namespace gafro
     }
 
     template <class T>
+    void Body<T>::setMass(const T &mass)
+    {
+        mass_ = mass;
+    }
+
+    template <class T>
     const Translator<T> &Body<T>::getCenterOfMass() const
     {
         return center_of_mass_;
@@ -68,6 +74,12 @@ namespace gafro
     const typename Motor<T>::Generator &Body<T>::getAxis() const
     {
         return axis_;
+    }
+
+    template <class T>
+    const T &Body<T>::getMass() const
+    {
+        return mass_;
     }
 
 }  // namespace gafro

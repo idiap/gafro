@@ -41,7 +41,9 @@ namespace gafro
 
     template <class M>
     template <class T, int... index>
-    Algebra<M>::Multivector<T, index...>::Multivector(const int &value) : Multivector(Parameters::Ones() * value)
+    Algebra<M>::Multivector<T, index...>::Multivector(const double &value)
+        requires(sizeof...(index) == 1)
+      : Multivector(Parameters::Ones() * value)
     {}
 
     template <class M>
@@ -303,7 +305,7 @@ namespace gafro
     template <class M2>
     auto Algebra<M>::Multivector<T, index...>::commute(const M2 &multivector) const
     {
-        return 0.5 * ((*this) * multivector - multivector * (*this)).evaluate();
+        return Scalar<T>((Eigen::Matrix<T, 1, 1>() << TypeTraits<T>::Value(0.5)).finished()) * ((*this) * multivector - multivector * (*this));
     }
 
     template <class M>
@@ -311,7 +313,7 @@ namespace gafro
     template <class M2>
     auto Algebra<M>::Multivector<T, index...>::anticommute(const M2 &multivector) const
     {
-        return 0.5 * ((*this) * multivector + multivector * (*this)).evaluate();
+        return Scalar<T>((Eigen::Matrix<T, 1, 1>() << TypeTraits<T>::Value(0.5)).finished()) * ((*this) * multivector + multivector * (*this));
     }
 
     //

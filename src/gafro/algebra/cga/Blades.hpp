@@ -77,8 +77,6 @@ namespace gafro
 
         Blade(const Base &other) : Base(other) {}
 
-        Blade(const T &value) : Base((Eigen::Matrix<T, 1, 1>() << value).finished()) {}
-
         virtual ~Blade() = default;
 
         using ConformalGeometricAlgebra::template Multivector<T, index>::blades;
@@ -104,8 +102,6 @@ namespace gafro
         using Base = typename Blade<T, index>::Base;
 
         Scalar() : Blade<T, index>(T(0.0)) {}
-
-        Scalar(const T &value) : Blade<T, index>(value) {}
 
         template <class E>
         Scalar(const Expression<E, Scalar> &expression) : Scalar(expression.template get<blades::scalar>())

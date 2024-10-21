@@ -48,8 +48,8 @@ namespace gafro_control
     }
 
     template <int dof>
-    RobotModel<dof>::Vector RobotModel<dof>::computeForwardDynamics(const Vector &position, const Vector &velocity, const Vector &acceleration,
-                                                                    const double &gravity)
+    typename RobotModel<dof>::Vector RobotModel<dof>::computeForwardDynamics(const Vector &position, const Vector &velocity,
+                                                                             const Vector &acceleration, const double &gravity)
     {
         return manipulator_->getJointTorques(position, velocity, acceleration, gravity);
     }
@@ -73,10 +73,10 @@ namespace gafro_control
     }
 
     template <int dof>
-    template <template <class> class Manipulator>
-    typename RobotModel<dof>::Ptr RobotModel<dof>::create()
+    template <template <class> class Manipulator, class... Args>
+    typename RobotModel<dof>::Ptr RobotModel<dof>::create(Args... args)
     {
-        return std::make_shared<RobotModel<dof>>(std::make_shared<Manipulator<double>>());
+        return std::make_shared<RobotModel<dof>>(std::make_shared<Manipulator<double>>(std::forward<Args>(args)...));
     }
 
 }  // namespace gafro_control

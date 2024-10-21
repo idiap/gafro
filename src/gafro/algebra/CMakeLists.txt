@@ -1,7 +1,3 @@
-target_sources(${PROJECT_NAME}
-    PRIVATE
-)
-
 add_subdirectory(cga)
 add_subdirectory(dqa)
 add_subdirectory(pga)
@@ -21,6 +17,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
             Operators.hxx
 
             MultivectorMatrix.hpp
+            MultivectorMatrix.hxx
 
             AbstractExpression.hpp
             AbstractExpression.hxx

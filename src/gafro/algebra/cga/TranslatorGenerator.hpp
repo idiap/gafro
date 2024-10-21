@@ -37,8 +37,6 @@ namespace gafro
 
         Generator(const Base &other);
 
-        Generator(const Generator &other);
-
         Generator(const Parameters &parameters);
 
         const T &x() const;

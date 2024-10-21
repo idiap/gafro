@@ -60,6 +60,11 @@ namespace gafro
     Motor<T>::Motor(const Rotor<T> &rotor) : Motor(Translator<T>(), rotor)
     {}
 
+    template <class T>
+    Motor<T>::Motor(const Eigen::Vector<T, 3> &position, const Eigen::Quaternion<T> &orientation)
+      : Motor<T>(Translator<T>::exp(position), Rotor<T>::fromQuaternion(orientation))
+    {}
+
     // OPERATORS
 
     template <class T>
@@ -111,68 +116,6 @@ namespace gafro
     typename Motor<T>::Logarithm Motor<T>::log() const
     {
         return Logarithm(*static_cast<const Motor<T> *>(this));
-    }
-
-    template <class T>
-    Eigen::Matrix<T, 6, 8> Motor<T>::logJacobian() const
-    {
-        const T &m1 = this->vector().coeff(0, 0);
-        const T &m2 = this->vector().coeff(3, 0);
-        const T &m3 = this->vector().coeff(2, 0);
-        const T &m4 = this->vector().coeff(1, 0);
-        const T &m5 = this->vector().coeff(4, 0);
-        const T &m6 = this->vector().coeff(5, 0);
-        const T &m7 = this->vector().coeff(6, 0);
-        const T &m8 = this->vector().coeff(7, 0);
-
-        Eigen::Matrix<T, 6, 8> jacobian = Eigen::Matrix<T, 6, 8>::Zero();
-
-        T factor1 = 0.0;
-        T factor2 = 0.0;
-
-        if (m1 != 1.0)
-        {
-            factor1 = -2.0 * (1.0 / (m1 * m1 - 1.0) + m1 * acos(m1) / pow(1.0 - m1 * m1, 1.5));
-            factor2 = -(2.0 * acos(m1) / sin(acos(m1)));
-        }
-
-        jacobian.coeffRef(0, 0) = factor1 * m2;
-        jacobian.coeffRef(0, 1) = factor2;
-
-        jacobian.coeffRef(1, 0) = factor1 * m3;
-        jacobian.coeffRef(1, 2) = factor2;
-
-        jacobian.coeffRef(2, 0) = factor1 * m4;
-        jacobian.coeffRef(2, 3) = factor2;
-
-        jacobian.coeffRef(3, 0) = -2.0 * m5;
-        jacobian.coeffRef(3, 1) = -2.0 * m8;
-        jacobian.coeffRef(3, 2) = -2.0 * m7;
-        jacobian.coeffRef(3, 3) = -2.0 * m6;
-        jacobian.coeffRef(3, 4) = -2.0 * m1;
-        jacobian.coeffRef(3, 5) = -2.0 * m4;
-        jacobian.coeffRef(3, 6) = -2.0 * m3;
-        jacobian.coeffRef(3, 7) = -2.0 * m2;
-
-        jacobian.coeffRef(4, 0) = -2.0 * m6;
-        jacobian.coeffRef(4, 1) = -2.0 * m7;
-        jacobian.coeffRef(4, 2) = 2.0 * m8;
-        jacobian.coeffRef(4, 3) = 2.0 * m5;
-        jacobian.coeffRef(4, 4) = 2.0 * m4;
-        jacobian.coeffRef(4, 5) = -2.0 * m1;
-        jacobian.coeffRef(4, 6) = -2.0 * m2;
-        jacobian.coeffRef(4, 7) = 2.0 * m3;
-
-        jacobian.coeffRef(5, 0) = -2.0 * m7;
-        jacobian.coeffRef(5, 1) = 2.0 * m6;
-        jacobian.coeffRef(5, 2) = 2.0 * m5;
-        jacobian.coeffRef(5, 3) = -2.0 * m8;
-        jacobian.coeffRef(5, 4) = 2.0 * m3;
-        jacobian.coeffRef(5, 5) = 2.0 * m2;
-        jacobian.coeffRef(5, 6) = -2.0 * m1;
-        jacobian.coeffRef(5, 7) = -2.0 * m4;
-
-        return jacobian;
     }
 
     template <class T>
