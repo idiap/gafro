@@ -22,6 +22,8 @@ target_compile_options(${PROJECT_NAME} INTERFACE "-Wpedantic")
 # target_compile_options(${PROJECT_NAME} INTERFACE "-Werror")
 target_compile_options(${PROJECT_NAME} INTERFACE "-fno-builtin")
 
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_20)
+
 add_subdirectory(algebra)
 add_subdirectory(physics)
 add_subdirectory(robot)
