@@ -68,3 +68,5 @@ namespace gafro
     };
 
 }  // namespace gafro
+
+#include <gafro/physics/Twist.hxx>
