@@ -77,6 +77,10 @@ namespace gafro
 
         Vector getRandomConfiguration() const;
 
+        Vector getJointLimitsMin() const;
+
+        Vector getJointLimitsMax() const;
+
         //
 
         KinematicChain<T> *getEEKinematicChain();

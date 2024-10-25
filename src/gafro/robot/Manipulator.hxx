@@ -105,6 +105,36 @@ namespace gafro
     }
 
     template <class T, int dof>
+    typename Manipulator<T, dof>::Vector Manipulator<T, dof>::getJointLimitsMin() const
+    {
+        Vector joint_limits;
+
+        typename System<T>::Vector joint_limits_system = System<T>::getJointLimitsMin();
+
+        for (unsigned i = 0; i < dof; ++i)
+        {
+            joint_limits[i] = joint_limits_system[getEEKinematicChain()->getActuatedJoints()[i]->getIndex()];
+        }
+
+        return joint_limits;
+    }
+
+    template <class T, int dof>
+    typename Manipulator<T, dof>::Vector Manipulator<T, dof>::getJointLimitsMax() const
+    {
+        Vector joint_limits;
+
+        typename System<T>::Vector joint_limits_system = System<T>::getJointLimitsMax();
+
+        for (unsigned i = 0; i < dof; ++i)
+        {
+            joint_limits[i] = joint_limits_system[getEEKinematicChain()->getActuatedJoints()[i]->getIndex()];
+        }
+
+        return joint_limits;
+    }
+
+    template <class T, int dof>
     KinematicChain<T> *Manipulator<T, dof>::getEEKinematicChain()
     {
         return getSystem().getKinematicChain(ee_joint_name_);
