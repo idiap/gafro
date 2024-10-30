@@ -64,6 +64,12 @@ namespace gafro
     }
 
     template <typename T>
+    Translator<T> Translator<T>::exp(const T &e1i, const T &e2i, const T &e3i)
+    {
+        return Translator<T>::exp({ e1i, e2i, e3i });
+    }
+
+    template <typename T>
     Translator<T> Translator<T>::exp(const Eigen::Vector<T, 3> &generator)
     {
         return Translator<T>::exp(Generator(generator));

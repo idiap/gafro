@@ -73,6 +73,18 @@ namespace gafro
     }
 
     template <typename T>
+    typename Rotor<T>::Exponential Rotor<T>::exp(const T &e12, const T &e13, const T &e23)
+    {
+        return Rotor<T>::exp({ e12, e13, e23 });
+    }
+
+    template <typename T>
+    typename Rotor<T>::Exponential Rotor<T>::exp(const Eigen::Vector<T, 3> &generator)
+    {
+        return Rotor<T>::exp(Generator(generator));
+    }
+
+    template <typename T>
     typename Rotor<T>::Exponential Rotor<T>::exp(const Generator &generator)
     {
         return Exponential(*static_cast<const Generator *>(&generator));
