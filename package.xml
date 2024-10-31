@@ -9,6 +9,9 @@
   
   <license>GPLv3</license>
 
+  <build_depend>orwell</build_depend>
+  <build_depend>sackmesser</build_depend>
+
   <export>
     <build_type>cmake</build_type>
   </export>
