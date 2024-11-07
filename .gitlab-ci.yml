@@ -1,7 +1,4 @@
 default:
-  tags:
-    - gitlab-org-docker # @ gitlab.com
-    - docker # @ idiap
   image: docker:24.0.5
   services:
     - docker:24.0.5-dind
@@ -15,10 +12,21 @@ stages:
 variables:
   IMAGES_PREFIX: $CI_REGISTRY_IMAGE/env_
   DOCKERFILE: ".github/docker/Dockerfile"
+  RUNNER_TAG: "gitlab-org-docker"
+
+
+workflow:
+  rules:
+    - if: $CI_SERVER_HOST == "gitlab.idiap.ch"
+      variables:
+        RUNNER_TAG: "docker"
+    - when: always  
 
 
 build-docker-images-gcc:
   stage: docker-images
+  tags:
+    - $RUNNER_TAG
   variables:
     COMPILER: "gcc"
   script:
@@ -36,6 +44,8 @@ build-docker-images-gcc:
 
 build-docker-images-clang:
   stage: docker-images
+  tags:
+    - $RUNNER_TAG
   variables:
     COMPILER: "clang"
   script:
@@ -53,6 +63,8 @@ build-docker-images-clang:
 
 build-gafro:
   stage: build
+  tags:
+    - $RUNNER_TAG
   image:
     name: ${IMAGES_PREFIX}${COMPILER}:${COMPILER_VERSION}
   script:
