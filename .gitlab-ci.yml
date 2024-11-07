@@ -1,6 +1,7 @@
 default:
   tags:
-    - gitlab-org-docker
+    - gitlab-org-docker # @ gitlab.com
+    - docker # @ idiap
   image: docker:24.0.5
   services:
     - docker:24.0.5-dind
