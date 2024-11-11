@@ -48,8 +48,10 @@ if (${orwell_FOUND})
                 RobotModelDualManipulator.hpp
                 RobotModelDualManipulator.hxx
 
-                DualArmAbsoluteAdmittanceController.hpp
-                DualArmAbsoluteAdmittanceController.hxx
+                DualArmAdmittanceController.hpp
+                DualArmAdmittanceController.hxx
+                DualArmMotorAdmittanceController.hpp
+                DualArmMotorAdmittanceController.hxx
             DESTINATION
                 ${GAFRO_PREFIX_INCLUDE}/gafro_control
             COMPONENT

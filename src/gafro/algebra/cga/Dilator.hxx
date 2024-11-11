@@ -28,6 +28,10 @@ namespace gafro
     Dilator<T>::Dilator() = default;
 
     template <class T>
+    Dilator<T>::Dilator(const T &dilation) : Base({ TypeTraits<T>::Value(1.0), TypeTraits<T>::Value((1.0 - dilation) / (1.0 + dilation)) })
+    {}
+
+    template <class T>
     Dilator<T>::~Dilator() = default;
 
 }  // namespace gafro

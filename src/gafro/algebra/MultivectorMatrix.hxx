@@ -96,6 +96,22 @@ namespace gafro
     }
 
     template <class T, template <class S> class M, int rows, int cols>
+    MultivectorMatrix<T, M, rows, cols> MultivectorMatrix<T, M, rows, cols>::normalized() const
+    {
+        MultivectorMatrix normalized;
+
+        for (unsigned r = 0; r < rows; r++)
+        {
+            for (unsigned c = 0; c < cols; c++)
+            {
+                normalized.setCoefficient(r, c, getCoefficient(r, c).normalized());
+            }
+        }
+
+        return normalized;
+    }
+
+    template <class T, template <class S> class M, int rows, int cols>
     MultivectorMatrix<T, M, rows, cols> MultivectorMatrix<T, M, rows, cols>::transform(const Motor<T> &motor) const
     {
         MultivectorMatrix transformed;
@@ -122,40 +138,6 @@ namespace gafro
             for (unsigned c = 0; c < cols; c++)
             {
                 matrix.setCoefficient(r, c, getCoefficient(r, c).template cast<M2<T>>());
-            }
-        }
-
-        return matrix;
-    }
-
-    template <class T, template <class S> class M, int rows, int cols>
-    template <int... blades>
-    auto MultivectorMatrix<T, M, rows, cols>::leftMultiply(const typename Type::MAlgebra::template Multivector<T, blades...> &multivector) const
-    {
-        typename GeometricProduct<M<T>, typename Type::MAlgebra::template Multivector<T, blades...>>::Type::template Matrix<rows, cols> matrix;
-
-        for (unsigned r = 0; r < rows; r++)
-        {
-            for (unsigned c = 0; c < cols; c++)
-            {
-                matrix.setCoefficient(r, c, multivector * getCoefficient(r, c));
-            }
-        }
-
-        return matrix;
-    }
-
-    template <class T, template <class S> class M, int rows, int cols>
-    template <int... blades>
-    auto MultivectorMatrix<T, M, rows, cols>::rightMultiply(const typename Type::MAlgebra::template Multivector<T, blades...> &multivector) const
-    {
-        typename GeometricProduct<M<T>, typename Type::MAlgebra::template Multivector<T, blades...>>::Type::template Matrix<rows, cols> matrix;
-
-        for (unsigned r = 0; r < rows; r++)
-        {
-            for (unsigned c = 0; c < cols; c++)
-            {
-                matrix.setCoefficient(r, c, getCoefficient(r, c) * multivector);
             }
         }
 

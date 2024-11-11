@@ -47,18 +47,14 @@ namespace gafro
 
         Matrix embed() const;
 
+        MultivectorMatrix normalized() const;
+
         MultivectorMatrix reverse() const;
 
         MultivectorMatrix transform(const Motor<T> &motor) const;
 
         template <template <class S2> class M2>
         MultivectorMatrix<T, M2, rows, cols> extract() const;
-
-        template <int... blades>
-        auto leftMultiply(const typename Type::MAlgebra::template Multivector<T, blades...> &multivector) const;
-
-        template <int... blades>
-        auto rightMultiply(const typename Type::MAlgebra::template Multivector<T, blades...> &multivector) const;
 
         std::vector<M<T>> asVector() const;
 

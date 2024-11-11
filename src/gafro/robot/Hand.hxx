@@ -90,6 +90,28 @@ namespace gafro
     }
 
     template <class T, int n_fingers, int dof>
+    MultivectorMatrix<T, Point, 1, n_fingers> Hand<T, n_fingers, dof>::getFingerPoints(const Eigen::Vector<T, n_fingers * dof> &position) const
+    {
+        MultivectorMatrix<T, Point, 1, n_fingers> points;
+
+        for (int j = 0; j < n_fingers; ++j)
+        {
+            points.setCoefficient(0, j, getFingerMotor(j, position.middleRows(j * dof, dof)).apply(Point<T>()));
+        }
+
+        return points;
+    }
+
+    template <class T, int n_fingers, int dof>
+    Sphere<T> Hand<T, n_fingers, dof>::getFingerSphere(const Eigen::Vector<T, n_fingers * dof> &position) const
+        requires(n_fingers == 4)
+    {
+        MultivectorMatrix<T, Point, 1, n_fingers> points = getFingerPoints(position);
+
+        return Sphere<T>(points.getCoefficient(0, 0), points.getCoefficient(0, 1), points.getCoefficient(0, 2), points.getCoefficient(0, 3));
+    }
+
+    template <class T, int n_fingers, int dof>
     MultivectorMatrix<T, Motor, 1, dof> Hand<T, n_fingers, dof>::getFingerAnalyticJacobian(const unsigned &id,
                                                                                            const Eigen::Vector<T, dof> &position) const
     {
@@ -215,6 +237,46 @@ namespace gafro
         }
 
         return jacobian;
+    }
+    template <class T, int n_fingers, int dof>
+    MultivectorMatrix<T, Sphere, 1, n_fingers * dof> Hand<T, n_fingers, dof>::getFingerSphereJacobian(
+      const Eigen::Vector<T, n_fingers * dof> &position) const
+        requires(n_fingers == 4)
+    {
+        auto finger_motors_1 = getFingerMotors(position).asVector();
+        auto finger_points_1 = getFingerPoints(position).asVector();
+        auto finger_0_jacobian_1 = getFingerAnalyticJacobian(0, position.middleRows(0, 4));
+        auto finger_1_jacobian_1 = getFingerAnalyticJacobian(1, position.middleRows(4, 4));
+        auto finger_2_jacobian_1 = getFingerAnalyticJacobian(2, position.middleRows(8, 4));
+        auto finger_3_jacobian_1 = getFingerAnalyticJacobian(3, position.middleRows(12, 4));
+
+        auto j_0_1 = finger_0_jacobian_1 * (Point<T>() * finger_motors_1[0].reverse()).evaluate();
+        auto j_0_2 = (finger_motors_1[0] * Point<T>()).evaluate() * finger_0_jacobian_1.reverse();
+        auto finger_0_sphere_jacobian = ((j_0_1 + j_0_2) ^ (finger_points_1[1] ^ finger_points_1[2] ^ finger_points_1[3]).evaluate()).normalized();
+
+        auto j_1_1 = finger_1_jacobian_1 * (Point<T>() * finger_motors_1[1].reverse()).evaluate();
+        auto j_1_2 = (finger_motors_1[1] * Point<T>()).evaluate() * finger_1_jacobian_1.reverse();
+        auto finger_1_sphere_jacobian = (finger_points_1[0] ^ (j_1_1 + j_1_2) ^ (finger_points_1[2] ^ finger_points_1[3]).evaluate()).normalized();
+
+        auto j_2_1 = finger_2_jacobian_1 * (Point<T>() * finger_motors_1[2].reverse()).evaluate();
+        auto j_2_2 = (finger_motors_1[2] * Point<T>()).evaluate() * finger_2_jacobian_1.reverse();
+        auto finger_2_sphere_jacobian = ((finger_points_1[0] ^ finger_points_1[1]).evaluate() ^ (j_2_1 + j_2_2) ^ finger_points_1[3]).normalized();
+
+        auto j_3_1 = finger_3_jacobian_1 * (Point<T>() * finger_motors_1[3].reverse()).evaluate();
+        auto j_3_2 = (finger_motors_1[3] * Point<T>()).evaluate() * finger_3_jacobian_1.reverse();
+        auto finger_3_sphere_jacobian = ((finger_points_1[0] ^ finger_points_1[1] ^ finger_points_1[2]).evaluate() ^ (j_3_1 + j_3_2)).normalized();
+
+        MultivectorMatrix<T, Sphere, 1, 16> sphere_jacobian;
+
+        for (unsigned i = 0; i < 4; ++i)
+        {
+            sphere_jacobian.setCoefficient(0, i, Sphere<T>(finger_0_sphere_jacobian.getCoefficient(0, i)));
+            sphere_jacobian.setCoefficient(0, i + 4, Sphere<T>(finger_1_sphere_jacobian.getCoefficient(0, i)));
+            sphere_jacobian.setCoefficient(0, i + 8, Sphere<T>(finger_2_sphere_jacobian.getCoefficient(0, i)));
+            sphere_jacobian.setCoefficient(0, i + 12, Sphere<T>(finger_3_sphere_jacobian.getCoefficient(0, i)));
+        }
+
+        return sphere_jacobian;
     }
 
     //

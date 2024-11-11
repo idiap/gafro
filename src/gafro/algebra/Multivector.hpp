@@ -134,6 +134,21 @@ namespace gafro
 
         Multivector operator/(const T &scalar) const;
 
+        template <template <class S> class MType, int rows, int cols>
+        auto operator*(const MultivectorMatrix<T, MType, rows, cols> &matrix) const;
+
+        template <template <class S> class MType, int rows, int cols>
+        auto operator|(const MultivectorMatrix<T, MType, rows, cols> &matrix) const;
+
+        template <template <class S> class MType, int rows, int cols>
+        auto operator^(const MultivectorMatrix<T, MType, rows, cols> &matrix) const;
+
+        template <template <class S> class MType, int rows, int cols>
+        auto operator+(const MultivectorMatrix<T, MType, rows, cols> &matrix) const;
+
+        template <template <class S> class MType, int rows, int cols>
+        auto operator-(const MultivectorMatrix<T, MType, rows, cols> &matrix) const;
+
         //
 
         void setParameters(Parameters &&parameters);

@@ -48,6 +48,7 @@
 #include <gafro/algebra/cga/TangentVector.hxx>
 #include <gafro/algebra/cga/Vector.hxx>
 //
+#include <gafro/algebra/cga/Dilator.hpp>
 #include <gafro/algebra/cga/Motor.hxx>
 #include <gafro/algebra/cga/MotorGenerator.hxx>
 #include <gafro/algebra/cga/Rotor.hxx>

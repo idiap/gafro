@@ -36,6 +36,8 @@ namespace gafro
 
         Dilator();
 
+        Dilator(const T &dilation);
+
         virtual ~Dilator();
 
       protected:
@@ -44,3 +46,5 @@ namespace gafro
     };
 
 }  // namespace gafro
+
+#include <gafro/algebra/cga/Dilator.hxx>

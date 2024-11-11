@@ -27,9 +27,7 @@ namespace gafro
 
     template <typename T>
     Sphere<T>::Sphere() : Base()
-    {
-        this->template set<blades::e0>(1.0);
-    }
+    {}
 
     template <typename T>
     Sphere<T>::Sphere(const Base &other) : Base(other)

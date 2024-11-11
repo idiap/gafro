@@ -212,6 +212,39 @@ namespace gafro
     }
 
     template <class T, int dof>
+    Eigen::Matrix<T, 6, 6> Manipulator<T, dof>::getEEVelocityManipulability(const Vector &position) const
+    {
+        Eigen::Matrix<T, 6, dof> jacobian = getEEGeometricJacobian(position).embed();
+
+        return jacobian * jacobian.transpose();
+    }
+
+    template <class T, int dof>
+    Eigen::Matrix<T, 6, 6> Manipulator<T, dof>::getEEForceManipulability(const Vector &position) const
+    {
+        return getEEVelocityManipulability(position).inverse();
+    }
+
+    template <class T, int dof>
+    Eigen::Matrix<T, 6, 6> Manipulator<T, dof>::getEEDynamicManipulability(const Vector &position) const
+    {
+        Eigen::Matrix<T, 6, dof> jacobian = getEEGeometricJacobian(position).embed();
+        Eigen::Matrix<T, dof, dof> mass_matrix = getMassMatrix(position);
+
+        return jacobian * (mass_matrix.transpose() * mass_matrix).inverse() * jacobian.transpose();
+    }
+
+    template <class T, int dof>
+    Eigen::Matrix<T, 7, 7> Manipulator<T, dof>::getEEKinematicNullspaceProjector(const Vector &position) const
+    {
+        Eigen::Matrix<T, 6, dof> jacobian = getEEGeometricJacobian(position).embed();
+        Eigen::Matrix<T, dof, 6> inverse_jacobian =
+          (jacobian.transpose() * jacobian + 1e-5 * Eigen::Matrix<T, dof, dof>::Identity()).inverse() * jacobian.transpose();
+
+        return Eigen::Matrix<T, dof, dof>::Identity() - inverse_jacobian * jacobian;
+    }
+
+    template <class T, int dof>
     typename Manipulator<T, dof>::Vector Manipulator<T, dof>::getJointTorques(const Vector &position,      //
                                                                               const Vector &velocity,      //
                                                                               const Vector &acceleration,  //

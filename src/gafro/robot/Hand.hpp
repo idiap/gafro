@@ -54,6 +54,14 @@ namespace gafro
 
         MultivectorMatrix<T, Motor, 1, n_fingers> getFingerMotors(const Eigen::Vector<T, n_fingers * dof> &position) const;
 
+        MultivectorMatrix<T, Point, 1, n_fingers> getFingerPoints(const Eigen::Vector<T, n_fingers * dof> &position) const;
+
+        Sphere<T> getFingerSphere(const Eigen::Vector<T, n_fingers * dof> &position) const
+            requires(n_fingers == 4);
+
+        MultivectorMatrix<T, Sphere, 1, n_fingers * dof> getFingerSphereJacobian(const Eigen::Vector<T, n_fingers * dof> &position) const
+            requires(n_fingers == 4);
+
         MultivectorMatrix<T, Motor, 1, dof> getFingerAnalyticJacobian(const unsigned &id, const Eigen::Vector<T, dof> &position) const;
 
         MultivectorMatrix<T, MotorGenerator, 1, dof> getFingerGeometricJacobian(const unsigned &id, const Eigen::Vector<T, dof> &position) const;

@@ -26,7 +26,7 @@ namespace gafro_control
 
     template <int dof>
     RobotModelDualManipulator<dof>::RobotModelDualManipulator(const std::shared_ptr<gafro::DualManipulator<double, dof>> &manipulator)
-      : manipulator_(manipulator)
+      : orwell::RobotModel<dof>(manipulator->getJointLimitsMin(), manipulator->getJointLimitsMax()), manipulator_(manipulator)
     {}
 
     template <int dof>
