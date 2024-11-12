@@ -25,6 +25,9 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
             Hand.hpp
             Hand.hxx
 
+            Quadruped.hpp
+            Quadruped.hxx
+
             System.hpp
             System.hxx
 
