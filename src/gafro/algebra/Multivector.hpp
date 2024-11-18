@@ -300,6 +300,53 @@ namespace gafro
         constexpr static Bitset<MAlgebra::dim, index...> bits_ = Bitset<MAlgebra::dim, index...>();
 
         constexpr static const std::array<int, size> blades_ = bits_.blades();
+
+      public:
+        void print() const
+        {
+            bool first = true;
+
+            for (unsigned int k = 0; k < vector().rows(); ++k)
+            {
+                if (abs(vector().coeff(k, 0)) < 1e-10)
+                {
+                    continue;
+                }
+
+                if (!first)
+                {
+                    std::cout << (vector().coeff(k, 0) >= 0 ? " + " : " - ");
+
+                    std::cout << abs(vector().coeff(k, 0));
+                }
+                else
+                {
+                    std::cout << vector().coeff(k, 0);
+
+                    first = false;
+                }
+
+                if (blades()[k] > 0)
+                {
+                    std::string blade_name = "e";
+                    for (int j = 0; j < dim; ++j)
+                    {
+                        if ((1 << j) & blades()[k])
+                        {
+                            blade_name += std::to_string(j + 1);
+                        }
+                    }
+                    std::cout << "*" << blade_name;
+                }
+            }
+
+            if (first)
+            {
+                std::cout << 0;
+            }
+
+            std::cout << std::endl;
+        }
     };
 
 }  // namespace gafro
