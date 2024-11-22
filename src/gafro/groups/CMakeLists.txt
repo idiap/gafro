@@ -13,6 +13,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
             SpecialOrthogonalGroup.hpp
             CliffordGroup.hpp
             PinGroup.hpp
+            PinGroup.hxx
             SpinGroup.hpp
         DESTINATION
             ${GAFRO_PREFIX_INCLUDE}/gafro/groups

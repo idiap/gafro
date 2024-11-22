@@ -5,13 +5,13 @@
 namespace gafro::groups
 {
 
-    template <class T, int p, int q, int r, DerivedGroup<T, p, q, r> Cover, DerivedGroup<T, p, q, r> Base>
+    template <class T, int p, int q, int r, DerivedGroup<T, p, q, r> Base>
     class CoveringGroup
     {
       public:
-        CoveringGroup();
+        CoveringGroup() = default;
 
-        virtual ~CoveringGroup();
+        virtual ~CoveringGroup() = default;
 
       protected:
       private:

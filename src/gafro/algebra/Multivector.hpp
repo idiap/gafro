@@ -329,9 +329,9 @@ namespace gafro
                 if (blades()[k] > 0)
                 {
                     std::string blade_name = "e";
-                    for (int j = 0; j < dim; ++j)
+                    for (int j = 0; j < M::dim; ++j)
                     {
-                        if ((1 << j) & blades()[k])
+                        if (((1 << j) & blades()[k]) != 0)
                         {
                             blade_name += std::to_string(j + 1);
                         }
