@@ -19,37 +19,21 @@
 
 #pragma once
 
-#include <gafro/algebra/cga/Blades.hpp>
-#include <gafro/algebra/cga/Versor.hpp>
+#include <gafro/algebra/cga/ConformalTransformation.hpp>
 
 namespace gafro
 {
+
     template <class T>
-    class Dilator : public Versor<Dilator<T>, T, blades::scalar, blades::e0i>
+    class ConformalTransformation<T>::Exponential
+      : public UnaryExpression<ConformalTransformation<T>::Exponential, typename ConformalTransformation<T>::Generator, ConformalTransformation<T>>
     {
-      public:
-        using Base = Versor<Dilator<T>, T, blades::scalar, blades::e0i>;
+        Exponential(const typename ConformalTransformation<T>::Generator &generator);
+        virtual ~Exponential() = default;
 
-        using Parameters = typename Base::Parameters;
-
-        using Base::Base;
-
-        using Generator = Multivector<T, blades::e0i>;
-
-        Dilator();
-
-        Dilator(const T &dilation);
-
-        virtual ~Dilator();
-
-        Generator log() const;
-
-      protected:
-      private:
-      public:
-        static Dilator exp(const Generator &generator);
+        template <int blade>
+            requires(ConformalTransformation<T>::has(blade))  //
+        T get() const;
     };
 
 }  // namespace gafro
-
-#include <gafro/algebra/cga/Dilator.hxx>

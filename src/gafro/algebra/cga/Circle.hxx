@@ -58,6 +58,41 @@ namespace gafro
         return Plane<T>((*this) ^ Ei<T>(T(1.0)));
     }
 
+    template <typename T>
+    auto Circle<T>::getTransformation(const Circle &target) const
+    {
+        if (this->norm() < 1e-5 || target.norm() < 1e-5)
+        {
+            return (Scalar<T>::Zero() + ConformalGeometricAlgebra::Grade<T, 2>::Zero() + ConformalGeometricAlgebra::Grade<T, 4>::Zero()).evaluate();
+        }
+
+        Circle<T> circle = this->normalized();
+        Circle<T> target_normalized = target.normalized();
+
+        auto k = (Scalar<T>(TypeTraits<T>::Value(2.0)) + (circle * target_normalized + target_normalized * circle)).evaluate();
+        auto k4 = (k.template extract<blades::e0123>()    //
+                   + k.template extract<blades::e123i>()  //
+                   + k.template extract<blades::e012i>()  //
+                   + k.template extract<blades::e013i>()  //
+                   + k.template extract<blades::e023i>())
+                    .evaluate();
+
+        if (k4.norm() < 1e-5)
+        {
+            return (Scalar<T>(TypeTraits<T>::Value(1.0)) + target_normalized * circle).evaluate().normalized();
+        }
+
+        auto k0 = k.template extract<blades::scalar>();
+        T lambda = -(k4 * k4).template get<blades::scalar>();
+        T mu = ((k0 - k4) * k).template get<blades::scalar>();
+        T beta = sqrt(TypeTraits<T>::Value(1.0) / (TypeTraits<T>::Value(2.0) * lambda) * (sqrt(mu) - k0.template get<blades::scalar>()));
+
+        return (Scalar<T>(TypeTraits<T>::Value(1.0) / sqrt(mu)) *
+                (Scalar<T>(TypeTraits<T>::Value(-1.0) / (TypeTraits<T>::Value(2.0) * beta)) + beta * k4) *
+                (Scalar<T>(TypeTraits<T>::Value(1.0)) + target_normalized * circle))
+          .evaluate();
+    }
+
     template <class T>
     Circle<T> Circle<T>::Random()
     {

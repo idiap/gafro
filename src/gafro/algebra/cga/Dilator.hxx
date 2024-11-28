@@ -28,10 +28,23 @@ namespace gafro
     Dilator<T>::Dilator() = default;
 
     template <class T>
-    Dilator<T>::Dilator(const T &dilation) : Base({ TypeTraits<T>::Value(1.0), TypeTraits<T>::Value((1.0 - dilation) / (1.0 + dilation)) })
+    Dilator<T>::Dilator(const T &dilation)
+      : Base({ TypeTraits<T>::Value(cosh(0.5 * ::log(dilation))), TypeTraits<T>::Value(sinh(0.5 * ::log(dilation))) })
     {}
 
     template <class T>
     Dilator<T>::~Dilator() = default;
+
+    template <class T>
+    typename Dilator<T>::Generator Dilator<T>::log() const
+    {
+        return Generator(TypeTraits<T>::Value(2.0) * acosh(this->template get<blades::scalar>()));
+    }
+
+    template <class T>
+    Dilator<T> Dilator<T>::exp(const Generator &generator)
+    {
+        return Scalar<T>(cosh(0.5 * generator.norm())) - sinh(0.5 * generator.norm()) * generator / generator.signedNorm();
+    }
 
 }  // namespace gafro
