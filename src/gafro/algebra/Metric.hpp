@@ -31,6 +31,23 @@ namespace gafro
         }
 
         using Algebra = gafro::Algebra<Metric>;
+
+      private:
+        template <int... j, int... k>
+        constexpr static void fillTensor(Eigen::Matrix<double, dim, dim> &tensor, std::index_sequence<j...>, std::index_sequence<k...>)
+        {
+            (tensor.coeffRef(j, k), ...) = (get<j, k>(), ...);
+        }
+
+      public:
+        constexpr static Eigen::Matrix<double, dim, dim> getTensor()
+        {
+            Eigen::Matrix<double, dim, dim> tensor;
+
+            fillTensor(tensor, std::make_index_sequence<dim>(), std::make_index_sequence<dim>());
+
+            return tensor;
+        }
     };
 
 }  // namespace gafro

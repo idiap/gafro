@@ -31,6 +31,9 @@ namespace gafro
     class Plane;
 
     template <class T>
+    class Motor;
+
+    template <class T>
     class Circle : public Multivector<T, blades::e012, blades::e013, blades::e023, blades::e123, blades::e01i, blades::e02i, blades::e12i,
                                       blades::e03i, blades::e13i, blades::e23i>
     {
@@ -51,6 +54,8 @@ namespace gafro
         Point<T> getCenter() const;
 
         T getRadius() const;
+
+        auto getTransformation(const Circle &target) const;
 
       protected:
       private:

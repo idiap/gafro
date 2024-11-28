@@ -231,6 +231,13 @@ namespace gafro
 
         template <int blade>
             requires(has(blade))  //
+        Multivector<T, blade> extract() const
+        {
+            return Multivector<T, blade>(get<blade>());
+        }
+
+        template <int blade>
+            requires(has(blade))  //
         Multivector<T, blade> getBlade() const
         {
             return typename Algebra<M>::template Multivector<T, blade>((Eigen::Matrix<T, 1, 1>() << this->template get<blade>()).finished());
@@ -280,6 +287,13 @@ namespace gafro
 
       public:
         auto getBlades() const;
+
+        constexpr static int getGrade()
+        {
+            std::array<int, sizeof...(index)> blades = { MAlgebra::BladeBitmap::template getGrade<index>()... };
+
+            return *std::max_element(blades.begin(), blades.end());
+        }
 
       private:
         template <std::size_t... i>

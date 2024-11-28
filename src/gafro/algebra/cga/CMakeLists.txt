@@ -60,6 +60,12 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
             Dilator.hpp
             Dilator.hxx
 
+            Transversion.hpp
+            Transversion.hxx
+
+            ConformalTransformation.hpp
+            ConformalTransformation.hxx
+
             Blades.hpp
         DESTINATION
             ${GAFRO_PREFIX_INCLUDE}/gafro/algebra/cga

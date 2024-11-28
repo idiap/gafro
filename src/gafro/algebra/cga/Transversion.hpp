@@ -24,32 +24,37 @@
 
 namespace gafro
 {
+
     template <class T>
-    class Dilator : public Versor<Dilator<T>, T, blades::scalar, blades::e0i>
+    class Transversion : public Versor<Transversion<T>, T, blades::scalar, blades::e01, blades::e02, blades::e03>
     {
       public:
-        using Base = Versor<Dilator<T>, T, blades::scalar, blades::e0i>;
+        using Base = Versor<Transversion<T>, T, blades::scalar, blades::e01, blades::e02, blades::e03>;
 
         using Parameters = typename Base::Parameters;
 
+        using Generator = Multivector<T, blades::e01, blades::e02, blades::e03>;
+
         using Base::Base;
 
-        using Generator = Multivector<T, blades::e0i>;
+        Transversion();
 
-        Dilator();
+        Transversion(const Generator &generator);
 
-        Dilator(const T &dilation);
-
-        virtual ~Dilator();
+        virtual ~Transversion();
 
         Generator log() const;
 
       protected:
       private:
       public:
-        static Dilator exp(const Generator &generator);
+        static Transversion exp(const T &e01, const T &e02, const T &e03);
+
+        static Transversion exp(const Eigen::Vector<T, 3> &generator);
+
+        static Transversion exp(const Generator &generator);
     };
 
 }  // namespace gafro
 
-#include <gafro/algebra/cga/Dilator.hxx>
+#include <gafro/algebra/cga/Transversion.hxx>
