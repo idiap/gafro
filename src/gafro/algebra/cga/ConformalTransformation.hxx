@@ -43,6 +43,11 @@ namespace gafro
     template <typename T>
     typename ConformalTransformation<T>::Generator ConformalTransformation<T>::log() const
     {
+        if (this->norm() < 1e-5)
+        {
+            return Generator::Zero();
+        }
+
         Dilator<T> dilator = this->apply(Ei<T>(1.0)).template get<blades::ei>();
         auto str = (dilator.reverse() * (*this)).evaluate();
         Rotor<T> rotor = (Ei<T>(1.0) | (E0<T>(1.0) ^ (E0<T>(1.0) | (str * Ei<T>(1.0)))));

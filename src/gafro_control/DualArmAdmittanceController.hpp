@@ -64,14 +64,11 @@ namespace gafro_control
         gafro::Inertia<double> relative_damping_;
         gafro::Inertia<double> relative_stiffness_;
 
-        gafro::Wrench<double> desired_wrench_;
-        gafro::Wrench<double> external_wrench_;
-
         gafro::Wrench<double> desired_absolute_wrench_;
-        gafro::Wrench<double> absolute_wrench_;
+        gafro::Wrench<double> external_absolute_wrench_;
 
         gafro::Wrench<double> desired_relative_wrench_;
-        gafro::Wrench<double> relative_wrench_;
+        gafro::Wrench<double> external_relative_wrench_;
 
         gafro::Twist<double> absolute_residual_;
         gafro::Twist<double> absolute_residual_dt_;

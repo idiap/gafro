@@ -21,6 +21,7 @@
 
 #include <gafro/algebra/Multivector.hxx>
 #include <gafro/algebra/cga/Blades.hpp>
+#include <gafro/algebra/cga/ConformalTransformation.hpp>
 
 namespace gafro
 {
@@ -55,7 +56,7 @@ namespace gafro
 
         T getRadius() const;
 
-        auto getTransformation(const Circle &target) const;
+        ConformalTransformation<T> getTransformation(const Circle &target) const;
 
       protected:
       private:

@@ -46,14 +46,11 @@ namespace gafro_control
         relative_damping_ = loadTensor("relative_damping");
         relative_stiffness_ = loadTensor("relative_stiffness");
 
-        desired_wrench_ = gafro::Wrench<double>::Zero();
-        external_wrench_ = gafro::Wrench<double>::Zero();
-
         desired_absolute_wrench_ = gafro::Wrench<double>::Zero();
-        absolute_wrench_ = gafro::Wrench<double>::Zero();
+        external_absolute_wrench_ = gafro::Wrench<double>::Zero();
 
         desired_relative_wrench_ = gafro::Wrench<double>::Zero();
-        relative_wrench_ = gafro::Wrench<double>::Zero();
+        external_relative_wrench_ = gafro::Wrench<double>::Zero();
 
         absolute_residual_ = gafro::Twist<double>::Zero();
         absolute_residual_dt_ = gafro::Twist<double>::Zero();
@@ -133,14 +130,14 @@ namespace gafro_control
     template <int dof, class Reference, orwell::AdmittanceControllerType type>
     gafro::Twist<double> DualArmAdmittanceController<dof, Reference, type>::computeDesiredAbsoluteEEAcceleration() const
     {
-        return absolute_inertia_(desired_absolute_wrench_ - absolute_wrench_ - absolute_stiffness_(absolute_residual_) -
+        return absolute_inertia_(desired_absolute_wrench_ - external_absolute_wrench_ - absolute_stiffness_(absolute_residual_) -
                                  absolute_damping_(absolute_residual_dt_));
     }
 
     template <int dof, class Reference, orwell::AdmittanceControllerType type>
     gafro::Twist<double> DualArmAdmittanceController<dof, Reference, type>::computeDesiredRelativeEEAcceleration() const
     {
-        return relative_inertia_(desired_relative_wrench_ - relative_wrench_ - relative_stiffness_(relative_residual_) -
+        return relative_inertia_(desired_relative_wrench_ - external_relative_wrench_ - relative_stiffness_(relative_residual_) -
                                  relative_damping_(relative_residual_dt_));
     }
 

@@ -45,7 +45,7 @@ namespace gafro
 
     template <class M>
     template <class T, int... index>
-    Algebra<M>::Multivector<T, index...>::Multivector(const double &value)
+    Algebra<M>::Multivector<T, index...>::Multivector(const T &value)
         requires(sizeof...(index) == 1)
       : Multivector(Parameters::Ones() * value)
     {}

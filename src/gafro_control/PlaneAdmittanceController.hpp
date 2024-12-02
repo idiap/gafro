@@ -31,12 +31,16 @@ namespace gafro_control
       public:
         PlaneAdmittanceController(const sackmesser::Interface::Ptr &interface, const std::string &name);
 
+        void setReferencePlane(const gafro::Plane<double> &reference_plane);
+
       private:
         void computeResiduals();
 
         gafro::Motor<double> getReferenceFrame();
 
         gafro::Motor<double> reference_frame_;
+
+        gafro::Plane<double> reference_plane_;
     };
 
     template <int dof>

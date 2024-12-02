@@ -34,16 +34,20 @@ namespace gafro_control
     {
         auto robot_model = std::dynamic_pointer_cast<gafro_control::RobotModel<dof>>(this->getRobotModel());
 
-        gafro::Motor<double> ee_motor = robot_model->getEEMotor().reverse();
+        gafro::Motor<double> ee_motor_reverse = robot_model->getEEMotor().reverse();
 
-        gafro::Plane<double> target_plane = ee_motor.apply(this->getReference());
+        gafro::Motor<double> residual_motor = reference_plane_.computeMotor(ee_motor_reverse.apply(this->getReference()));
 
-        gafro::Motor<double> residual_motor = target_plane.computeMotor(gafro::Plane<double>::XZ());
-
-        this->setResidualBivector(residual_motor.log());
+        this->setResidualBivector(-residual_motor.log());
         this->setResidualTwist(robot_model->getEETwist());
 
         reference_frame_ = robot_model->getEEMotor();
+    }
+
+    template <int dof, orwell::AdmittanceControllerType type>
+    void PlaneAdmittanceController<dof, type>::setReferencePlane(const gafro::Plane<double> &reference_plane)
+    {
+        reference_plane_ = reference_plane;
     }
 
     template <int dof, orwell::AdmittanceControllerType type>

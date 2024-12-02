@@ -59,11 +59,11 @@ namespace gafro
     }
 
     template <typename T>
-    auto Circle<T>::getTransformation(const Circle &target) const
+    ConformalTransformation<T> Circle<T>::getTransformation(const Circle &target) const
     {
         if (this->norm() < 1e-5 || target.norm() < 1e-5)
         {
-            return (Scalar<T>::Zero() + ConformalGeometricAlgebra::Grade<T, 2>::Zero() + ConformalGeometricAlgebra::Grade<T, 4>::Zero()).evaluate();
+            return ConformalTransformation<T>::Zero();
         }
 
         Circle<T> circle = this->normalized();
