@@ -245,15 +245,6 @@ namespace gafro
             Point<T> j_0_1 = finger_jacobian.getCoefficient(0, k) * Point<T>() * finger_motors[0].reverse();
             Point<T> j_0_2 = finger_motors[0] * Point<T>() * finger_jacobian.getCoefficient(0, k).reverse();
 
-            std::cout << k << " -------" << std::endl;
-            std::cout << finger_motors[0] << std::endl;
-            std::cout << finger_jacobian.getCoefficient(0, k) << std::endl;
-            std::cout << ((Scalar<double>(2.0) * finger_jacobian.getCoefficient(0, k) * Point<T>() * finger_motors[0].reverse()) ^ finger_points[1] ^
-                          finger_points[2])
-                      << std::endl;
-            std::cout << j_0_1 << std::endl;
-            std::cout << j_0_2 << std::endl;
-
             circle_jacobian.setCoefficient(0, k, (j_0_1 + j_0_2) ^ finger_points[1] ^ finger_points[2]);
         }
 
@@ -262,12 +253,6 @@ namespace gafro
             Point<T> j_1_1 = finger_jacobian.getCoefficient(0, k) * (Point<T>() * finger_motors[1].reverse()).evaluate();
             Point<T> j_1_2 = (finger_motors[1] * Point<T>()).evaluate() * finger_jacobian.getCoefficient(0, k).reverse();
 
-            std::cout << k << " -------" << std::endl;
-            std::cout << finger_motors[0] << std::endl;
-            std::cout << finger_jacobian.getCoefficient(0, k) << std::endl;
-            std::cout << j_1_1 << std::endl;
-            std::cout << j_1_2 << std::endl;
-
             circle_jacobian.setCoefficient(0, k, finger_points[0] ^ (j_1_1 + j_1_2) ^ finger_points[2]);
         }
 
@@ -275,12 +260,6 @@ namespace gafro
         {
             Point<T> j_2_1 = finger_jacobian.getCoefficient(0, k) * (Point<T>() * finger_motors[2].reverse()).evaluate();
             Point<T> j_2_2 = (finger_motors[2] * Point<T>()).evaluate() * finger_jacobian.getCoefficient(0, k).reverse();
-
-            std::cout << k << " -------" << std::endl;
-            std::cout << finger_motors[0] << std::endl;
-            std::cout << finger_jacobian.getCoefficient(0, k) << std::endl;
-            std::cout << j_2_1 << std::endl;
-            std::cout << j_2_2 << std::endl;
 
             circle_jacobian.setCoefficient(0, k, finger_points[0] ^ finger_points[1] ^ (j_2_1 + j_2_2));
         }

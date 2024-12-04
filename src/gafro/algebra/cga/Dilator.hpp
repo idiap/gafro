@@ -42,7 +42,7 @@ namespace gafro
 
         virtual ~Dilator();
 
-        Generator log() const;
+        Generator logarithm() const;
 
       protected:
       private:

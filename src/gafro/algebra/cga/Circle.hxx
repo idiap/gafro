@@ -88,7 +88,7 @@ namespace gafro
         T beta = sqrt(TypeTraits<T>::Value(1.0) / (TypeTraits<T>::Value(2.0) * lambda) * (sqrt(mu) - k0.template get<blades::scalar>()));
 
         return (Scalar<T>(TypeTraits<T>::Value(1.0) / sqrt(mu)) *
-                (Scalar<T>(TypeTraits<T>::Value(-1.0) / (TypeTraits<T>::Value(2.0) * beta)) + beta * k4) *
+                (Scalar<T>(TypeTraits<T>::Value(-1.0) / (TypeTraits<T>::Value(2.0) * beta)) + Scalar<T>(beta) * k4) *
                 (Scalar<T>(TypeTraits<T>::Value(1.0)) + target_normalized * circle))
           .evaluate();
     }

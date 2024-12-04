@@ -20,6 +20,10 @@
 #pragma once
 
 #include <gafro/algebra/cga/Blades.hpp>
+#include <gafro/algebra/cga/Dilator.hxx>
+#include <gafro/algebra/cga/Rotor.hxx>
+#include <gafro/algebra/cga/Translator.hxx>
+#include <gafro/algebra/cga/Transversion.hpp>
 #include <gafro/algebra/cga/Versor.hpp>
 
 namespace gafro
@@ -42,6 +46,29 @@ namespace gafro
 
         using Base::Base;
 
+        class CanonicalDecomposition
+        {
+          public:
+            CanonicalDecomposition(const ConformalTransformation &transformation);
+
+            const Dilator<T> &getDilator() const;
+
+            const Rotor<T> &getRotor() const;
+
+            const Transversion<T> &getTransversion() const;
+
+            const Translator<T> &getTranslator() const;
+
+          private:
+            Dilator<T> dilator_;
+
+            Rotor<T> rotor_;
+
+            Transversion<T> transversion_;
+
+            Translator<T> translator_;
+        };
+
         class Exponential;
         class Logarithm;
 
@@ -52,6 +79,8 @@ namespace gafro
         virtual ~ConformalTransformation();
 
         Generator log() const;
+
+        CanonicalDecomposition getCanonicalDecomposition() const;
 
       protected:
       private:

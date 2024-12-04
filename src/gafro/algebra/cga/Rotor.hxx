@@ -60,16 +60,18 @@ namespace gafro
     template <typename T>
     typename Rotor<T>::Generator Rotor<T>::log() const
     {
-        T acos = std::acos(scalar());
+        T angle = acos(scalar());
 
-        if (abs(acos) < 1e-6)
+        if (abs(angle) < 1e-6)
         {
             return Rotor<T>::Generator({ e12(), e13(), e23() });
         }
 
-        acos = -2.0 * acos / (sin(acos));
+        angle = -2.0 * angle / (sin(angle));
 
-        return Rotor<T>::Generator({ e12() * TypeTraits<T>::Value(acos), e13() * TypeTraits<T>::Value(acos), e23() * TypeTraits<T>::Value(acos) });
+        return Rotor<T>::Generator({ angle * e12(),  //
+                                     angle * e13(),  //
+                                     angle * e23() });
     }
 
     template <typename T>
