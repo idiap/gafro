@@ -233,7 +233,7 @@ namespace gafro
     template <class T, int... index>
     T Multivector<T, index...>::norm() const
     {
-        return sqrt(abs(squaredNorm()));
+        return sqrt(fabs(squaredNorm()));
     }
 
     template <class T, int... index>
@@ -247,7 +247,7 @@ namespace gafro
     {
         T squared_norm = squaredNorm();
 
-        return squared_norm > 0 ? sqrt(squared_norm) : -sqrt(abs(squared_norm));
+        return squared_norm > 0 ? sqrt(squared_norm) : -sqrt(fabs(squared_norm));
     }
 
     template <class T, int... index>
@@ -326,7 +326,7 @@ namespace gafro
 
         for (unsigned int k = 0; k < mv.vector().rows(); ++k)
         {
-            if (abs(mv.vector().coeff(k, 0)) < 1e-10)
+            if (fabs(mv.vector().coeff(k, 0)) < 1e-10)
             {
                 continue;
             }
@@ -335,7 +335,7 @@ namespace gafro
             {
                 ostream << (mv.vector().coeff(k, 0) >= 0 ? " + " : " - ");
 
-                ostream << abs(mv.vector().coeff(k, 0));
+                ostream << fabs(mv.vector().coeff(k, 0));
             }
             else
             {

@@ -42,7 +42,7 @@ namespace gafro
             switch (blade)
             {
             case blades::e23:
-                if (TypeTraits<T>::greaterEqual(abs(motor.template get<blades::scalar>()), TypeTraits<T>::Value(1.0 - 1e-10)))
+                if (TypeTraits<T>::greaterEqual(fabs(motor.template get<blades::scalar>()), TypeTraits<T>::Value(1.0 - 1e-10)))
                 {
                     return TypeTraits<T>::Zero();
                 }
@@ -50,7 +50,7 @@ namespace gafro
                 return motor.template get<blades::e23>() * TypeTraits<T>::Value(-2.0) * acos(motor.template get<blades::scalar>()) /
                        (sin(acos(motor.template get<blades::scalar>())) + TypeTraits<T>::Value(1e-10));
             case blades::e13:
-                if (TypeTraits<T>::greaterEqual(abs(motor.template get<blades::scalar>()), TypeTraits<T>::Value(1.0 - 1e-10)))
+                if (TypeTraits<T>::greaterEqual(fabs(motor.template get<blades::scalar>()), TypeTraits<T>::Value(1.0 - 1e-10)))
                 {
                     return TypeTraits<T>::Zero();
                 }
@@ -58,7 +58,7 @@ namespace gafro
                 return motor.template get<blades::e13>() * TypeTraits<T>::Value(-2.0) * acos(motor.template get<blades::scalar>()) /
                        (sin(acos(motor.template get<blades::scalar>())) + TypeTraits<T>::Value(1e-10));
             case blades::e12:
-                if (TypeTraits<T>::greaterEqual(abs(motor.template get<blades::scalar>()), TypeTraits<T>::Value(1.0 - 1e-10)))
+                if (TypeTraits<T>::greaterEqual(fabs(motor.template get<blades::scalar>()), TypeTraits<T>::Value(1.0 - 1e-10)))
                 {
                     return TypeTraits<T>::Zero();
                 }
