@@ -28,6 +28,7 @@ add_subdirectory(algebra)
 add_subdirectory(physics)
 add_subdirectory(robot)
 add_subdirectory(optimization)
+add_subdirectory(probabilistic)
 
 # include(GenerateExportHeader)
 # generate_export_header(${PROJECT_NAME})
@@ -69,6 +70,7 @@ target_link_libraries(${PROJECT_NAME}
             robot.hpp
             physics.hpp
             optimization.hpp
+            probabilistic.hpp
         DESTINATION
             ${GAFRO_PREFIX_INCLUDE}/gafro
         COMPONENT
