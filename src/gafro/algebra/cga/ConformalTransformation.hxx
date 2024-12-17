@@ -29,8 +29,7 @@ namespace gafro
     {}
 
     template <typename T>
-    ConformalTransformation<T>::ConformalTransformation(const Generator &generator)
-      : Base(Scalar<T>(TypeTraits<T>::One()) + Scalar<T>(TypeTraits<T>::Value(-0.5)) * generator)  //
+    ConformalTransformation<T>::ConformalTransformation(const Generator &generator) : Base(ConformalTransformation::exp(generator))
     {}
 
     template <typename T>
