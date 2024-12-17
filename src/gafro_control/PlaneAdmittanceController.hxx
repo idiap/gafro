@@ -36,7 +36,7 @@ namespace gafro_control
 
         gafro::Motor<double> ee_motor_reverse = robot_model->getEEMotor().reverse();
 
-        gafro::Motor<double> residual_motor = reference_plane_.computeMotor(ee_motor_reverse.apply(this->getReference()));
+        gafro::Motor<double> residual_motor = reference_plane_.getMotor(ee_motor_reverse.apply(this->getReference()));
 
         this->setResidualBivector(-residual_motor.log());
         this->setResidualTwist(robot_model->getEETwist());

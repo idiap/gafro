@@ -38,6 +38,18 @@ namespace gafro_control
 
         void setExternalWrench(const gafro::Wrench<double> &external_wrench);
 
+        void setInertia(const gafro::Inertia<double> &inertia);
+
+        void setDamping(const gafro::Inertia<double> &damping);
+
+        void setStiffness(const gafro::Inertia<double> &stiffness);
+
+        const gafro::Inertia<double> &getInertia() const;
+
+        const gafro::Inertia<double> &getDamping() const;
+
+        const gafro::Inertia<double> &getStiffness() const;
+
       protected:
         typename orwell::RobotState<dof>::Vector computeDesiredJointAcceleration();
 

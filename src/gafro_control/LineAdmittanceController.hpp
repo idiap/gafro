@@ -31,13 +31,20 @@ namespace gafro_control
       public:
         LineAdmittanceController(const sackmesser::Interface::Ptr &interface, const std::string &name);
 
+        void setReferenceLine(const gafro::Line<double> &reference_line);
+
       private:
         void computeResiduals();
 
         gafro::Motor<double> getReferenceFrame();
 
         gafro::Motor<double> reference_frame_;
+
+        gafro::Line<double> reference_line_;
     };
+
+    template <int dof>
+    using LineAdmittancePositionController = gafro_control::LineAdmittanceController<dof, orwell::AdmittanceControllerType::POSITION>;
 
 }  // namespace gafro_control
 
