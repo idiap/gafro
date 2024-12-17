@@ -60,8 +60,11 @@ namespace gafro
     template <class T>
     Motor<T> Line<T>::getMotor(const Line &other) const
     {
-        auto l2l1 = (gafro::Scalar<double>(1.0) + other * (*this)).evaluate();
-        auto l1l2 = (gafro::Scalar<double>(1.0) + (*this) * other).evaluate();
+        Line<T> l1 = this->normalized();
+        Line<T> l2 = other.normalized();
+
+        auto l2l1 = (gafro::Scalar<double>(1.0) + l2 * l1).evaluate();
+        auto l1l2 = (gafro::Scalar<double>(1.0) + l1 * l2).evaluate();
 
         auto k = (l1l2 + l2l1).evaluate();
 

@@ -60,6 +60,11 @@ namespace gafro_control
 
         computeResiduals();
 
+        if (residual_bivector_.vector().norm() < 1e-5)
+        {
+            residual_bivector_ = gafro::Twist<double>::Zero();
+        }
+
         gafro::Twist<double> desired_ee_acceleration =
           inertia_(desired_wrench_ - external_wrench_ - stiffness_(residual_bivector_) - damping_(residual_twist_));
 
@@ -93,7 +98,44 @@ namespace gafro_control
     template <int dof, class Reference, orwell::AdmittanceControllerType type>
     void AdmittanceController<dof, Reference, type>::setExternalWrench(const gafro::Wrench<double> &external_wrench)
     {
-        external_wrench_ = external_wrench;
+        external_wrench_ =
+          external_wrench.transform(std::dynamic_pointer_cast<gafro_control::RobotModel<dof>>(this->getRobotModel())->getEEMotor().reverse());
+    }
+
+    template <int dof, class Reference, orwell::AdmittanceControllerType type>
+    void AdmittanceController<dof, Reference, type>::setInertia(const gafro::Inertia<double> &inertia)
+    {
+        inertia_ = inertia;
+    }
+
+    template <int dof, class Reference, orwell::AdmittanceControllerType type>
+    void AdmittanceController<dof, Reference, type>::setDamping(const gafro::Inertia<double> &damping)
+    {
+        damping_ = damping;
+    }
+
+    template <int dof, class Reference, orwell::AdmittanceControllerType type>
+    void AdmittanceController<dof, Reference, type>::setStiffness(const gafro::Inertia<double> &stiffness)
+    {
+        stiffness_ = stiffness;
+    }
+
+    template <int dof, class Reference, orwell::AdmittanceControllerType type>
+    const gafro::Inertia<double> &AdmittanceController<dof, Reference, type>::getInertia() const
+    {
+        return inertia_;
+    }
+
+    template <int dof, class Reference, orwell::AdmittanceControllerType type>
+    const gafro::Inertia<double> &AdmittanceController<dof, Reference, type>::getDamping() const
+    {
+        return damping_;
+    }
+
+    template <int dof, class Reference, orwell::AdmittanceControllerType type>
+    const gafro::Inertia<double> &AdmittanceController<dof, Reference, type>::getStiffness() const
+    {
+        return stiffness_;
     }
 
 }  // namespace gafro_control

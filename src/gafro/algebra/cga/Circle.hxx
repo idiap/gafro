@@ -59,11 +59,11 @@ namespace gafro
     }
 
     template <typename T>
-    auto Circle<T>::getTransformation(const Circle &target) const
+    ConformalTransformation<T> Circle<T>::getConformalTransformation(const Circle &target) const
     {
         if (this->norm() < 1e-5 || target.norm() < 1e-5)
         {
-            return (Scalar<T>::Zero() + ConformalGeometricAlgebra::Grade<T, 2>::Zero() + ConformalGeometricAlgebra::Grade<T, 4>::Zero()).evaluate();
+            return ConformalTransformation<T>::Zero();
         }
 
         Circle<T> circle = this->normalized();
@@ -88,15 +88,51 @@ namespace gafro
         T beta = sqrt(TypeTraits<T>::Value(1.0) / (TypeTraits<T>::Value(2.0) * lambda) * (sqrt(mu) - k0.template get<blades::scalar>()));
 
         return (Scalar<T>(TypeTraits<T>::Value(1.0) / sqrt(mu)) *
-                (Scalar<T>(TypeTraits<T>::Value(-1.0) / (TypeTraits<T>::Value(2.0) * beta)) + beta * k4) *
+                (Scalar<T>(TypeTraits<T>::Value(-1.0) / (TypeTraits<T>::Value(2.0) * beta)) + Scalar<T>(beta) * k4) *
                 (Scalar<T>(TypeTraits<T>::Value(1.0)) + target_normalized * circle))
           .evaluate();
+    }
+
+    template <class T>
+    Motor<T> Circle<T>::getMotor(const Circle &target) const
+    {
+        Vector<T> n1 = this->getPlane().getNormal().normalized();
+        Vector<T> n2 = target.getPlane().getNormal().normalized();
+        Rotor<T> rotor = Rotor<T>(Scalar<T>(TypeTraits<T>::Value(1.0)) + (n1 | n2) - (n1 ^ n2)).normalized();
+
+        Circle circle = rotor.apply(*this);
+
+        Translator<T> translator = Translator<T>::exp(target.getCenter().getEuclideanPoint() - circle.getCenter().getEuclideanPoint());
+
+        return Motor<T>(translator, rotor);
+    }
+
+    template <class T>
+    SimilarityTransformation<T> Circle<T>::getSimilarityTransformation(const Circle &target) const
+    {
+        Dilator<T> dilator(target.getRadius() / this->getRadius());
+
+        Circle<T> circle = dilator.apply(*this);
+
+        Motor<T> motor = circle.getMotor(target);
+
+        return motor * dilator;
     }
 
     template <class T>
     Circle<T> Circle<T>::Random()
     {
         return Circle(Point<T>::Random(), Point<T>::Random(), Point<T>::Random());
+    }
+
+    template <class T>
+    Circle<T> Circle<T>::Unit(const Motor<T> &motor, const T &radius)
+    {
+        Point<T> p1(radius * TypeTraits<T>::Value(cos(0.0)), radius * TypeTraits<T>::Value(sin(0.0)), TypeTraits<T>::Value(0.0));
+        Point<T> p2(radius * TypeTraits<T>::Value(cos(1.0)), radius * TypeTraits<T>::Value(sin(1.0)), TypeTraits<T>::Value(0.0));
+        Point<T> p3(radius * TypeTraits<T>::Value(cos(2.0)), radius * TypeTraits<T>::Value(sin(2.0)), TypeTraits<T>::Value(0.0));
+
+        return motor.apply(Circle<T>(p1, p2, p3));
     }
 
 }  // namespace gafro

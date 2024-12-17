@@ -82,7 +82,7 @@ namespace gafro
 
         Multivector();
 
-        Multivector(const double &value)
+        Multivector(const T &value)
             requires(sizeof...(index) == 1);
 
         Multivector(const Parameters &parameters);

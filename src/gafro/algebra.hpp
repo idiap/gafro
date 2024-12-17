@@ -54,6 +54,7 @@
 #include <gafro/algebra/cga/MotorGenerator.hxx>
 #include <gafro/algebra/cga/Rotor.hxx>
 #include <gafro/algebra/cga/RotorGenerator.hxx>
+#include <gafro/algebra/cga/SimilarityTransformation.hpp>
 #include <gafro/algebra/cga/Translator.hxx>
 #include <gafro/algebra/cga/TranslatorGenerator.hxx>
 #include <gafro/algebra/cga/Transversion.hpp>

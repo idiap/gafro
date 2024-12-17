@@ -63,6 +63,9 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
             Transversion.hpp
             Transversion.hxx
 
+            SimilarityTransformation.hpp
+            SimilarityTransformation.hxx
+
             ConformalTransformation.hpp
             ConformalTransformation.hxx
 
