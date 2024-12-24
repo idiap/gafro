@@ -13,7 +13,7 @@ namespace gafro::probabilistic
       public:
         using Mean = typename Multivector<T>::Type;
         constexpr static int size = Mean::size;
-        using Covariance = Eigen::Matrix<double, size, size>;
+        using Covariance = Eigen::Matrix<T, size, size>;
 
         MultivectorGaussian();
 
@@ -31,9 +31,13 @@ namespace gafro::probabilistic
 
         const Covariance &getCovariance() const;
 
-        T getProbability(const gafro::Point<double> &point) const;
+        T getProbability(const gafro::Point<T> &point) const;
 
         T getProbability(const gafro::Vector<T> &vector) const;
+
+        T getDistance(const gafro::Point<T> &point) const;
+
+        T getDistance(const gafro::Vector<T> &vector) const;
 
         T getLikelihood(const Mean &sample) const;
 
@@ -118,18 +122,18 @@ namespace gafro::probabilistic
     }
 
     template <class T, template <class S> class Multivector>
-    T MultivectorGaussian<T, Multivector>::getProbability(const gafro::Point<double> &point) const
+    T MultivectorGaussian<T, Multivector>::getProbability(const gafro::Point<T> &point) const
     {
-        using Result = typename gafro::OuterProduct<Mean, gafro::Point<double>>::Type;
+        using Result = typename gafro::OuterProduct<Mean, gafro::Point<T>>::Type;
         constexpr static int size = Result::size;
 
         auto expression = this->getMean() ^ point;
         auto left_jacobian = expression.getLeftJacobian();
 
-        Eigen::Matrix<double, size, size> covariance =
-          left_jacobian * covariance_ * left_jacobian.transpose() + 1e-7 * Eigen::Matrix<double, size, size>::Identity();
+        Eigen::Matrix<T, size, size> covariance =
+          left_jacobian * covariance_ * left_jacobian.transpose() + 1e-7 * Eigen::Matrix<T, size, size>::Identity();
 
-        double probability = (expression.vector().transpose() * covariance.inverse() * expression.vector()).value();
+        T probability = (expression.vector().transpose() * covariance.inverse() * expression.vector()).value();
 
         return std::exp(-0.5 * probability);
     }
@@ -137,17 +141,41 @@ namespace gafro::probabilistic
     template <class T, template <class S> class Multivector>
     T MultivectorGaussian<T, Multivector>::getProbability(const gafro::Vector<T> &vector) const
     {
-        gafro::Point<double> point(vector.template get<gafro::blades::e1>(), vector.template get<gafro::blades::e2>(),
-                                   vector.template get<gafro::blades::e3>());
+        gafro::Point<T> point(vector.template get<gafro::blades::e1>(), vector.template get<gafro::blades::e2>(),
+                              vector.template get<gafro::blades::e3>());
 
         return getProbability(point);
+    }
+
+    template <class T, template <class S> class Multivector>
+    T MultivectorGaussian<T, Multivector>::getDistance(const gafro::Point<T> &point) const
+    {
+        using Result = typename gafro::OuterProduct<Mean, gafro::Point<T>>::Type;
+        constexpr static int size = Result::size;
+
+        auto expression = this->getMean() ^ point;
+        auto left_jacobian = expression.getLeftJacobian();
+
+        Eigen::Matrix<T, size, size> covariance =
+          left_jacobian * covariance_ * left_jacobian.transpose() + 1e-7 * Eigen::Matrix<T, size, size>::Identity();
+
+        return (expression.vector().transpose() * covariance.inverse() * expression.vector()).value();
+    }
+
+    template <class T, template <class S> class Multivector>
+    T MultivectorGaussian<T, Multivector>::getDistance(const gafro::Vector<T> &vector) const
+    {
+        gafro::Point<T> point(vector.template get<gafro::blades::e1>(), vector.template get<gafro::blades::e2>(),
+                              vector.template get<gafro::blades::e3>());
+
+        return getDistance(point);
     }
 
     template <class T, template <class S> class Multivector>
     T MultivectorGaussian<T, Multivector>::getLikelihood(const Mean &sample) const
     {
         Eigen::Vector<T, size> difference = (this->getMean() - sample).vector();
-        Eigen::Matrix<T, size, size> covariance = this->getCovariance() + Eigen::Matrix<double, size, size>::Identity();
+        Eigen::Matrix<T, size, size> covariance = this->getCovariance() + Eigen::Matrix<T, size, size>::Identity();
 
         return std::exp(-0.5 * (difference.transpose() * covariance.inverse() * difference).value());
     }
@@ -155,7 +183,7 @@ namespace gafro::probabilistic
     template <class T, template <class S> class Multivector>
     gafro::Point<T> MultivectorGaussian<T, Multivector>::getGradient(const gafro::Point<T> &point) const
     {
-        using Result = typename gafro::OuterProduct<Mean, gafro::Point<double>>::Type;
+        using Result = typename gafro::OuterProduct<Mean, gafro::Point<T>>::Type;
         constexpr static int rsize = Result::size;
 
         auto expr = this->getMean() ^ point;
@@ -164,24 +192,24 @@ namespace gafro::probabilistic
         auto left_jacobian = expr.getLeftJacobian();
         auto right_jacobian = expr.getRightJacobian();
 
-        Eigen::Matrix<double, rsize, rsize> metric =
-          (left_jacobian * covariance_ * left_jacobian.transpose() + 1e-7 * Eigen::Matrix<double, rsize, rsize>::Identity()).inverse();
+        Eigen::Matrix<T, rsize, rsize> metric =
+          (left_jacobian * covariance_ * left_jacobian.transpose() + 1e-7 * Eigen::Matrix<T, rsize, rsize>::Identity()).inverse();
 
-        Eigen::Matrix<double, 5, 1> gradient = Eigen::Matrix<double, 5, 1>::Zero();
+        Eigen::Matrix<T, 5, 1> gradient = Eigen::Matrix<T, 5, 1>::Zero();
 
-        for (unsigned i = 0; i < 5; ++i)
+        for (unsigned k = 0; k < 5; ++k)
         {
-            Eigen::Matrix<double, rsize, size> left_hessian = Eigen::Matrix<double, rsize, size>::Zero();
+            Eigen::Matrix<T, rsize, size> left_hessian = Eigen::Matrix<T, rsize, size>::Zero();
 
             for (unsigned j = 0; j < rsize; ++j)
             {
-                left_hessian.row(j) = tensor[j].col(i).transpose();
+                left_hessian.row(j) = tensor[j].col(k).transpose();
             }
 
-            Eigen::Matrix<double, rsize, rsize> metric_gradient =
+            Eigen::Matrix<T, rsize, rsize> metric_gradient =
               left_hessian * covariance_ * left_jacobian.transpose() + left_jacobian * covariance_ * left_hessian.transpose();
 
-            gradient[i] = -point.vector().transpose() * right_jacobian.transpose() * metric.transpose() * metric_gradient * metric * right_jacobian *
+            gradient[k] = -point.vector().transpose() * right_jacobian.transpose() * metric.transpose() * metric_gradient * metric * right_jacobian *
                           point.vector();
         }
 
@@ -193,11 +221,11 @@ namespace gafro::probabilistic
     template <class T, template <class S> class Multivector>
     gafro::Vector<T> MultivectorGaussian<T, Multivector>::getGradient(const gafro::Vector<T> &vector) const
     {
-        gafro::Point<double> point(vector.template get<gafro::blades::e1>(),  //
-                                   vector.template get<gafro::blades::e2>(),  //
-                                   vector.template get<gafro::blades::e3>());
+        gafro::Point<T> point(vector.template get<gafro::blades::e1>(),  //
+                              vector.template get<gafro::blades::e2>(),  //
+                              vector.template get<gafro::blades::e3>());
 
-        Eigen::Matrix<double, 5, 3> jacobian = point.getEmbeddingJacobian();
+        Eigen::Matrix<T, 5, 3> jacobian = point.getEmbeddingJacobian();
 
         return Eigen::Vector3d(jacobian.transpose() * getGradient(point).vector());
     }
