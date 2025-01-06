@@ -46,7 +46,7 @@ namespace gafro
     template <typename T>
     T Sphere<T>::getRadius() const
     {
-        return sqrt(fabs(((*this) * Scalar<T>(-1.0 / (this->dual() | Ei<T>(1.0)).template get<blades::scalar>())).evaluate().squaredNorm()));
+        return sqrt(abs(((*this) * Scalar<T>(-1.0 / (this->dual() | Ei<T>(1.0)).template get<blades::scalar>())).evaluate().squaredNorm()));
     }
 
     template <typename T>

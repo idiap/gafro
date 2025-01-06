@@ -49,7 +49,7 @@ namespace gafro
     {
         auto mv = ((*this) * (Scalar<T>(T(-1.0)) * ((*this).dual() | Ei<T>(T(1.0))).evaluate().inverse())).evaluate();
 
-        return sqrt(fabs((mv * mv).template get<blades::scalar>()));
+        return sqrt(abs((mv * mv).template get<blades::scalar>()));
     }
 
     template <typename T>

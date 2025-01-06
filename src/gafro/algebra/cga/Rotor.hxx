@@ -62,7 +62,7 @@ namespace gafro
     {
         T angle = acos(scalar());
 
-        if (fabs(acos) < 1e-6)
+        if (abs(angle) < 1e-6)
         {
             return Rotor<T>::Generator({ e12(), e13(), e23() });
         }
