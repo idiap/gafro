@@ -50,7 +50,7 @@ namespace gafro
 
         for (unsigned int k = 0; k < mv.vector().rows(); ++k)
         {
-            if (abs(mv.vector().coeff(k, 0)) < 1e-10)
+            if (fabs(mv.vector().coeff(k, 0)) < 1e-10)
             {
                 continue;
             }
@@ -59,7 +59,7 @@ namespace gafro
             {
                 ostream << (mv.vector().coeff(k, 0) >= 0 ? " + " : " - ");
 
-                ostream << abs(mv.vector().coeff(k, 0));
+                ostream << fabs(mv.vector().coeff(k, 0));
             }
             else
             {
