@@ -432,7 +432,7 @@ namespace gafro
     template <class T, int... index>
     T Algebra<M>::Multivector<T, index...>::norm() const
     {
-        return sqrt(fabs(squaredNorm()));
+        return sqrt(abs(squaredNorm()));
     }
 
     template <class M>
@@ -448,7 +448,7 @@ namespace gafro
     {
         T squared_norm = squaredNorm();
 
-        return squared_norm > 0 ? sqrt(squared_norm) : -sqrt(fabs(squared_norm));
+        return squared_norm > 0 ? sqrt(squared_norm) : -sqrt(abs(squared_norm));
     }
 
     template <class M>
