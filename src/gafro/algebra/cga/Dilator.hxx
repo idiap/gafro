@@ -46,7 +46,7 @@ namespace gafro
     Dilator<T> Dilator<T>::exp(const Generator &generator)
     {
         return Scalar<T>(cosh(TypeTraits<T>::Value(0.5) * generator.norm())) -
-               sinh(TypeTraits<T>::Value(0.5) * generator.norm()) * generator / generator.signedNorm();
+               sinh(TypeTraits<T>::Value(0.5) * generator.norm()) * generator.normalized();
     }
 
 }  // namespace gafro

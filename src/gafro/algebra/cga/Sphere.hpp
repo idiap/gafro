@@ -21,13 +21,12 @@
 
 #include <gafro/algebra/Multivector.hpp>
 #include <gafro/algebra/cga/Blades.hpp>
+#include <gafro/algebra/cga/SimilarityTransformation.hpp>
 
 namespace gafro
 {
     template <typename T>
     class Point;
-    // template <typename T>
-    // class Circle;
 
     template <typename T>
     class Sphere : public Multivector<T, blades::e0123, blades::e012i, blades::e013i, blades::e023i, blades::e123i>
@@ -50,6 +49,8 @@ namespace gafro
         T getRadius() const;
 
         Point<T> getCenter() const;
+
+        SimilarityTransformation<T> getSimilarityTransformation(const Sphere &target) const;
 
       protected:
       private:

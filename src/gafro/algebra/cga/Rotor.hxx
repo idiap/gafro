@@ -131,4 +131,10 @@ namespace gafro
         return Eigen::Matrix<T, 3, 3>(quaternion());
     }
 
+    template <typename T>
+    Rotor<T> Rotor<T>::Unit()
+    {
+        return Rotor<T>({ 1.0, 0.0, 0.0, 0.0 });
+    }
+
 }  // namespace gafro
