@@ -34,13 +34,22 @@ namespace gafro
 
         using Base::Base;
 
+        using Generator = Multivector<T, blades::e0i>;
+
         Dilator();
 
+        Dilator(const T &dilation);
+
         virtual ~Dilator();
+
+        Generator logarithm() const;
 
       protected:
       private:
       public:
+        static Dilator exp(const Generator &generator);
     };
 
 }  // namespace gafro
+
+#include <gafro/algebra/cga/Dilator.hxx>

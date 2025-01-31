@@ -70,6 +70,10 @@ namespace gafro
       protected:
       private:
       public:
+        static Exponential exp(const T &e12, const T &e13, const T &e23);
+
+        static Exponential exp(const Eigen::Vector<T, 3> &generator);
+
         static Exponential exp(const Generator &generator);
 
         static Rotor fromQuaternion(const Eigen::Quaternion<T> &quaternion);

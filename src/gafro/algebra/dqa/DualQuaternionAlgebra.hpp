@@ -86,7 +86,7 @@ std::ostream &operator<<(std::ostream &ostream, const gafro::dqa::Multivector<do
 
     for (unsigned int k = 0; k < dq.vector().rows(); ++k)
     {
-        if (fabs(dq.vector().coeff(k, 0)) < 1e-10)
+        if (abs(dq.vector().coeff(k, 0)) < 1e-10)
         {
             continue;
         }
@@ -95,7 +95,7 @@ std::ostream &operator<<(std::ostream &ostream, const gafro::dqa::Multivector<do
         {
             ostream << (dq.vector().coeff(k, 0) >= 0 ? " + " : " - ");
 
-            ostream << fabs(dq.vector().coeff(k, 0));
+            ostream << abs(dq.vector().coeff(k, 0));
         }
         else
         {

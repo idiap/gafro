@@ -24,13 +24,13 @@
 namespace gafro_control
 {
 
-    template <int dof>
-    MotorAdmittanceController<dof>::MotorAdmittanceController(const sackmesser::Interface::Ptr &interface, const std::string &name)
-      : AdmittanceController<dof, gafro::Motor<double>>(interface, name)
+    template <int dof, orwell::AdmittanceControllerType type>
+    MotorAdmittanceController<dof, type>::MotorAdmittanceController(const sackmesser::Interface::Ptr &interface, const std::string &name)
+      : AdmittanceController<dof, gafro::Motor<double>, type>(interface, name)
     {}
 
-    template <int dof>
-    void MotorAdmittanceController<dof>::computeResiduals()
+    template <int dof, orwell::AdmittanceControllerType type>
+    void MotorAdmittanceController<dof, type>::computeResiduals()
     {
         auto robot = std::dynamic_pointer_cast<gafro_control::RobotModel<dof>>(this->getRobotModel())->getManipulator();
 
@@ -42,17 +42,16 @@ namespace gafro_control
         gafro::Motor<double> ee_motor = robot->getEEMotor(q);
         gafro::Motor<double> ee_motor_dt = gafro::Motor<double>::Parameters(robot->getEEAnalyticJacobian(q).embed() * dq);
 
-        gafro::Motor<double> residual_motor = target_motor.reverse() * ee_motor;
-        gafro::Motor<double> residual_motor_dt = target_motor.reverse() * ee_motor_dt;
+        gafro::Motor<double> residual_motor = ee_motor.reverse() * target_motor;
 
-        this->setResidualBivector(residual_motor.log());
-        this->setResidualTwist(-2.0 * gafro::Twist<double>(residual_motor.reverse() * residual_motor_dt));
+        this->setResidualBivector(-residual_motor.log());
+        this->setResidualTwist(-2.0 * gafro::Twist<double>(ee_motor.reverse() * ee_motor_dt));
     }
 
-    template <int dof>
-    gafro::Motor<double> MotorAdmittanceController<dof>::getReferenceFrame()
+    template <int dof, orwell::AdmittanceControllerType type>
+    gafro::Motor<double> MotorAdmittanceController<dof, type>::getReferenceFrame()
     {
-        return this->getReference();
+        return std::dynamic_pointer_cast<gafro_control::RobotModel<dof>>(this->getRobotModel())->getEEMotor();
     }
 
 }  // namespace gafro_control

@@ -77,11 +77,15 @@ namespace gafro
 
         Vector getRandomConfiguration() const;
 
+        Vector getJointLimitsMin() const;
+
+        Vector getJointLimitsMax() const;
+
         //
 
-        KinematicChain<double> *getEEKinematicChain();
+        KinematicChain<T> *getEEKinematicChain();
 
-        const KinematicChain<double> *getEEKinematicChain() const;
+        const KinematicChain<T> *getEEKinematicChain() const;
 
         //
 
@@ -103,6 +107,16 @@ namespace gafro
 
         //
 
+        Eigen::Matrix<T, 6, 6> getEEVelocityManipulability(const Vector &position) const;
+
+        Eigen::Matrix<T, 6, 6> getEEForceManipulability(const Vector &position) const;
+
+        Eigen::Matrix<T, 6, 6> getEEDynamicManipulability(const Vector &position) const;
+
+        Eigen::Matrix<T, 7, 7> getEEKinematicNullspaceProjector(const Vector &position) const;
+
+        //
+
         Vector getJointTorques(const Vector &position,                         //
                                const Vector &velocity,                         //
                                const Vector &acceleration,                     //
@@ -112,6 +126,8 @@ namespace gafro
         Vector getJointAccelerations(const Vector &position,  //
                                      const Vector &velocity,  //
                                      const Vector &torque) const;
+
+        Eigen::Matrix<T, dof, dof> getMassMatrix(const Eigen::Vector<T, dof> &position) const;
 
       private:
         std::string ee_joint_name_;

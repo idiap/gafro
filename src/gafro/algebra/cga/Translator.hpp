@@ -51,6 +51,10 @@ namespace gafro
       protected:
       private:
       public:
+        static Translator exp(const T &e1i, const T &e2i, const T &e3i);
+
+        static Translator exp(const Eigen::Vector<T, 3> &generator);
+
         static Translator exp(const Generator &generator);
     };
 

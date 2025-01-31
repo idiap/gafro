@@ -82,7 +82,8 @@ namespace gafro
 
         Multivector();
 
-        Multivector(const int &value);
+        Multivector(const T &value)
+            requires(sizeof...(index) == 1);
 
         Multivector(const Parameters &parameters);
 
@@ -132,6 +133,21 @@ namespace gafro
         Multivector operator*(const T &scalar) const;
 
         Multivector operator/(const T &scalar) const;
+
+        template <template <class S> class MType, int rows, int cols>
+        auto operator*(const MultivectorMatrix<T, MType, rows, cols> &matrix) const;
+
+        template <template <class S> class MType, int rows, int cols>
+        auto operator|(const MultivectorMatrix<T, MType, rows, cols> &matrix) const;
+
+        template <template <class S> class MType, int rows, int cols>
+        auto operator^(const MultivectorMatrix<T, MType, rows, cols> &matrix) const;
+
+        template <template <class S> class MType, int rows, int cols>
+        auto operator+(const MultivectorMatrix<T, MType, rows, cols> &matrix) const;
+
+        template <template <class S> class MType, int rows, int cols>
+        auto operator-(const MultivectorMatrix<T, MType, rows, cols> &matrix) const;
 
         //
 
@@ -215,6 +231,13 @@ namespace gafro
 
         template <int blade>
             requires(has(blade))  //
+        Multivector<T, blade> extract() const
+        {
+            return Multivector<T, blade>(get<blade>());
+        }
+
+        template <int blade>
+            requires(has(blade))  //
         Multivector<T, blade> getBlade() const
         {
             return typename Algebra<M>::template Multivector<T, blade>((Eigen::Matrix<T, 1, 1>() << this->template get<blade>()).finished());
@@ -264,6 +287,13 @@ namespace gafro
 
       public:
         auto getBlades() const;
+
+        constexpr static int getGrade()
+        {
+            std::array<int, sizeof...(index)> blades = { MAlgebra::BladeBitmap::template getGrade<index>()... };
+
+            return *std::max_element(blades.begin(), blades.end());
+        }
 
       private:
         template <std::size_t... i>

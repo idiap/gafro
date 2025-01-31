@@ -65,8 +65,8 @@ namespace gafro_control
       public:
         using Ptr = std::shared_ptr<RobotModel>;
 
-        template <template <class> class Manipulator>
-        static Ptr create();
+        template <template <class> class Manipulator, class... Args>
+        static Ptr create(Args... args);
     };
 
 }  // namespace gafro_control
