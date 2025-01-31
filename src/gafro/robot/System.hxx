@@ -44,7 +44,9 @@ namespace gafro
     System<T>::System(System &&other)
     {
         if (other.dof_ == 0)
+        {
             other.finalize();
+        }
 
         *this = std::move(other);
     }
@@ -53,7 +55,9 @@ namespace gafro
     System<T> &System<T>::operator=(System &&other)
     {
         if (other.dof_ == 0)
+        {
             other.finalize();
+        }
 
         links_ = std::move(other.links_);
         joints_ = std::move(other.joints_);
@@ -128,7 +132,7 @@ namespace gafro
 
             if (joint->isActuated())
             {
-                dof_++;
+                joint->setIndex(dof_++);
             }
         }
 
@@ -148,6 +152,12 @@ namespace gafro
     std::vector<std::unique_ptr<Joint<T>>> &System<T>::getJoints()
     {
         return joints_;
+    }
+
+    template <class T>
+    const int &System<T>::getDoF() const
+    {
+        return dof_;
     }
 
     template <class T>
@@ -288,16 +298,9 @@ namespace gafro
 
         auto joint = link->getParentJoint();
 
-        int actuated_joints = 0;
-
         while (joint)
         {
             joints.push_back(joint);
-
-            if (joint->isActuated())
-            {
-                actuated_joints++;
-            }
 
             if (joint->getParentLink())
             {
@@ -311,9 +314,10 @@ namespace gafro
     }
 
     template <class T>
-    template <int dof>
-    Motor<T> System<T>::computeLinkMotor(const std::string &name, const Eigen::Vector<T, dof> &position) const
+    Motor<T> System<T>::computeLinkMotor(const std::string &name, const Eigen::Vector<T, Eigen::Dynamic> &position) const
     {
+        assert(dof_ == position.rows());
+
         std::vector<const Joint<T> *> joints = getJointChain(name);
 
         if (joints.empty())
@@ -323,13 +327,11 @@ namespace gafro
 
         Motor<T> motor;
 
-        int j = 0;
-
         for (const Joint<T> *joint : joints)
         {
             if (joint->isActuated())
             {
-                motor = motor * joint->getMotor(position[j++]);
+                motor = motor * joint->getMotor(position[joint->getIndex()]);
             }
             else
             {
@@ -369,6 +371,14 @@ namespace gafro
                                                                                                        const Eigen::Vector<T, dof> &position) const
     {
         return getKinematicChain(name)->computeGeometricJacobianBody(position);
+    }
+
+    template <class T>
+    template <int dof>
+    MultivectorMatrix<T, MotorGenerator, 1, dof> System<T>::computeKinematicChainGeometricJacobianTimeDerivative(
+      const std::string &name, const Eigen::Vector<T, dof> &position, const Eigen::Vector<T, dof> &velocity, const Motor<T> &reference) const
+    {
+        return getKinematicChain(name)->computeKinematicChainGeometricJacobianTimeDerivative(position, velocity, reference);
     }
 
     template <class T>
@@ -479,7 +489,7 @@ namespace gafro
 
         if (kinematic_chain_name.empty())
         {
-            for (auto& chain : kinematic_chains_)
+            for (auto &chain : kinematic_chains_)
             {
                 if (chain->getDoF() == dof)
                 {
@@ -524,7 +534,7 @@ namespace gafro
 
         if (kinematic_chain_name.empty())
         {
-            for (auto& chain : kinematic_chains_)
+            for (auto &chain : kinematic_chains_)
             {
                 if (chain->getDoF() == dof)
                 {
@@ -558,7 +568,7 @@ namespace gafro
 
             frames[j] = joints[j]->getMotor(position[j]).reverse();
             twist = frames[j].apply(twist) + Scalar<T>(velocity[j]) * axis;
-            twist_dt = frames[j].apply(twist_dt) + Scalar<T>(velocity[j]) * axis.commutatorProduct(twist);
+            twist_dt = frames[j].apply(twist_dt) + Scalar<T>(velocity[j]) * axis.commute(twist);
 
             bias_wrench[j] = inertia[j](twist_dt) - twist.commute(inertia[j](twist));
         }
@@ -645,9 +655,23 @@ namespace gafro
     }
 
     template <class T>
+    template <int dof>
+    Eigen::Matrix<T, dof, dof> System<T>::computeKinematicChainMassMatrix(const std::string &name, const Eigen::Vector<T, dof> &position) const
+    {
+        auto kinematic_chain = getKinematicChain(name);
+
+        if (dof != kinematic_chain->getDoF())
+        {
+            throw std::runtime_error("Incorrect number of DOF");
+        }
+
+        return kinematic_chain->computeMassMatrix(position);
+    }
+
+    template <class T>
     void System<T>::createKinematicChain(const std::string &joint_name)
     {
-        auto kinematic_chain = std::make_unique<KinematicChain<T>>();
+        auto kinematic_chain = std::make_unique<KinematicChain<T>>(joint_name);
 
         std::vector<const Joint<T> *> joints;
 

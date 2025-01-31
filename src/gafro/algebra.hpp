@@ -19,36 +19,42 @@
 
 #pragma once
 
-#include <gafro/algebra/Blades.hpp>
 #include <gafro/algebra/Multivector.hxx>
 #include <gafro/algebra/MultivectorMatrix.hpp>
 //
 #include <gafro/algebra/AbstractMultivector.hxx>
 //
-#include <gafro/algebra/expressions/AbstractExpression.hxx>
-#include <gafro/algebra/expressions/CommutatorProduct.hpp>
-#include <gafro/algebra/expressions/GeometricProduct.hpp>
-#include <gafro/algebra/expressions/InnerProduct.hpp>
-#include <gafro/algebra/expressions/OuterProduct.hpp>
-#include <gafro/algebra/expressions/Reflection.hpp>
-#include <gafro/algebra/expressions/Reverse.hpp>
-#include <gafro/algebra/expressions/SandwichProduct.hpp>
-#include <gafro/algebra/expressions/Sum.hpp>
+#include <gafro/algebra/AbstractExpression.hxx>
+#include <gafro/algebra/CommutatorProduct.hpp>
+#include <gafro/algebra/GeometricProduct.hpp>
+#include <gafro/algebra/Grade.hpp>
+#include <gafro/algebra/InnerProduct.hpp>
+#include <gafro/algebra/OuterProduct.hpp>
+#include <gafro/algebra/Reflection.hpp>
+#include <gafro/algebra/Reverse.hpp>
+#include <gafro/algebra/SandwichProduct.hpp>
+#include <gafro/algebra/Sum.hpp>
 //
 #include <gafro/algebra/Operators.hxx>
 //
-#include <gafro/algebra/Circle.hxx>
-#include <gafro/algebra/DirectionVector.hxx>
-#include <gafro/algebra/Line.hxx>
-#include <gafro/algebra/Plane.hxx>
-#include <gafro/algebra/Point.hxx>
-#include <gafro/algebra/PointPair.hxx>
-#include <gafro/algebra/Sphere.hxx>
-#include <gafro/algebra/Vector.hxx>
+#include <gafro/algebra/cga/Blades.hpp>
+#include <gafro/algebra/cga/Circle.hxx>
+#include <gafro/algebra/cga/DirectionVector.hxx>
+#include <gafro/algebra/cga/Line.hxx>
+#include <gafro/algebra/cga/Plane.hxx>
+#include <gafro/algebra/cga/Point.hxx>
+#include <gafro/algebra/cga/PointPair.hxx>
+#include <gafro/algebra/cga/Sphere.hxx>
+#include <gafro/algebra/cga/TangentVector.hxx>
+#include <gafro/algebra/cga/Vector.hxx>
 //
-#include <gafro/algebra/Motor.hxx>
-#include <gafro/algebra/MotorGenerator.hxx>
-#include <gafro/algebra/Rotor.hxx>
-#include <gafro/algebra/RotorGenerator.hxx>
-#include <gafro/algebra/Translator.hxx>
-#include <gafro/algebra/TranslatorGenerator.hxx>
+#include <gafro/algebra/cga/ConformalTransformation.hpp>
+#include <gafro/algebra/cga/Dilator.hpp>
+#include <gafro/algebra/cga/Motor.hxx>
+#include <gafro/algebra/cga/MotorGenerator.hxx>
+#include <gafro/algebra/cga/Rotor.hxx>
+#include <gafro/algebra/cga/RotorGenerator.hxx>
+#include <gafro/algebra/cga/SimilarityTransformation.hpp>
+#include <gafro/algebra/cga/Translator.hxx>
+#include <gafro/algebra/cga/TranslatorGenerator.hxx>
+#include <gafro/algebra/cga/Transversion.hpp>

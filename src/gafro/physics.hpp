@@ -20,5 +20,5 @@
 #pragma once
 
 #include <gafro/physics/Inertia.hpp>
-#include <gafro/physics/Twist.hxx>
+#include <gafro/physics/Twist.hpp>
 #include <gafro/physics/Wrench.hxx>

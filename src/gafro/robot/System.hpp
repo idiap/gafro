@@ -57,6 +57,8 @@ namespace gafro
 
         void setName(const std::string &name);
 
+        const int &getDoF() const;
+
         const Link<T> &getBaseLink() const;
 
         Link<T> *getLink(const std::string &name);
@@ -88,8 +90,7 @@ namespace gafro
 
         //
 
-        template <int dof>
-        Motor<T> computeLinkMotor(const std::string &name, const Eigen::Vector<T, dof> &position) const;
+        Motor<T> computeLinkMotor(const std::string &name, const Eigen::Vector<T, Eigen::Dynamic> &position) const;
 
         //
 
@@ -109,6 +110,12 @@ namespace gafro
                                                                                                 const Eigen::Vector<T, dof> &position) const;
 
         template <int dof>
+        MultivectorMatrix<T, MotorGenerator, 1, dof> computeKinematicChainGeometricJacobianTimeDerivative(const std::string &name,
+                                                                                                          const Eigen::Vector<T, dof> &position,
+                                                                                                          const Eigen::Vector<T, dof> &velocity,
+                                                                                                          const Motor<T> &reference) const;
+
+        template <int dof>
         Eigen::Vector<T, dof> computeInverseDynamics(const Eigen::Vector<T, dof> &position, const Eigen::Vector<T, dof> &velocity,
                                                      const Eigen::Vector<T, dof> &acceleration, const T &gravity = 9.81,
                                                      const Wrench<T> ee_wrench = Wrench<T>::Zero(),
@@ -118,10 +125,13 @@ namespace gafro
         Eigen::Vector<T, dof> computeForwardDynamics(const Eigen::Vector<T, dof> &position, const Eigen::Vector<T, dof> &velocity,
                                                      const Eigen::Vector<T, dof> &torque, const std::string &kinematic_chain_name = "") const;
 
-      protected:
-        void createKinematicChain(const std::string &joint_name);
+        template <int dof>
+        Eigen::Matrix<T, dof, dof> computeKinematicChainMassMatrix(const std::string &name, const Eigen::Vector<T, dof> &position) const;
 
         std::vector<const Joint<T> *> getJointChain(const std::string &name) const;
+
+      protected:
+        void createKinematicChain(const std::string &joint_name);
 
       public:
         using Vector = Eigen::VectorX<T>;

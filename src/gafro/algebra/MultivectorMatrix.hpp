@@ -23,6 +23,9 @@
 
 namespace gafro
 {
+    template <class T>
+    class Motor;
+
     template <class T, template <class S> class M, int rows, int cols>
     class MultivectorMatrix
     {
@@ -31,6 +34,8 @@ namespace gafro
         using Matrix = Eigen::Matrix<T, rows * Type::size, cols>;
 
         MultivectorMatrix();
+
+        MultivectorMatrix(const Matrix &parameters);
 
         virtual ~MultivectorMatrix();
 
@@ -42,7 +47,16 @@ namespace gafro
 
         Matrix embed() const;
 
+        MultivectorMatrix normalized() const;
+
         MultivectorMatrix reverse() const;
+
+        MultivectorMatrix transform(const Motor<T> &motor) const;
+
+        template <template <class S2> class M2>
+        MultivectorMatrix<T, M2, rows, cols> extract() const;
+
+        std::vector<M<T>> asVector() const;
 
       protected:
       private:
@@ -54,103 +68,24 @@ namespace gafro
         MultivectorMatrix &operator*=(const Type &multivector);
 
         MultivectorMatrix operator*(const Type &multivector) const;
+
+        template <int... blades>
+        auto operator*(const typename Type::MAlgebra::template Multivector<T, blades...> &multivector) const;
+
+        template <int... blades>
+        auto operator^(const typename Type::MAlgebra::template Multivector<T, blades...> &multivector) const;
+
+        template <template <class S2> class M2, int rows2, int cols2>
+        auto operator*(const MultivectorMatrix<T, M2, rows2, cols2> &matrix) const;
+
+        template <template <class S2> class M2, int rows2, int cols2>
+        auto operator|(const MultivectorMatrix<T, M2, rows2, cols2> &matrix) const;
+
+        MultivectorMatrix operator|(const MultivectorMatrix &matrix) const;
+
+        MultivectorMatrix operator+(const MultivectorMatrix &matrix) const;
     };
-
-    template <class T, template <class S> class M, int rows, int cols>
-    MultivectorMatrix<T, M, rows, cols>::MultivectorMatrix()
-    {}
-
-    template <class T, template <class S> class M, int rows, int cols>
-    MultivectorMatrix<T, M, rows, cols>::~MultivectorMatrix()
-    {}
-
-    template <class T, template <class S> class M, int rows, int cols>
-    typename MultivectorMatrix<T, M, rows, cols>::Type &MultivectorMatrix<T, M, rows, cols>::getCoefficient(int row, int col)
-    {
-        return multivectors_[row][col];
-    }
-
-    template <class T, template <class S> class M, int rows, int cols>
-    const typename MultivectorMatrix<T, M, rows, cols>::Type &MultivectorMatrix<T, M, rows, cols>::getCoefficient(int row, int col) const
-    {
-        return multivectors_[row][col];
-    }
-
-    template <class T, template <class S> class M, int rows, int cols>
-    void MultivectorMatrix<T, M, rows, cols>::setCoefficient(int row, int col, const Type &multivector)
-    {
-        multivectors_[row][col] = multivector;
-    }
-
-    template <class T, template <class S> class M, int rows, int cols>
-    Eigen::Matrix<T, rows * M<T>::size, cols> MultivectorMatrix<T, M, rows, cols>::embed() const
-    {
-        Matrix embedding = Matrix::Zero();
-
-        for (unsigned r = 0; r < rows; r++)
-        {
-            for (unsigned c = 0; c < cols; c++)
-            {
-                embedding.block(r * Type::size, c, Type::size, 1) = multivectors_[r][c].vector();
-            }
-        }
-
-        return embedding;
-    }
-
-    template <class T, template <class S> class M, int rows, int cols>
-    MultivectorMatrix<T, M, rows, cols> MultivectorMatrix<T, M, rows, cols>::reverse() const
-    {
-        MultivectorMatrix reversed;
-
-        for (unsigned r = 0; r < rows; r++)
-        {
-            for (unsigned c = 0; c < cols; c++)
-            {
-                reversed[r][c] = multivectors_[r][c];
-            }
-        }
-
-        return reversed;
-    }
-
-    template <class T, template <class S> class M, int rows, int cols>
-    MultivectorMatrix<T, M, rows, cols> &MultivectorMatrix<T, M, rows, cols>::operator*=(const Type &multivector)
-    {
-        for (unsigned r = 0; r < rows; r++)
-        {
-            for (unsigned c = 0; c < cols; c++)
-            {
-                multivectors_[r][c] *= multivector;
-            }
-        }
-    }
-
-    template <class T, template <class S> class M, int rows, int cols>
-    MultivectorMatrix<T, M, rows, cols> MultivectorMatrix<T, M, rows, cols>::operator*(const Type &multivector) const
-    {
-        MultivectorMatrix<T, M, rows, cols> result = *this;
-
-        result *= multivector;
-
-        return result;
-    }
 
 }  // namespace gafro
 
-template <class T, template <class S> class M, int rows, int cols>
-std::ostream &operator<<(std::ostream &ostream, const gafro::MultivectorMatrix<T, M, rows, cols> &matrix)
-{
-    ostream << std::endl;
-    for (unsigned r = 0; r < rows; r++)
-    {
-        for (unsigned c = 0; c < cols; c++)
-        {
-            std::cout << r << "," << c << ":\t";
-            ostream << matrix.getCoefficient(r, c);
-            ostream << std::endl;
-        }
-    }
-
-    return ostream;
-}
+#include <gafro/algebra/MultivectorMatrix.hxx>

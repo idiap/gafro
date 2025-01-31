@@ -19,12 +19,11 @@
 
 #pragma once
 
+#include <gafro/robot/DualManipulator.hxx>
 #include <gafro/robot/FixedJoint.hxx>
-// #include <gafro/robot/FrankaEmikaRobot.hpp>
 #include <gafro/robot/Joint.hxx>
 #include <gafro/robot/Link.hxx>
 #include <gafro/robot/Manipulator.hxx>
 #include <gafro/robot/PrismaticJoint.hxx>
 #include <gafro/robot/RevoluteJoint.hxx>
 #include <gafro/robot/System.hxx>
-// #include <gafro/robot/UR5.hpp>

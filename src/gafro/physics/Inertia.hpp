@@ -45,10 +45,14 @@ namespace gafro
 
         Inertia(const T &mass, const Eigen::Matrix<T, 3, 3> &tensor);
 
+        Inertia(const Eigen::Matrix<T, 3, 3> &translation, const Eigen::Matrix<T, 3, 3> &rotational);
+
         Inertia(const std::array<InertiaElement<T>, 6> &elements);
 
         template <class S>
         Inertia(const Inertia<S> &other);
+
+        Inertia(const Base &base);
 
         virtual ~Inertia() = default;
 
@@ -60,7 +64,23 @@ namespace gafro
 
         //
 
+        /**
+         * @brief linear map from Twist to Wrench
+         * @details
+         *
+         * @param twist input Twist
+         * @return Wrench
+         */
         Wrench<T> operator()(const Twist<T> &twist) const;
+
+        /**
+         * @brief inverse map from Wrench to Twist
+         * @details
+         *
+         * @param wrench input Wrench
+         * @return Twist
+         */
+        Twist<T> operator()(const Wrench<T> &wrench) const;
 
         //
 
@@ -86,10 +106,16 @@ namespace gafro
 
         typename Base::Matrix getTensor() const;
 
+        const Base &getMultivectorMatrix() const;
+
       protected:
       private:
       public:
         static Inertia Zero();
+
+        static Inertia Random();
+
+        static Inertia RandomDiagonal();
     };
 
 }  // namespace gafro

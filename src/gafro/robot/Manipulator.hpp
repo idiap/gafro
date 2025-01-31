@@ -77,11 +77,15 @@ namespace gafro
 
         Vector getRandomConfiguration() const;
 
+        Vector getJointLimitsMin() const;
+
+        Vector getJointLimitsMax() const;
+
         //
 
-        KinematicChain<double>* getEEKinematicChain();
+        KinematicChain<T> *getEEKinematicChain();
 
-        const KinematicChain<double>* getEEKinematicChain() const;
+        const KinematicChain<T> *getEEKinematicChain() const;
 
         //
 
@@ -91,13 +95,25 @@ namespace gafro
 
         MultivectorMatrix<T, MotorGenerator, 1, dof> getEEGeometricJacobian(const Vector &position) const;
 
-        MultivectorMatrix<T, MotorGenerator, 1, dof> getGeometricJacobian(const Vector &position, const Translator<T> &reference) const;
+        MultivectorMatrix<T, MotorGenerator, 1, dof> getGeometricJacobian(const Vector &position, const Motor<T> &reference) const;
+
+        MultivectorMatrix<T, MotorGenerator, 1, dof> getGeometricJacobianTimeDerivative(const Vector &position, const Vector &velocity,
+                                                                                        const Motor<T> &reference) const;
 
         MultivectorMatrix<T, MotorGenerator, 1, dof> getEEFrameJacobian(const Vector &position) const;
 
         template <class Primitive>
-        typename SandwichProduct<Primitive, Motor<T>>::Type::template Matrix<1, dof> getEEPrimitiveJacobian(const Vector &position,
-                                                                                                            const Primitive &primitive) const;
+        typename Primitive::Type::template Matrix<1, dof> getEEPrimitiveJacobian(const Vector &position, const Primitive &primitive) const;
+
+        //
+
+        Eigen::Matrix<T, 6, 6> getEEVelocityManipulability(const Vector &position) const;
+
+        Eigen::Matrix<T, 6, 6> getEEForceManipulability(const Vector &position) const;
+
+        Eigen::Matrix<T, 6, 6> getEEDynamicManipulability(const Vector &position) const;
+
+        Eigen::Matrix<T, 7, 7> getEEKinematicNullspaceProjector(const Vector &position) const;
 
         //
 
@@ -110,6 +126,8 @@ namespace gafro
         Vector getJointAccelerations(const Vector &position,  //
                                      const Vector &velocity,  //
                                      const Vector &torque) const;
+
+        Eigen::Matrix<T, dof, dof> getMassMatrix(const Eigen::Vector<T, dof> &position) const;
 
       private:
         std::string ee_joint_name_;

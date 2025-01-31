@@ -210,7 +210,6 @@ TEST_CASE("Wrench commutation", "[Twist]")
     Twist<double> twist({ 3.0, 2.0, 1.0, 4.0, 5.0, 6.0 });
 
     Wrench<double> wrench(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
-    // Wrench<double> wrench({ 3.0, 2.0, 1.0, 4.0, 5.0, 6.0 });
 
     Wrench<double> wrench2 = twist.commute(wrench);
 

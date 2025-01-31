@@ -26,10 +26,8 @@
 #include <gafro/physics/Twist.hxx>
 #include <gafro/physics/Wrench.hxx>
 //
-#include <gafro/robot/Manipulator.hpp>
-
 #include <algorithm>
-
+#include <gafro/robot/Manipulator.hpp>
 
 namespace gafro
 {
@@ -83,11 +81,11 @@ namespace gafro
         auto system_configuration = System<T>::getRandomConfiguration();
         auto kinematic_chain = getEEKinematicChain();
         auto joints = kinematic_chain->getActuatedJoints();
-        auto& system_joints = System<T>::getJoints();
+        auto &system_joints = System<T>::getJoints();
 
         std::vector<std::string> names;
 
-        for (const std::unique_ptr<gafro::Joint<double>>& joint : system_joints)
+        for (const std::unique_ptr<gafro::Joint<T>> &joint : system_joints)
         {
             if (joint->isActuated())
                 names.push_back(joint->getName());
@@ -107,13 +105,43 @@ namespace gafro
     }
 
     template <class T, int dof>
-    KinematicChain<double>* Manipulator<T, dof>::getEEKinematicChain()
+    typename Manipulator<T, dof>::Vector Manipulator<T, dof>::getJointLimitsMin() const
+    {
+        Vector joint_limits;
+
+        typename System<T>::Vector joint_limits_system = System<T>::getJointLimitsMin();
+
+        for (unsigned i = 0; i < dof; ++i)
+        {
+            joint_limits[i] = joint_limits_system[getEEKinematicChain()->getActuatedJoints()[i]->getIndex()];
+        }
+
+        return joint_limits;
+    }
+
+    template <class T, int dof>
+    typename Manipulator<T, dof>::Vector Manipulator<T, dof>::getJointLimitsMax() const
+    {
+        Vector joint_limits;
+
+        typename System<T>::Vector joint_limits_system = System<T>::getJointLimitsMax();
+
+        for (unsigned i = 0; i < dof; ++i)
+        {
+            joint_limits[i] = joint_limits_system[getEEKinematicChain()->getActuatedJoints()[i]->getIndex()];
+        }
+
+        return joint_limits;
+    }
+
+    template <class T, int dof>
+    KinematicChain<T> *Manipulator<T, dof>::getEEKinematicChain()
     {
         return getSystem().getKinematicChain(ee_joint_name_);
     }
 
     template <class T, int dof>
-    const KinematicChain<double>* Manipulator<T, dof>::getEEKinematicChain() const
+    const KinematicChain<T> *Manipulator<T, dof>::getEEKinematicChain() const
     {
         return getSystem().getKinematicChain(ee_joint_name_);
     }
@@ -137,8 +165,7 @@ namespace gafro
     }
 
     template <class T, int dof>
-    MultivectorMatrix<T, MotorGenerator, 1, dof> Manipulator<T, dof>::getGeometricJacobian(const Vector &position,
-                                                                                           const Translator<T> &reference) const
+    MultivectorMatrix<T, MotorGenerator, 1, dof> Manipulator<T, dof>::getGeometricJacobian(const Vector &position, const Motor<T> &reference) const
     {
         auto jacobian = getSystem().computeKinematicChainGeometricJacobian(ee_joint_name_, position);
 
@@ -151,6 +178,14 @@ namespace gafro
     }
 
     template <class T, int dof>
+    MultivectorMatrix<T, MotorGenerator, 1, dof> Manipulator<T, dof>::getGeometricJacobianTimeDerivative(const Vector &position,
+                                                                                                         const Vector &velocity,
+                                                                                                         const Motor<T> &reference) const
+    {
+        return getSystem().computeKinematicChainGeometricJacobianTimeDerivative(ee_joint_name_, position, velocity, reference);
+    }
+
+    template <class T, int dof>
     MultivectorMatrix<T, MotorGenerator, 1, dof> Manipulator<T, dof>::getEEFrameJacobian(const Vector &position) const
     {
         return getSystem().computeKinematicChainGeometricJacobianBody(ee_joint_name_, position);
@@ -158,15 +193,13 @@ namespace gafro
 
     template <class T, int dof>
     template <class Primitive>
-    typename SandwichProduct<Primitive, Motor<T>>::Type::template Matrix<1, dof> Manipulator<T, dof>::getEEPrimitiveJacobian(
-      const Vector &position, const Primitive &primitive) const
+    typename Primitive::Type::template Matrix<1, dof> Manipulator<T, dof>::getEEPrimitiveJacobian(const Vector &position,
+                                                                                                  const Primitive &primitive) const
     {
-        using Result = typename SandwichProduct<Primitive, Motor<T>>::Type;
-
-        Motor<double> ee_motor = getEEMotor(position);
+        Motor<T> ee_motor = getEEMotor(position);
         auto ee_jacobian = getEEAnalyticJacobian(position);
 
-        auto jacobian = Result::template CreateMatrix<1, dof>();
+        typename Primitive::Type::template Matrix<1, dof> jacobian;
 
         for (unsigned i = 0; i < dof; ++i)
         {
@@ -176,6 +209,39 @@ namespace gafro
         }
 
         return jacobian;
+    }
+
+    template <class T, int dof>
+    Eigen::Matrix<T, 6, 6> Manipulator<T, dof>::getEEVelocityManipulability(const Vector &position) const
+    {
+        Eigen::Matrix<T, 6, dof> jacobian = getEEGeometricJacobian(position).embed();
+
+        return jacobian * jacobian.transpose();
+    }
+
+    template <class T, int dof>
+    Eigen::Matrix<T, 6, 6> Manipulator<T, dof>::getEEForceManipulability(const Vector &position) const
+    {
+        return getEEVelocityManipulability(position).inverse();
+    }
+
+    template <class T, int dof>
+    Eigen::Matrix<T, 6, 6> Manipulator<T, dof>::getEEDynamicManipulability(const Vector &position) const
+    {
+        Eigen::Matrix<T, 6, dof> jacobian = getEEGeometricJacobian(position).embed();
+        Eigen::Matrix<T, dof, dof> mass_matrix = getMassMatrix(position);
+
+        return jacobian * (mass_matrix.transpose() * mass_matrix).inverse() * jacobian.transpose();
+    }
+
+    template <class T, int dof>
+    Eigen::Matrix<T, 7, 7> Manipulator<T, dof>::getEEKinematicNullspaceProjector(const Vector &position) const
+    {
+        Eigen::Matrix<T, 6, dof> jacobian = getEEGeometricJacobian(position).embed();
+        Eigen::Matrix<T, dof, 6> inverse_jacobian =
+          (jacobian.transpose() * jacobian + 1e-5 * Eigen::Matrix<T, dof, dof>::Identity()).inverse() * jacobian.transpose();
+
+        return Eigen::Matrix<T, dof, dof>::Identity() - inverse_jacobian * jacobian;
     }
 
     template <class T, int dof>
@@ -194,6 +260,12 @@ namespace gafro
                                                                                     const Vector &torque) const
     {
         return getSystem().computeForwardDynamics(position, velocity, torque, ee_joint_name_);
+    }
+
+    template <class T, int dof>
+    Eigen::Matrix<T, dof, dof> Manipulator<T, dof>::getMassMatrix(const Eigen::Vector<T, dof> &position) const
+    {
+        return getSystem().computeKinematicChainMassMatrix(ee_joint_name_, position);
     }
 
 }  // namespace gafro

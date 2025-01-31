@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cmath>
-#include <gafro/algebra/util/Bitset.hpp>
+#include <gafro/algebra/Bitset.hpp>
 
 namespace gafro
 {
@@ -63,6 +63,14 @@ namespace gafro
         template <class T, int... index>
         class Multivector;
 
+      private:
+        template <class T, int grade>
+        class GradeConstructor;
+
+      public:
+        template <class T, int grade>
+        using Grade = typename GradeConstructor<T, grade>::Type;
+
         constexpr static int dim = math::pow2<M::dim>();
 
         class BladeBitmap
@@ -74,6 +82,42 @@ namespace gafro
                 if constexpr (i != 0)
                 {
                     return 1 + getGrade<(i & (i - 1))>();
+                }
+
+                return 0;
+            }
+
+            template <int i, int d = M::dim - 1>
+            constexpr static int getNegativeGrade()
+            {
+                if constexpr (d > -1 && i != 0)
+                {
+                    if constexpr (i & (1 << d) && Metric::template get<d, d>() == -1.0)
+                    {
+                        return 1 + getZeroGrade<i, d - 1>();
+                    }
+                    else
+                    {
+                        return getZeroGrade<i, d - 1>();
+                    }
+                }
+
+                return 0;
+            }
+
+            template <int i, int d = M::dim - 1>
+            constexpr static int getZeroGrade()
+            {
+                if constexpr (d > -1 && i != 0)
+                {
+                    if constexpr (i & (1 << d) && Metric::template get<d, d>() == 0.0)
+                    {
+                        return 1 + getZeroGrade<i, d - 1>();
+                    }
+                    else
+                    {
+                        return getZeroGrade<i, d - 1>();
+                    }
                 }
 
                 return 0;
@@ -160,6 +204,12 @@ namespace gafro
                 // odd number of swaps -> return -1
                 return ((sum & 1) == 0) ? 1.0 : -1.0;
             }
+
+            template <int blade>
+            constexpr static int getPoincareDual()
+            {
+                return blade ^ (dim - 1);
+            }
         };
 
         template <class T, int i1, int i2>
@@ -172,11 +222,14 @@ namespace gafro
         class InnerProduct;
 
         template <class T>
+        using Scalar = Multivector<T, 0>;
+
+        template <class T>
         using Pseudoscalar = Multivector<T, dim - 1>;
     };
 
 }  // namespace gafro
 
-#include <gafro/algebra/expressions/GeometricProductCayleyTable.hpp>
-#include <gafro/algebra/expressions/InnerProductCayleyTable.hpp>
-#include <gafro/algebra/expressions/OuterProductCayleyTable.hpp>
+#include <gafro/algebra/GeometricProductCayleyTable.hpp>
+#include <gafro/algebra/InnerProductCayleyTable.hpp>
+#include <gafro/algebra/OuterProductCayleyTable.hpp>

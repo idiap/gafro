@@ -58,8 +58,6 @@ namespace gafro
 
         Twist transform(const Motor<T> &motor) const;
 
-        Wrench<T> commute(const Wrench<T> &wrench) const;
-
         template <class E>
         Twist &operator=(const Expression<E, Base> &expression);
 
@@ -70,3 +68,5 @@ namespace gafro
     };
 
 }  // namespace gafro
+
+#include <gafro/physics/Twist.hxx>

@@ -66,12 +66,8 @@ TEST_CASE("Multivector creation", "[Multivector]")
 
 TEST_CASE("Multivector creation with value", "[Multivector]")
 {
-    gafro::Multivector<double, blades::e0, blades::e1, blades::e2, blades::e3, blades::ei> mv(10);
+    gafro::Multivector<double, blades::e0> mv(10);
 
-    REQUIRE(mv.get<blades::e1>() == Approx(10.0));
-    REQUIRE(mv.get<blades::e2>() == Approx(10.0));
-    REQUIRE(mv.get<blades::e3>() == Approx(10.0));
-    REQUIRE(mv.get<blades::ei>() == Approx(10.0));
     REQUIRE(mv.get<blades::e0>() == Approx(10.0));
 }
 

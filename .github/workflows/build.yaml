@@ -1,0 +1,54 @@
+name: Build
+run-name: Build and test of commit "${{ github.event.head_commit.message }}"
+
+on:
+  push:
+    branches:
+      - "*"
+
+jobs:
+  build:
+    name: Build
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        compiler: [
+          "gcc:10-bullseye",
+          "gcc:11-bullseye",
+          "gcc:12-bullseye",
+          "gcc:13-bookworm",
+          "silkeh/clang:13-bullseye",
+          "silkeh/clang:14-bullseye",
+          "silkeh/clang:15-bullseye",
+          "silkeh/clang:16-bullseye"
+        ]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set reusable strings
+      id: strings
+      shell: bash
+      run: |
+        IMAGE_NAME=$(echo "${{ matrix.compiler }}" | sed 's/silkeh\///g')
+        echo "IMAGE_NAME=gafro-$IMAGE_NAME" >> "$GITHUB_OUTPUT"
+
+    - name: Build the Docker image
+      run: |
+        docker build . --build-arg BASE_IMAGE="${{ matrix.compiler }}" --file .github/docker/Dockerfile --tag ${{ steps.strings.outputs.IMAGE_NAME }}
+
+    - name: Run the build process with Docker
+      uses: addnab/docker-run-action@v3
+      with:
+          image: ${{ steps.strings.outputs.IMAGE_NAME }}
+          options: -v ${{ github.workspace }}:/opt/gafro
+          run: |
+            cd /opt/gafro
+            mkdir build
+            cd build
+            cmake ..
+            make install
