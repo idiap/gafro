@@ -42,10 +42,13 @@ namespace gafro
     }
 
     template <typename T>
-    Motor<T> Plane<T>::computeMotor(const Plane &other) const
+    Motor<T> Plane<T>::getMotor(const Plane &other) const
     {
-        auto motor_exp = ((Scalar<double>::One() - other * (*this)) *
-                          Scalar<double>(1.0 / std::sqrt((Scalar<double>(2.0) - ((*this) * other + other * (*this))).template get<blades::scalar>())))
+        Plane<T> plane1 = this->normalized();
+        Plane<T> plane2 = other.normalized();
+
+        auto motor_exp = ((Scalar<double>::One() - plane2 * plane1) *
+                          Scalar<double>(1.0 / std::sqrt((Scalar<double>(2.0) - (plane1 * plane2 + plane2 * plane1)).template get<blades::scalar>())))
                            .evaluate();
 
         Motor<T> motor = motor_exp + E123i<double>::Zero();

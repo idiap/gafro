@@ -36,8 +36,6 @@ namespace gafro
 
         Generator() = default;
 
-        Generator(const Generator &other);
-
         Generator(const Base &other);
 
         Generator(const Parameters &parameters);

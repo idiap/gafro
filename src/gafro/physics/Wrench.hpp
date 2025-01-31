@@ -29,6 +29,8 @@ namespace gafro
     {
       public:
         using Base = Multivector<T, blades::e01, blades::e02, blades::e12, blades::e03, blades::e13, blades::e23>;
+        using Linear = Multivector<T, blades::e01, blades::e02, blades::e03>;
+        using Angular = Multivector<T, blades::e12, blades::e13, blades::e23>;
         using Parameters = typename Base::Parameters;
 
         using Base::Base;
@@ -41,6 +43,14 @@ namespace gafro
         Wrench(const T &tx, const T &ty, const T &tz, const T &fx, const T &fy, const T &fz);
 
         virtual ~Wrench();
+
+        void setLinear(const Linear &linear);
+
+        void setAngular(const Angular &angular);
+
+        Linear getLinear() const;
+
+        Angular getAngular() const;
 
         Base &multivector();
 

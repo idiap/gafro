@@ -71,6 +71,8 @@ namespace gafro
 
         Motor(const Rotor<T> &rotor, const Translator<T> &translator);
 
+        Motor(const Eigen::Vector<T, 3> &position, const Eigen::Quaternion<T> &orientation);
+
         virtual ~Motor() = default;
 
         // OPERATORS
@@ -88,8 +90,6 @@ namespace gafro
         Translator<T> getTranslator() const;
 
         Logarithm log() const;
-
-        Eigen::Matrix<T, 6, 8> logJacobian() const;
 
         Eigen::Matrix<T, 4, 4> toTransformationMatrix() const;
 

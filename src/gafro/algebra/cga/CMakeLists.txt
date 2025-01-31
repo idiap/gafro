@@ -1,7 +1,3 @@
-target_sources(${PROJECT_NAME}
-    PRIVATE
-)
-
 # Only do that when using the gafro source code directly, not from a submodule
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     install(
@@ -63,6 +59,15 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
             Dilator.hpp
             Dilator.hxx
+
+            Transversion.hpp
+            Transversion.hxx
+
+            SimilarityTransformation.hpp
+            SimilarityTransformation.hxx
+
+            ConformalTransformation.hpp
+            ConformalTransformation.hxx
 
             Blades.hpp
         DESTINATION

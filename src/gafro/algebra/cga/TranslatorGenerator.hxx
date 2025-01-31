@@ -29,10 +29,6 @@ namespace gafro
     {}
 
     template <class T>
-    Translator<T>::Generator::Generator(const Generator &other) : Base(other)
-    {}
-
-    template <class T>
     Translator<T>::Generator::Generator(const Parameters &parameters) : Base(parameters)
     {}
 

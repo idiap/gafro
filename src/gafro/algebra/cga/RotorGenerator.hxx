@@ -29,10 +29,6 @@ namespace gafro
     {}
 
     template <class T>
-    Rotor<T>::Generator::Generator(const Generator &other) : Base(other)
-    {}
-
-    template <class T>
     Rotor<T>::Generator::Generator(const Parameters &parameters) : Base(parameters)
     {}
 

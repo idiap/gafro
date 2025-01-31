@@ -41,7 +41,7 @@ TEST_CASE("Default motor", "[Motor]")
 
     SECTION("logJacobian")
     {
-        auto jacobian = motor.logJacobian();
+        auto jacobian = Motor<double>::Logarithm::getJacobian(motor);
 
         REQUIRE(jacobian.coeff(0, 0) == Approx(0.0));
         REQUIRE(jacobian.coeff(0, 1) == Approx(0.0));
@@ -270,7 +270,7 @@ TEST_CASE("Motor with translation", "[Motor]")
 
     SECTION("logJacobian")
     {
-        auto jacobian = motor.logJacobian();
+        auto jacobian = Motor<double>::Logarithm::getJacobian(motor);
 
         REQUIRE(jacobian.coeff(0, 0) == Approx(0.0));
         REQUIRE(jacobian.coeff(0, 1) == Approx(0.0));
@@ -309,9 +309,9 @@ TEST_CASE("Motor with translation", "[Motor]")
         REQUIRE(jacobian.coeff(3, 7) == Approx(0.0));
 
         REQUIRE(jacobian.coeff(4, 0) == Approx(0.0));
-        REQUIRE(jacobian.coeff(4, 1) == Approx(1.0));
+        REQUIRE(jacobian.coeff(4, 1) == Approx(0.0));
         REQUIRE(jacobian.coeff(4, 2) == Approx(0.0));
-        REQUIRE(jacobian.coeff(4, 3) == Approx(0.0));
+        REQUIRE(jacobian.coeff(4, 3) == Approx(1.0));
         REQUIRE(jacobian.coeff(4, 4) == Approx(0.0));
         REQUIRE(jacobian.coeff(4, 5) == Approx(-2.0));
         REQUIRE(jacobian.coeff(4, 6) == Approx(0.0));
@@ -499,9 +499,9 @@ TEST_CASE("Motor with rotation", "[Motor]")
 
     SECTION("logJacobian")
     {
-        auto jacobian = motor.logJacobian();
+        auto jacobian = Motor<double>::Logarithm::getJacobian(motor);
 
-        REQUIRE(jacobian.coeff(0, 0) == Approx(0.0));
+        REQUIRE(jacobian.coeff(0, 0) == Approx(-0.606986));
         REQUIRE(jacobian.coeff(0, 1) == Approx(-2.22144));
         REQUIRE(jacobian.coeff(0, 2) == Approx(0.0));
         REQUIRE(jacobian.coeff(0, 3) == Approx(0.0));
@@ -519,7 +519,7 @@ TEST_CASE("Motor with rotation", "[Motor]")
         REQUIRE(jacobian.coeff(1, 6) == Approx(0.0));
         REQUIRE(jacobian.coeff(1, 7) == Approx(0.0));
 
-        REQUIRE(jacobian.coeff(2, 0) == Approx(-0.606986));
+        REQUIRE(jacobian.coeff(2, 0) == Approx(0.0));
         REQUIRE(jacobian.coeff(2, 1) == Approx(0.0));
         REQUIRE(jacobian.coeff(2, 2) == Approx(0.0));
         REQUIRE(jacobian.coeff(2, 3) == Approx(-2.22144));
@@ -729,9 +729,9 @@ TEST_CASE("Motor with translation & rotation", "[Motor]")
 
     SECTION("logJacobian")
     {
-        auto jacobian = motor.logJacobian();
+        auto jacobian = Motor<double>::Logarithm::getJacobian(motor);
 
-        REQUIRE(jacobian.coeff(0, 0) == Approx(0.0));
+        REQUIRE(jacobian.coeff(0, 0) == Approx(-0.606986));
         REQUIRE(jacobian.coeff(0, 1) == Approx(-2.22144));
         REQUIRE(jacobian.coeff(0, 2) == Approx(0.0));
         REQUIRE(jacobian.coeff(0, 3) == Approx(0.0));
@@ -749,7 +749,7 @@ TEST_CASE("Motor with translation & rotation", "[Motor]")
         REQUIRE(jacobian.coeff(1, 6) == Approx(0.0));
         REQUIRE(jacobian.coeff(1, 7) == Approx(0.0));
 
-        REQUIRE(jacobian.coeff(2, 0) == Approx(-0.606986));
+        REQUIRE(jacobian.coeff(2, 0) == Approx(0.0));
         REQUIRE(jacobian.coeff(2, 1) == Approx(0.0));
         REQUIRE(jacobian.coeff(2, 2) == Approx(0.0));
         REQUIRE(jacobian.coeff(2, 3) == Approx(-2.22144));
@@ -759,27 +759,27 @@ TEST_CASE("Motor with translation & rotation", "[Motor]")
         REQUIRE(jacobian.coeff(2, 7) == Approx(0.0));
 
         REQUIRE(jacobian.coeff(3, 0) == Approx(0.0));
-        REQUIRE(jacobian.coeff(3, 1) == Approx(-0.707107));
+        REQUIRE(jacobian.coeff(3, 1) == Approx(0.0));
         REQUIRE(jacobian.coeff(3, 2) == Approx(0.707107));
-        REQUIRE(jacobian.coeff(3, 3) == Approx(0.0));
+        REQUIRE(jacobian.coeff(3, 3) == Approx(-0.707107));
         REQUIRE(jacobian.coeff(3, 4) == Approx(-1.41421));
         REQUIRE(jacobian.coeff(3, 5) == Approx(1.41421));
         REQUIRE(jacobian.coeff(3, 6) == Approx(0.0));
         REQUIRE(jacobian.coeff(3, 7) == Approx(0.0));
 
         REQUIRE(jacobian.coeff(4, 0) == Approx(0.0));
-        REQUIRE(jacobian.coeff(4, 1) == Approx(0.707107));
+        REQUIRE(jacobian.coeff(4, 1) == Approx(0.0));
         REQUIRE(jacobian.coeff(4, 2) == Approx(0.707107));
-        REQUIRE(jacobian.coeff(4, 3) == Approx(0.0));
+        REQUIRE(jacobian.coeff(4, 3) == Approx(0.707107));
         REQUIRE(jacobian.coeff(4, 4) == Approx(-1.41421));
         REQUIRE(jacobian.coeff(4, 5) == Approx(-1.41421));
         REQUIRE(jacobian.coeff(4, 6) == Approx(0.0));
         REQUIRE(jacobian.coeff(4, 7) == Approx(0.0));
 
         REQUIRE(jacobian.coeff(5, 0) == Approx(0.707107));
-        REQUIRE(jacobian.coeff(5, 1) == Approx(0.0));
+        REQUIRE(jacobian.coeff(5, 1) == Approx(-0.707107));
         REQUIRE(jacobian.coeff(5, 2) == Approx(0.0));
-        REQUIRE(jacobian.coeff(5, 3) == Approx(-0.707107));
+        REQUIRE(jacobian.coeff(5, 3) == Approx(0.0));
         REQUIRE(jacobian.coeff(5, 4) == Approx(0.0));
         REQUIRE(jacobian.coeff(5, 5) == Approx(0.0));
         REQUIRE(jacobian.coeff(5, 6) == Approx(-1.41421));

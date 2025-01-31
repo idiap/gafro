@@ -69,17 +69,8 @@ namespace gafro
             return result_.template get<blade>();
         }
 
-        Eigen::Matrix<T, 8, 6> getJacobian() const
+        static Eigen::Matrix<T, 8, 6> getJacobian(const typename Motor<T>::Generator &b)
         {
-            T m1 = result_.template get<blades::scalar>();
-            T m2 = result_.template get<blades::e23>();
-            T m3 = result_.template get<blades::e13>();
-            T m4 = result_.template get<blades::e12>();
-
-            const auto &b = this->operand();
-
-            T theta = b.vector().topRows(3).norm();
-
             T b1 = b.template get<blades::e23>();
             T b2 = b.template get<blades::e13>();
             T b3 = b.template get<blades::e12>();
@@ -87,21 +78,61 @@ namespace gafro
             T t2 = b.template get<blades::e2i>();
             T t3 = b.template get<blades::e3i>();
 
-            T m1b1 = -0.5 * b1 * sin(0.5 * theta) / theta;
-            T m1b2 = -0.5 * b2 * sin(0.5 * theta) / theta;
-            T m1b3 = -0.5 * b3 * sin(0.5 * theta) / theta;
+            typename Rotor<T>::Generator br({ b3, b2, b1 });
 
-            T m2b1 = sin(0.5 * theta) * (b1 * b1 / std::pow(theta, 3) - 1.0 / theta) - 0.5 * b1 * b1 * cos(0.5 * theta) / (theta * theta);
-            T m2b2 = b1 * (b2 * sin(0.5 * theta) / std::pow(theta, 3) - 0.5 * b2 * cos(0.5 * theta) / (theta * theta));
-            T m2b3 = b1 * (b3 * sin(0.5 * theta) / std::pow(theta, 3) - 0.5 * b3 * cos(0.5 * theta) / (theta * theta));
+            T m1 = 0.0;
+            T m2 = 0.0;
+            T m3 = 0.0;
+            T m4 = 0.0;
 
-            T m3b1 = b2 * (b1 * sin(0.5 * theta) / std::pow(theta, 3) - 0.5 * b1 * cos(0.5 * theta) / (theta * theta));
-            T m3b2 = sin(0.5 * theta) * (b2 * b2 / std::pow(theta, 3) - 1.0 / theta) - 0.5 * b2 * b2 * cos(0.5 * theta) / (theta * theta);
-            T m3b3 = b2 * (b3 * sin(0.5 * theta) / std::pow(theta, 3) - 0.5 * b3 * cos(0.5 * theta) / (theta * theta));
+            T theta = br.norm();
 
-            T m4b1 = b3 * (b1 * sin(0.5 * theta) / std::pow(theta, 3) - 0.5 * b1 * cos(0.5 * theta) / (theta * theta));
-            T m4b2 = b3 * (b2 * sin(0.5 * theta) / std::pow(theta, 3) - 0.5 * b2 * cos(0.5 * theta) / (theta * theta));
-            T m4b3 = sin(0.5 * theta) * (b3 * b3 / std::pow(theta, 3) - 1.0 / theta) - 0.5 * b3 * b3 * cos(0.5 * theta) / (theta * theta);
+            T m1b1 = 0.0;
+            T m1b2 = 0.0;
+            T m1b3 = 0.0;
+            T m2b1 = 0.0;
+            T m2b2 = 0.0;
+            T m2b3 = 0.0;
+            T m3b1 = 0.0;
+            T m3b2 = 0.0;
+            T m3b3 = 0.0;
+            T m4b1 = 0.0;
+            T m4b2 = 0.0;
+            T m4b3 = 0.0;
+
+            if (abs(theta) > 0)
+            {
+                br.normalize();
+
+                Rotor<T> r(br, theta);
+
+                m1 = r.template get<blades::scalar>();
+                m2 = r.template get<blades::e23>();
+                m3 = r.template get<blades::e13>();
+                m4 = r.template get<blades::e12>();
+
+                m1b1 = -0.5 * b1 * sin(0.5 * theta) / theta;
+                m1b2 = -0.5 * b2 * sin(0.5 * theta) / theta;
+                m1b3 = -0.5 * b3 * sin(0.5 * theta) / theta;
+
+                m2b1 = sin(0.5 * theta) * (b1 * b1 / std::pow(theta, 3) - 1.0 / theta) - 0.5 * b1 * b1 * cos(0.5 * theta) / (theta * theta);
+                m2b2 = b1 * (b2 * sin(0.5 * theta) / std::pow(theta, 3) - 0.5 * b2 * cos(0.5 * theta) / (theta * theta));
+                m2b3 = b1 * (b3 * sin(0.5 * theta) / std::pow(theta, 3) - 0.5 * b3 * cos(0.5 * theta) / (theta * theta));
+
+                m3b1 = b2 * (b1 * sin(0.5 * theta) / std::pow(theta, 3) - 0.5 * b1 * cos(0.5 * theta) / (theta * theta));
+                m3b2 = sin(0.5 * theta) * (b2 * b2 / std::pow(theta, 3) - 1.0 / theta) - 0.5 * b2 * b2 * cos(0.5 * theta) / (theta * theta);
+                m3b3 = b2 * (b3 * sin(0.5 * theta) / std::pow(theta, 3) - 0.5 * b3 * cos(0.5 * theta) / (theta * theta));
+
+                m4b1 = b3 * (b1 * sin(0.5 * theta) / std::pow(theta, 3) - 0.5 * b1 * cos(0.5 * theta) / (theta * theta));
+                m4b2 = b3 * (b2 * sin(0.5 * theta) / std::pow(theta, 3) - 0.5 * b2 * cos(0.5 * theta) / (theta * theta));
+                m4b3 = sin(0.5 * theta) * (b3 * b3 / std::pow(theta, 3) - 1.0 / theta) - 0.5 * b3 * b3 * cos(0.5 * theta) / (theta * theta);
+            }
+            else
+            {
+                m2 = 0.5 * b1;
+                m3 = 0.5 * b2;
+                m4 = 0.5 * b3;
+            }
 
             T m5b1 = -0.5 * (t1 * m1b1 - m3b1 * t3 - m4b1 * t2);
             T m5b2 = -0.5 * (t1 * m1b2 - m3b2 * t3 - m4b2 * t2);
@@ -137,32 +168,32 @@ namespace gafro
 
             Eigen::Matrix<T, 8, 6> exp_jacobian = Eigen::Matrix<T, 8, 6>::Zero();
 
-            exp_jacobian.coeffRef(0, 0) = m1b1;
-            exp_jacobian.coeffRef(1, 0) = m2b1;
-            exp_jacobian.coeffRef(2, 0) = m3b1;
-            exp_jacobian.coeffRef(3, 0) = m4b1;
-            exp_jacobian.coeffRef(4, 0) = m5b1;
-            exp_jacobian.coeffRef(5, 0) = m6b1;
-            exp_jacobian.coeffRef(6, 0) = m7b1;
-            exp_jacobian.coeffRef(7, 0) = m8b1;
+            exp_jacobian.coeffRef(0, 0) = m1b3;
+            exp_jacobian.coeffRef(1, 0) = m4b3;
+            exp_jacobian.coeffRef(2, 0) = m3b3;
+            exp_jacobian.coeffRef(3, 0) = m2b3;
+            exp_jacobian.coeffRef(4, 0) = m5b3;
+            exp_jacobian.coeffRef(5, 0) = m6b3;
+            exp_jacobian.coeffRef(6, 0) = m7b3;
+            exp_jacobian.coeffRef(7, 0) = m8b3;
 
             exp_jacobian.coeffRef(0, 1) = m1b2;
-            exp_jacobian.coeffRef(1, 1) = m2b2;
+            exp_jacobian.coeffRef(1, 1) = m4b2;
             exp_jacobian.coeffRef(2, 1) = m3b2;
-            exp_jacobian.coeffRef(3, 1) = m4b2;
+            exp_jacobian.coeffRef(3, 1) = m2b2;
             exp_jacobian.coeffRef(4, 1) = m5b2;
             exp_jacobian.coeffRef(5, 1) = m6b2;
             exp_jacobian.coeffRef(6, 1) = m7b2;
             exp_jacobian.coeffRef(7, 1) = m8b2;
 
-            exp_jacobian.coeffRef(0, 2) = m1b3;
-            exp_jacobian.coeffRef(1, 2) = m2b3;
-            exp_jacobian.coeffRef(2, 2) = m3b3;
-            exp_jacobian.coeffRef(3, 2) = m4b3;
-            exp_jacobian.coeffRef(4, 2) = m5b3;
-            exp_jacobian.coeffRef(5, 2) = m6b3;
-            exp_jacobian.coeffRef(6, 2) = m7b3;
-            exp_jacobian.coeffRef(7, 2) = m8b3;
+            exp_jacobian.coeffRef(0, 2) = m1b1;
+            exp_jacobian.coeffRef(1, 2) = m4b1;
+            exp_jacobian.coeffRef(2, 2) = m3b1;
+            exp_jacobian.coeffRef(3, 2) = m2b1;
+            exp_jacobian.coeffRef(4, 2) = m5b1;
+            exp_jacobian.coeffRef(5, 2) = m6b1;
+            exp_jacobian.coeffRef(6, 2) = m7b1;
+            exp_jacobian.coeffRef(7, 2) = m8b1;
 
             exp_jacobian.coeffRef(4, 3) = m5t1;
             exp_jacobian.coeffRef(5, 3) = m6t1;
@@ -178,6 +209,7 @@ namespace gafro
             exp_jacobian.coeffRef(5, 5) = m6t3;
             exp_jacobian.coeffRef(6, 5) = m7t3;
             exp_jacobian.coeffRef(7, 5) = m8t3;
+
 
             return exp_jacobian;
         }

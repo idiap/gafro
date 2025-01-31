@@ -125,6 +125,9 @@ namespace gafro
         Eigen::Vector<T, dof> computeForwardDynamics(const Eigen::Vector<T, dof> &position, const Eigen::Vector<T, dof> &velocity,
                                                      const Eigen::Vector<T, dof> &torque, const std::string &kinematic_chain_name = "") const;
 
+        template <int dof>
+        Eigen::Matrix<T, dof, dof> computeKinematicChainMassMatrix(const std::string &name, const Eigen::Vector<T, dof> &position) const;
+
         std::vector<const Joint<T> *> getJointChain(const std::string &name) const;
 
       protected:

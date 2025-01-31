@@ -49,7 +49,7 @@ namespace gafro
 
         Vector<T> getNormal() const;
 
-        Motor<T> computeMotor(const Plane &other) const;
+        Motor<T> getMotor(const Plane &other) const;
 
       protected:
       private:
