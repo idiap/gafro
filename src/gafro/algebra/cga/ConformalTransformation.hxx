@@ -36,7 +36,7 @@ namespace gafro
     ConformalTransformation<T>::~ConformalTransformation() = default;
 
     template <typename T>
-    ConformalTransformation<T>::CanonicalDecomposition ConformalTransformation<T>::getCanonicalDecomposition() const
+    typename ConformalTransformation<T>::CanonicalDecomposition ConformalTransformation<T>::getCanonicalDecomposition() const
     {
         return CanonicalDecomposition(*this);
     }

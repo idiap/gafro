@@ -36,7 +36,7 @@ namespace gafro
     SimilarityTransformation<T>::~SimilarityTransformation() = default;
 
     template <typename T>
-    SimilarityTransformation<T>::CanonicalDecomposition SimilarityTransformation<T>::getCanonicalDecomposition() const
+    typename SimilarityTransformation<T>::CanonicalDecomposition SimilarityTransformation<T>::getCanonicalDecomposition() const
     {
         return CanonicalDecomposition(*this);
     }

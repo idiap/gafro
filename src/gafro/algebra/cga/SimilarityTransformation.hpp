@@ -79,7 +79,7 @@ namespace gafro
       protected:
       private:
       public:
-        static SimilarityTransformation exp(const Generator::Parameters &generator);
+        static SimilarityTransformation exp(const typename Generator::Parameters &generator);
 
         static SimilarityTransformation exp(const Generator &generator);
     };

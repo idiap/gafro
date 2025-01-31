@@ -85,7 +85,7 @@ namespace gafro
       protected:
       private:
       public:
-        static ConformalTransformation exp(const Generator::Parameters &generator);
+        static ConformalTransformation exp(const typename Generator::Parameters &generator);
 
         static ConformalTransformation exp(const Generator &generator);
     };
