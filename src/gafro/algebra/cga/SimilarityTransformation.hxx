@@ -86,7 +86,7 @@ namespace gafro
     }
 
     template <typename T>
-    SimilarityTransformation<T> SimilarityTransformation<T>::exp(const Generator::Parameters &generator)
+    SimilarityTransformation<T> SimilarityTransformation<T>::exp(const typename Generator::Parameters &generator)
     {
         return SimilarityTransformation<T>::exp(Generator(generator));
     }
