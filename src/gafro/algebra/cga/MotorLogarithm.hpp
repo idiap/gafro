@@ -98,13 +98,14 @@ namespace gafro
 
             Eigen::Matrix<T, 6, 8> jacobian = Eigen::Matrix<T, 6, 8>::Zero();
 
-            T factor1 = 0.0;
-            T factor2 = 0.0;
+            T factor1 = TypeTraits<T>::Value(0.0);
+            T factor2 = TypeTraits<T>::Value(0.0);
 
-            if (m1 != 1.0)
+            if (m1 != TypeTraits<T>::Value(1.0))
             {
-                factor1 = -2.0 * (1.0 / (m1 * m1 - 1.0) + m1 * acos(m1) / pow(1.0 - m1 * m1, 1.5));
-                factor2 = -(2.0 * acos(m1) / sin(acos(m1)));
+                factor1 = TypeTraits<T>::Value(-2.0) * (TypeTraits<T>::Value(1.0) / (m1 * m1 - TypeTraits<T>::Value(1.0)) +
+                                                        m1 * acos(m1) / pow(TypeTraits<T>::Value(1.0) - m1 * m1, 1.5));
+                factor2 = -(TypeTraits<T>::Value(2.0) * acos(m1) / sin(acos(m1)));
             }
 
             jacobian.coeffRef(0, 0) = factor1 * m4;
@@ -116,32 +117,32 @@ namespace gafro
             jacobian.coeffRef(2, 0) = factor1 * m2;
             jacobian.coeffRef(2, 3) = factor2;
 
-            jacobian.coeffRef(3, 0) = -2.0 * m5;
-            jacobian.coeffRef(3, 1) = -2.0 * m6;
-            jacobian.coeffRef(3, 2) = -2.0 * m7;
-            jacobian.coeffRef(3, 3) = -2.0 * m8;
-            jacobian.coeffRef(3, 4) = -2.0 * m1;
-            jacobian.coeffRef(3, 5) = -2.0 * m4;
-            jacobian.coeffRef(3, 6) = -2.0 * m3;
-            jacobian.coeffRef(3, 7) = -2.0 * m2;
+            jacobian.coeffRef(3, 0) = TypeTraits<T>::Value(-2.0) * m5;
+            jacobian.coeffRef(3, 1) = TypeTraits<T>::Value(-2.0) * m6;
+            jacobian.coeffRef(3, 2) = TypeTraits<T>::Value(-2.0) * m7;
+            jacobian.coeffRef(3, 3) = TypeTraits<T>::Value(-2.0) * m8;
+            jacobian.coeffRef(3, 4) = TypeTraits<T>::Value(-2.0) * m1;
+            jacobian.coeffRef(3, 5) = TypeTraits<T>::Value(-2.0) * m4;
+            jacobian.coeffRef(3, 6) = TypeTraits<T>::Value(-2.0) * m3;
+            jacobian.coeffRef(3, 7) = TypeTraits<T>::Value(-2.0) * m2;
 
-            jacobian.coeffRef(4, 0) = -2.0 * m6;
-            jacobian.coeffRef(4, 1) = 2.0 * m5;
-            jacobian.coeffRef(4, 2) = 2.0 * m8;
-            jacobian.coeffRef(4, 3) = -2.0 * m7;
-            jacobian.coeffRef(4, 4) = 2.0 * m4;
-            jacobian.coeffRef(4, 5) = -2.0 * m1;
-            jacobian.coeffRef(4, 6) = -2.0 * m2;
-            jacobian.coeffRef(4, 7) = 2.0 * m3;
+            jacobian.coeffRef(4, 0) = TypeTraits<T>::Value(-2.0) * m6;
+            jacobian.coeffRef(4, 1) = TypeTraits<T>::Value(2.0) * m5;
+            jacobian.coeffRef(4, 2) = TypeTraits<T>::Value(2.0) * m8;
+            jacobian.coeffRef(4, 3) = TypeTraits<T>::Value(-2.0) * m7;
+            jacobian.coeffRef(4, 4) = TypeTraits<T>::Value(2.0) * m4;
+            jacobian.coeffRef(4, 5) = TypeTraits<T>::Value(-2.0) * m1;
+            jacobian.coeffRef(4, 6) = TypeTraits<T>::Value(-2.0) * m2;
+            jacobian.coeffRef(4, 7) = TypeTraits<T>::Value(2.0) * m3;
 
-            jacobian.coeffRef(5, 0) = -2.0 * m7;
-            jacobian.coeffRef(5, 1) = -2.0 * m8;
-            jacobian.coeffRef(5, 2) = 2.0 * m5;
-            jacobian.coeffRef(5, 3) = 2.0 * m6;
-            jacobian.coeffRef(5, 4) = 2.0 * m3;
-            jacobian.coeffRef(5, 5) = 2.0 * m2;
-            jacobian.coeffRef(5, 6) = -2.0 * m1;
-            jacobian.coeffRef(5, 7) = -2.0 * m4;
+            jacobian.coeffRef(5, 0) = TypeTraits<T>::Value(-2.0) * m7;
+            jacobian.coeffRef(5, 1) = TypeTraits<T>::Value(-2.0) * m8;
+            jacobian.coeffRef(5, 2) = TypeTraits<T>::Value(2.0) * m5;
+            jacobian.coeffRef(5, 3) = TypeTraits<T>::Value(2.0) * m6;
+            jacobian.coeffRef(5, 4) = TypeTraits<T>::Value(2.0) * m3;
+            jacobian.coeffRef(5, 5) = TypeTraits<T>::Value(2.0) * m2;
+            jacobian.coeffRef(5, 6) = TypeTraits<T>::Value(-2.0) * m1;
+            jacobian.coeffRef(5, 7) = TypeTraits<T>::Value(-2.0) * m4;
 
             return jacobian;
         }
