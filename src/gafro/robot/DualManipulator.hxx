@@ -46,7 +46,7 @@ namespace gafro
         const auto &links = manipulator.getSystem().getLinks();
         const auto &joints = manipulator.getSystem().getJoints();
 
-        for (const std::string &pre : { "first_", "second_" })
+        for (const std::string pre : { "first_", "second_" })
         {
             for (unsigned j = 0; j < links.size(); ++j)
             {
@@ -219,7 +219,8 @@ namespace gafro
     Motor<T> DualManipulator<T, dof>::getAbsoluteMotor(const Eigen::Vector<T, dof / 2> &position_first,
                                                        const Eigen::Vector<T, dof / 2> &position_second) const
     {
-        return getSecondEEMotor(position_second) * Motor<T>::exp(Scalar<T>(T(0.5)) * getRelativeMotor(position_first, position_second).log());
+        return getSecondEEMotor(position_second) *
+               Motor<T>::exp(Scalar<T>(TypeTraits<T>::Value(0.5)) * getRelativeMotor(position_first, position_second).log());
     }
 
     template <class T, int dof>
@@ -279,7 +280,9 @@ namespace gafro
         for (int j = 0; j < dof; ++j)
         {
             relative_geometric_jacobian.setCoefficient(
-              0, j, reference.reverse() * (-2.0 * relative_analytic_jacobian.getCoefficient(0, j) * relative_motor.reverse()) * reference);
+              0, j,
+              reference.reverse() *
+                (Scalar<T>(TypeTraits<T>::Value(-2.0)) * relative_analytic_jacobian.getCoefficient(0, j) * relative_motor.reverse()) * reference);
         }
 
         return relative_geometric_jacobian;
@@ -304,7 +307,9 @@ namespace gafro
         for (int j = 0; j < dof; ++j)
         {
             absolute_geometric_jacobian.setCoefficient(
-              0, j, reference.reverse() * (-2.0 * absolute_analytic_jacobian.getCoefficient(0, j) * absolute_motor.reverse()) * reference);
+              0, j,
+              reference.reverse() *
+                (Scalar<T>(TypeTraits<T>::Value(-2.0)) * absolute_analytic_jacobian.getCoefficient(0, j) * absolute_motor.reverse()) * reference);
         }
 
         return absolute_geometric_jacobian;
@@ -395,24 +400,25 @@ namespace gafro
                                                                                              const Eigen::Vector<T, dof / 2> &position_second) const
     {
         Motor<T> relative_motor = getRelativeMotor(position_first, position_second);
-        typename Motor<T>::Generator b = Scalar<T>(0.5) * relative_motor.log();
+        typename Motor<T>::Generator b = Scalar<T>(TypeTraits<T>::Value(0.5)) * relative_motor.log();
         Motor<T> motor = Motor<T>::exp(b);
         Motor<T> second_motor = getSecondEEMotor(position_second);
 
-        MultivectorMatrix<T, Motor, 1, 7> second_jacobian = this->computeKinematicChainAnalyticJacobian(second_ee_joint_name_, position_second);
+        MultivectorMatrix<T, Motor, 1, dof / 2> second_jacobian = this->computeKinematicChainAnalyticJacobian(second_ee_joint_name_, position_second);
 
-        MultivectorMatrix<T, Motor, 1, 14> absolute_jacobian;
+        MultivectorMatrix<T, Motor, 1, dof> absolute_jacobian;
 
         Eigen::Matrix<T, 8, 6> exp_jacobian = Motor<T>::Exponential::getJacobian(b);
         Eigen::Matrix<T, 6, 8> log_jacobian = Motor<T>::Logarithm::getJacobian(relative_motor);
-        Eigen::Matrix<T, 8, 14> relative_analytic_jacobian = getRelativeAnalyticJacobian(position_first, position_second).embed();
+        Eigen::Matrix<T, 8, dof> relative_analytic_jacobian = getRelativeAnalyticJacobian(position_first, position_second).embed();
 
-        Eigen::Matrix<T, 8, 14> j = 0.5 * exp_jacobian * log_jacobian * relative_analytic_jacobian;
+        Eigen::Matrix<T, 8, dof> j;  // = TypeTraits<T>::Value(0.5) * exp_jacobian * log_jacobian * relative_analytic_jacobian;
 
-        for (unsigned i = 0; i < 7; ++i)
+        for (unsigned i = 0; i < dof / 2; ++i)
         {
             absolute_jacobian.setCoefficient(0, i, second_motor * Motor<T>(j.col(i)));
-            absolute_jacobian.setCoefficient(0, i + 7, second_jacobian.getCoefficient(0, i) * motor + second_motor * Motor<T>(j.col(i + 7)));
+            absolute_jacobian.setCoefficient(0, i + dof / 2,
+                                             second_jacobian.getCoefficient(0, i) * motor + second_motor * Motor<T>(j.col(i + dof / 2)));
         }
 
         return absolute_jacobian;
@@ -443,12 +449,14 @@ namespace gafro
         for (unsigned j = 0; j < dof / 2; ++j)
         {
             pointpair_jacobian.coeffRef(0, j) =
-              ((getFirstBaseMotor() * first_jacobian.coeff(0, j) * E0<T>(T(1.0)) * first_motor.reverse()) ^ second_point) +
-              ((first_motor * E0<T>(T(1.0)) * Motor<T>(getFirstBaseMotor() * first_jacobian.coeff(0, j)).reverse()) ^ second_point);
+              ((getFirstBaseMotor() * first_jacobian.coeff(0, j) * E0<T>(TypeTraits<T>::Value(1.0)) * first_motor.reverse()) ^ second_point) +
+              ((first_motor * E0<T>(TypeTraits<T>::Value(1.0)) * Motor<T>(getFirstBaseMotor() * first_jacobian.coeff(0, j)).reverse()) ^
+               second_point);
 
             pointpair_jacobian.coeffRef(0, j + j) =
-              (first_point ^ (getSecondBaseMotor() * second_jacobian.coeff(0, j) * E0<T>(T(1.0)) * second_motor.reverse())) +
-              (first_point ^ (second_motor * E0<T>(T(1.0)) * Motor<T>(getSecondBaseMotor() * second_jacobian.coeff(0, j)).reverse()));
+              (first_point ^ (getSecondBaseMotor() * second_jacobian.coeff(0, j) * E0<T>(TypeTraits<T>::Value(1.0)) * second_motor.reverse())) +
+              (first_point ^
+               (second_motor * E0<T>(TypeTraits<T>::Value(1.0)) * Motor<T>(getSecondBaseMotor() * second_jacobian.coeff(0, j)).reverse()));
         }
 
         return pointpair_jacobian;
@@ -457,7 +465,7 @@ namespace gafro
     template <class T, int dof>
     Eigen::Matrix<T, 6, 6> DualManipulator<T, dof>::getRelativeVelocityManipulability(const Eigen::Vector<T, dof> &positions) const
     {
-        return getRelativeVelocityManipulability(positions.topRows(dof), positions.bottomRows(dof));
+        return getRelativeVelocityManipulability(positions.topRows(dof / 2), positions.bottomRows(dof / 2));
     }
 
     template <class T, int dof>
@@ -472,7 +480,7 @@ namespace gafro
     template <class T, int dof>
     Eigen::Matrix<T, 6, 6> DualManipulator<T, dof>::getRelativeForceManipulability(const Eigen::Vector<T, dof> &positions) const
     {
-        return getRelativeForceManipulability(positions.topRows(dof), positions.bottomRows(dof));
+        return getRelativeForceManipulability(positions.topRows(dof / 2), positions.bottomRows(dof / 2));
     }
 
     template <class T, int dof>
@@ -485,7 +493,7 @@ namespace gafro
     template <class T, int dof>
     Eigen::Matrix<T, 6, 6> DualManipulator<T, dof>::getRelativeDynamicManipulability(const Eigen::Vector<T, dof> &positions) const
     {
-        return getRelativeDynamicManipulability(positions.topRows(dof), positions.bottomRows(dof));
+        return getRelativeDynamicManipulability(positions.topRows(dof / 2), positions.bottomRows(dof / 2));
     }
 
     template <class T, int dof>
@@ -498,7 +506,7 @@ namespace gafro
     template <class T, int dof>
     Eigen::Matrix<T, 6, 6> DualManipulator<T, dof>::getAbsoluteVelocityManipulability(const Eigen::Vector<T, dof> &positions) const
     {
-        return getAbsoluteVelocityManipulability(positions.topRows(dof), positions.bottomRows(dof));
+        return getAbsoluteVelocityManipulability(positions.topRows(dof / 2), positions.bottomRows(dof / 2));
     }
 
     template <class T, int dof>
@@ -513,7 +521,7 @@ namespace gafro
     template <class T, int dof>
     Eigen::Matrix<T, 6, 6> DualManipulator<T, dof>::getAbsoluteForceManipulability(const Eigen::Vector<T, dof> &positions) const
     {
-        return getAbsoluteForceManipulability(positions.topRows(dof), positions.bottomRows(dof));
+        return getAbsoluteForceManipulability(positions.topRows(dof / 2), positions.bottomRows(dof / 2));
     }
 
     template <class T, int dof>
@@ -526,7 +534,7 @@ namespace gafro
     template <class T, int dof>
     Eigen::Matrix<T, 6, 6> DualManipulator<T, dof>::getAbsoluteDynamicManipulability(const Eigen::Vector<T, dof> &positions) const
     {
-        return getAbsoluteDynamicManipulability(positions.topRows(dof), positions.bottomRows(dof));
+        return getAbsoluteDynamicManipulability(positions.topRows(dof / 2), positions.bottomRows(dof / 2));
     }
 
     template <class T, int dof>
