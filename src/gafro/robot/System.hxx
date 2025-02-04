@@ -711,21 +711,21 @@ namespace gafro
     template <class T>
     void System<T>::createJointLimits()
     {
-        Vector joint_limits_min = Vector::Zero(dof_);
-        Vector joint_limits_max = Vector::Zero(dof_);
+        // Vector joint_limits_min = Vector::Zero(dof_);
+        // Vector joint_limits_max = Vector::Zero(dof_);
 
         int i = 0;
         for (const std::unique_ptr<Joint<T>> &joint : joints_)
         {
             if (joint->isActuated())
             {
-                joint_limits_min[i] = joint->getLimits().position_lower;
-                joint_limits_max[i] = joint->getLimits().position_upper;
+                // joint_limits_min[i] = joint->getLimits().position_lower;
+                // joint_limits_max[i] = joint->getLimits().position_upper;
                 ++i;
             }
         }
 
-        setJointLimits(joint_limits_min, joint_limits_max);
+        // setJointLimits(joint_limits_min, joint_limits_max);
     }
 
     template <class T>
