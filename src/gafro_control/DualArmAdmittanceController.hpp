@@ -55,6 +55,9 @@ namespace gafro_control
 
         void setRelativeResidualDt(const gafro::Twist<double> &relative_residual_dt);
 
+        void convertWrenchesToDualTaskSpace(const gafro::Wrench<double> &w1, const gafro::Wrench<double> &w2, gafro::Wrench<double> &absolute,
+                                            gafro::Wrench<double> &relative);
+
       private:
         gafro::Inertia<double> absolute_inertia_;
         gafro::Inertia<double> absolute_damping_;
