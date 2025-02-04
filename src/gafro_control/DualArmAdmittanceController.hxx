@@ -157,14 +157,14 @@ namespace gafro_control
 
         gafro::Motor<double> absolute_motor = dual_robot->getAbsoluteMotor(position);
 
-        Motor<double> m1 = dual_robot->getFirstEEMotor(position.topRows(dof));
-        Motor<double> m2 = dual_robot->getSecondEEMotor(position.bottomRows(dof));
+        gafro::Motor<double> m1 = dual_robot->getFirstEEMotor(position.topRows(dof));
+        gafro::Motor<double> m2 = dual_robot->getSecondEEMotor(position.bottomRows(dof));
 
-        Motor<double> m1ma = m1.reverse() * absolute_motor;
-        Motor<double> m2ma = m2.reverse() * absolute_motor;
+        gafro::Motor<double> m1ma = m1.reverse() * absolute_motor;
+        gafro::Motor<double> m2ma = m2.reverse() * absolute_motor;
 
-        Translator<double> tr1 = m1ma.getTranslator();
-        Translator<double> tr2 = m2ma.getTranslator();
+        gafro::Translator<double> tr1 = m1ma.getTranslator();
+        gafro::Translator<double> tr2 = m2ma.getTranslator();
 
         gafro::Rotor<double> relative_rotor = dual_robot->getRelativeMotor(position).getRotor();
 
