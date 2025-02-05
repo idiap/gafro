@@ -412,7 +412,7 @@ namespace gafro
         Eigen::Matrix<T, 6, 8> log_jacobian = Motor<T>::Logarithm::getJacobian(relative_motor);
         Eigen::Matrix<T, 8, dof> relative_analytic_jacobian = getRelativeAnalyticJacobian(position_first, position_second).embed();
 
-        Eigen::Matrix<T, 8, dof> j;  // = TypeTraits<T>::Value(0.5) * exp_jacobian * log_jacobian * relative_analytic_jacobian;
+        Eigen::Matrix<T, 8, dof> j = TypeTraits<T>::Value(0.5) * exp_jacobian * log_jacobian * relative_analytic_jacobian;
 
         for (unsigned i = 0; i < dof / 2; ++i)
         {

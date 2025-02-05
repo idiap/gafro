@@ -98,8 +98,7 @@ namespace gafro_control
     template <int dof, class Reference, orwell::AdmittanceControllerType type>
     void AdmittanceController<dof, Reference, type>::setExternalWrench(const gafro::Wrench<double> &external_wrench)
     {
-        external_wrench_ =
-          external_wrench.transform(std::dynamic_pointer_cast<gafro_control::RobotModel<dof>>(this->getRobotModel())->getEEMotor().reverse());
+        external_wrench_ = external_wrench;
     }
 
     template <int dof, class Reference, orwell::AdmittanceControllerType type>
