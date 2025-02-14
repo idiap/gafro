@@ -3,6 +3,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     install(
         FILES 
             MultivectorGaussian.hpp
+            MultivectorGaussian.hxx
             CovariancePropagation.hpp
             Point.hpp
             Point.hxx

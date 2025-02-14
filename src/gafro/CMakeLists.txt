@@ -71,6 +71,7 @@ target_link_libraries(${PROJECT_NAME}
             physics.hpp
             optimization.hpp
             probabilistic.hpp
+            autodiff.hpp
         DESTINATION
             ${GAFRO_PREFIX_INCLUDE}/gafro
         COMPONENT
