@@ -205,18 +205,16 @@ namespace gafro::probabilistic
 
         for (unsigned k1 = 0; k1 < 5; ++k1)
         {
-            for (unsigned k2 = k1; k2 < 5; ++k2)
+            for (unsigned k2 = 0; k2 <= k1; ++k2)
             {
-                Eigen::Matrix<T, rsize, rsize> d1 = -(metric * metric_gradients[k2] * metric) * metric_gradients[k1] * metric;
+                Eigen::Matrix<T, rsize, rsize> d1 = -metric_gradients[k2] * metric * metric_gradients[k1];
 
-                Eigen::Matrix<T, rsize, rsize> d2 = metric *
-                                                    (left_hessians[k1] * this->getCovariance() * left_hessians[k2].transpose() +
-                                                     left_hessians[k2] * this->getCovariance() * left_hessians[k1].transpose()) *
-                                                    metric;
+                Eigen::Matrix<T, rsize, rsize> d2 = (left_hessians[k1] * this->getCovariance() * left_hessians[k2].transpose() +
+                                                     left_hessians[k2] * this->getCovariance() * left_hessians[k1].transpose());
 
-                Eigen::Matrix<T, rsize, rsize> d3 = metric * metric_gradients[k1] * -(metric * metric_gradients[k2] * metric);
+                Eigen::Matrix<T, rsize, rsize> d3 = -metric_gradients[k1] * metric * metric_gradients[k2];
 
-                Eigen::Matrix<T, rsize, rsize> derivative = d1 + d2 + d3;
+                Eigen::Matrix<T, rsize, rsize> derivative = metric * (d1 + d2 + d3) * metric;
 
                 T v = -(point.vector().transpose() * right_jacobian.transpose() * derivative * right_jacobian * point.vector()).value();
 
@@ -228,10 +226,10 @@ namespace gafro::probabilistic
                 }
             }
 
-            Eigen::Vector<T, 5> g2 = 2.0 * right_jacobian.transpose() * metric * metric_gradients[k1] * metric * right_jacobian * point.vector();
+            Eigen::Vector<T, 5> g2 = -2.0 * right_jacobian.transpose() * metric * metric_gradients[k1] * metric * right_jacobian * point.vector();
 
-            hessian.col(k1) -= g2;
-            hessian.row(k1) -= g2.transpose();
+            hessian.col(k1) += g2;
+            hessian.row(k1) += g2.transpose();
         }
 
         hessian += 2.0 * right_jacobian.transpose() * metric * right_jacobian;
