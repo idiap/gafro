@@ -27,6 +27,8 @@
 
 namespace gafro
 {
+    template <class T>
+    class ForwardKinematics;
 
     template <class T>
     class System
@@ -91,6 +93,8 @@ namespace gafro
         //
 
         Motor<T> computeLinkMotor(const std::string &name, const Eigen::Vector<T, Eigen::Dynamic> &position) const;
+
+        ForwardKinematics<T> computeForwardKinematics(const Eigen::VectorX<T> &joint_positions, const Motor<T> &base_motor = Motor<T>()) const;
 
         //
 

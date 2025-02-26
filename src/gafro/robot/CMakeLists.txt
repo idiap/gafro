@@ -28,6 +28,9 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
             Quadruped.hpp
             Quadruped.hxx
 
+            Humanoid.hpp
+            Humanoid.hxx
+
             System.hpp
             System.hxx
 

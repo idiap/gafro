@@ -31,6 +31,7 @@
 #include <gafro/physics/Wrench.hxx>
 //
 #include <gafro/robot/System.hpp>
+#include <gafro/robot/algorithm/ForwardKinematics.hpp>
 #include <gafro/robot/algorithm/InverseDynamics.hxx>
 
 namespace gafro
@@ -340,6 +341,14 @@ namespace gafro
         }
 
         return motor;
+    }
+
+    template <class T>
+    ForwardKinematics<T> System<T>::computeForwardKinematics(const Eigen::VectorX<T> &joint_positions, const Motor<T> &base_motor) const
+    {
+        assert(joint_positions.rows() == dof_);
+
+        return ForwardKinematics<T>(*this, joint_positions, base_motor);
     }
 
     template <class T>
