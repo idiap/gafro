@@ -51,6 +51,10 @@ namespace gafro
 
         MultivectorMatrix reverse() const;
 
+        MultivectorMatrix inverse() const;
+
+        auto dual() const;
+
         MultivectorMatrix transform(const Motor<T> &motor) const;
 
         template <template <class S2> class M2>
@@ -67,13 +71,14 @@ namespace gafro
 
         MultivectorMatrix &operator*=(const Type &multivector);
 
-        MultivectorMatrix operator*(const Type &multivector) const;
-
         template <int... blades>
         auto operator*(const typename Type::MAlgebra::template Multivector<T, blades...> &multivector) const;
 
         template <int... blades>
         auto operator^(const typename Type::MAlgebra::template Multivector<T, blades...> &multivector) const;
+
+        template <int... blades>
+        auto operator|(const typename Type::MAlgebra::template Multivector<T, blades...> &multivector) const;
 
         template <template <class S2> class M2, int rows2, int cols2>
         auto operator*(const MultivectorMatrix<T, M2, rows2, cols2> &matrix) const;
@@ -81,9 +86,15 @@ namespace gafro
         template <template <class S2> class M2, int rows2, int cols2>
         auto operator|(const MultivectorMatrix<T, M2, rows2, cols2> &matrix) const;
 
-        MultivectorMatrix operator|(const MultivectorMatrix &matrix) const;
+        template <template <class S2> class M2>
+        auto operator+(const MultivectorMatrix<T, M2, rows, cols> &matrix) const;
 
-        MultivectorMatrix operator+(const MultivectorMatrix &matrix) const;
+        template <template <class S2> class M2>
+        auto operator-(const MultivectorMatrix<T, M2, rows, cols> &matrix) const;
+
+        // MultivectorMatrix operator|(const MultivectorMatrix &matrix) const;
+
+        // MultivectorMatrix operator+(const MultivectorMatrix &matrix) const;
     };
 
 }  // namespace gafro

@@ -22,6 +22,7 @@
 #include <gafro/algebra/InnerProduct.hpp>
 #include <gafro/algebra/MultivectorMatrix.hpp>
 #include <gafro/algebra/OuterProduct.hpp>
+#include <gafro/algebra/Sum.hpp>
 
 namespace gafro
 {
@@ -93,6 +94,38 @@ namespace gafro
         }
 
         return reversed;
+    }
+
+    template <class T, template <class S> class M, int rows, int cols>
+    MultivectorMatrix<T, M, rows, cols> MultivectorMatrix<T, M, rows, cols>::inverse() const
+    {
+        MultivectorMatrix inversed;
+
+        for (unsigned r = 0; r < rows; r++)
+        {
+            for (unsigned c = 0; c < cols; c++)
+            {
+                inversed.setCoefficient(r, c, getCoefficient(r, c).inverse());
+            }
+        }
+
+        return inversed;
+    }
+
+    template <class T, template <class S> class M, int rows, int cols>
+    auto MultivectorMatrix<T, M, rows, cols>::dual() const
+    {
+        typename Dual<M<T>>::Type::template Matrix<rows, cols> dualed;
+
+        for (unsigned r = 0; r < rows; r++)
+        {
+            for (unsigned c = 0; c < cols; c++)
+            {
+                dualed.setCoefficient(r, c, getCoefficient(r, c).dual());
+            }
+        }
+
+        return dualed;
     }
 
     template <class T, template <class S> class M, int rows, int cols>
@@ -175,16 +208,6 @@ namespace gafro
     }
 
     template <class T, template <class S> class M, int rows, int cols>
-    MultivectorMatrix<T, M, rows, cols> MultivectorMatrix<T, M, rows, cols>::operator*(const Type &multivector) const
-    {
-        MultivectorMatrix<T, M, rows, cols> result = *this;
-
-        result *= multivector;
-
-        return result;
-    }
-
-    template <class T, template <class S> class M, int rows, int cols>
     template <int... blades>
     auto MultivectorMatrix<T, M, rows, cols>::operator*(const typename Type::MAlgebra::template Multivector<T, blades...> &multivector) const
     {
@@ -212,6 +235,23 @@ namespace gafro
             for (unsigned c = 0; c < cols; c++)
             {
                 matrix.setCoefficient(r, c, getCoefficient(r, c) ^ multivector);
+            }
+        }
+
+        return matrix;
+    }
+
+    template <class T, template <class S> class M, int rows, int cols>
+    template <int... blades>
+    auto MultivectorMatrix<T, M, rows, cols>::operator|(const typename Type::MAlgebra::template Multivector<T, blades...> &multivector) const
+    {
+        typename InnerProduct<M<T>, typename Type::MAlgebra::template Multivector<T, blades...>>::Type::template Matrix<rows, cols> matrix;
+
+        for (unsigned r = 0; r < rows; r++)
+        {
+            for (unsigned c = 0; c < cols; c++)
+            {
+                matrix.setCoefficient(r, c, getCoefficient(r, c) | multivector);
             }
         }
 
@@ -263,25 +303,10 @@ namespace gafro
     }
 
     template <class T, template <class S> class M, int rows, int cols>
-    MultivectorMatrix<T, M, rows, cols> MultivectorMatrix<T, M, rows, cols>::operator|(const MultivectorMatrix &matrix) const
+    template <template <class S2> class M2>
+    auto MultivectorMatrix<T, M, rows, cols>::operator+(const MultivectorMatrix<T, M2, rows, cols> &matrix) const
     {
-        MultivectorMatrix<T, M, rows, cols> result;
-
-        for (unsigned r = 0; r < rows; r++)
-        {
-            for (unsigned c = 0; c < cols; c++)
-            {
-                result.setCoefficient(r, c, getCoefficient(r, c) | matrix.getCoefficient(r, c));
-            }
-        }
-
-        return result;
-    }
-
-    template <class T, template <class S> class M, int rows, int cols>
-    MultivectorMatrix<T, M, rows, cols> MultivectorMatrix<T, M, rows, cols>::operator+(const MultivectorMatrix &matrix) const
-    {
-        MultivectorMatrix<T, M, rows, cols> result;
+        typename Sum<M<T>, M2<T>, detail::AdditionOperator>::Type::template Matrix<rows, cols> result;
 
         for (unsigned r = 0; r < rows; r++)
         {
@@ -293,6 +318,55 @@ namespace gafro
 
         return result;
     }
+
+    template <class T, template <class S> class M, int rows, int cols>
+    template <template <class S2> class M2>
+    auto MultivectorMatrix<T, M, rows, cols>::operator-(const MultivectorMatrix<T, M2, rows, cols> &matrix) const
+    {
+        typename Sum<M<T>, M2<T>, detail::SubstractionOperator>::Type::template Matrix<rows, cols> result;
+
+        for (unsigned r = 0; r < rows; r++)
+        {
+            for (unsigned c = 0; c < cols; c++)
+            {
+                result.setCoefficient(r, c, getCoefficient(r, c) - matrix.getCoefficient(r, c));
+            }
+        }
+
+        return result;
+    }
+
+    // template <class T, template <class S> class M, int rows, int cols>
+    // MultivectorMatrix<T, M, rows, cols> MultivectorMatrix<T, M, rows, cols>::operator|(const MultivectorMatrix &matrix) const
+    // {
+    //     MultivectorMatrix<T, M, rows, cols> result;
+
+    //     for (unsigned r = 0; r < rows; r++)
+    //     {
+    //         for (unsigned c = 0; c < cols; c++)
+    //         {
+    //             result.setCoefficient(r, c, getCoefficient(r, c) | matrix.getCoefficient(r, c));
+    //         }
+    //     }
+
+    //     return result;
+    // }
+
+    // template <class T, template <class S> class M, int rows, int cols>
+    // MultivectorMatrix<T, M, rows, cols> MultivectorMatrix<T, M, rows, cols>::operator+(const MultivectorMatrix &matrix) const
+    // {
+    //     MultivectorMatrix<T, M, rows, cols> result;
+
+    //     for (unsigned r = 0; r < rows; r++)
+    //     {
+    //         for (unsigned c = 0; c < cols; c++)
+    //         {
+    //             result.setCoefficient(r, c, getCoefficient(r, c) + matrix.getCoefficient(r, c));
+    //         }
+    //     }
+
+    //     return result;
+    // }
 
 }  // namespace gafro
 
@@ -329,19 +403,19 @@ gafro::MultivectorMatrix<T, M, rows, cols> operator*(const T &value, const gafro
     return result;
 }
 
-template <class T, template <class S> class M, int rows, int cols>
-gafro::MultivectorMatrix<T, M, rows, cols> operator*(const typename gafro::MultivectorMatrix<T, M, rows, cols>::Type &multivector,
-                                                     const gafro::MultivectorMatrix<T, M, rows, cols> &matrix)
-{
-    gafro::MultivectorMatrix<T, M, rows, cols> result;
+// template <class T, template <class S> class M, int rows, int cols>
+// gafro::MultivectorMatrix<T, M, rows, cols> operator*(const typename gafro::MultivectorMatrix<T, M, rows, cols>::Type &multivector,
+//                                                      const gafro::MultivectorMatrix<T, M, rows, cols> &matrix)
+// {
+//     gafro::MultivectorMatrix<T, M, rows, cols> result;
 
-    for (int r = 0; r < rows; ++r)
-    {
-        for (int c = 0; c < cols; ++c)
-        {
-            result.setCoefficient(r, c, multivector * matrix.getCoefficient(r, c));
-        }
-    }
+//     for (int r = 0; r < rows; ++r)
+//     {
+//         for (int c = 0; c < cols; ++c)
+//         {
+//             result.setCoefficient(r, c, multivector * matrix.getCoefficient(r, c));
+//         }
+//     }
 
-    return result;
-}
+//     return result;
+// }

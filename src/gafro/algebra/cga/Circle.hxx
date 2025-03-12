@@ -132,7 +132,7 @@ namespace gafro
         Point<T> p2(radius * TypeTraits<T>::Value(cos(1.0)), radius * TypeTraits<T>::Value(sin(1.0)), TypeTraits<T>::Value(0.0));
         Point<T> p3(radius * TypeTraits<T>::Value(cos(2.0)), radius * TypeTraits<T>::Value(sin(2.0)), TypeTraits<T>::Value(0.0));
 
-        return motor.apply(Circle<T>(p1, p2, p3));
+        return motor.apply(Circle<T>(p1, p2, p3).normalized());
     }
 
 }  // namespace gafro
