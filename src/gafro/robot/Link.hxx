@@ -143,7 +143,7 @@ namespace gafro
     {}
 
     template <class T>
-    const Link<T>::Visual::Type &Link<T>::Visual::getType() const
+    const typename Link<T>::Visual::Type &Link<T>::Visual::getType() const
     {
         return type_;
     }
