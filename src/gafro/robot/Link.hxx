@@ -139,23 +139,7 @@ namespace gafro
     }
 
     template <class T>
-    Link<T>::Visual::Visual(const Type &type, const Motor<T> &transform) : type_(type), transform_(transform)
-    {}
-
-    template <class T>
-    const typename Link<T>::Visual::Type &Link<T>::Visual::getType() const
-    {
-        return type_;
-    }
-
-    template <class T>
-    const Motor<T> &Link<T>::Visual::getTransform() const
-    {
-        return transform_;
-    }
-
-    template <class T>
-    void Link<T>::setVisual(std::unique_ptr<Visual> &&visual)
+    void Link<T>::setVisual(std::unique_ptr<LinkVisual> &&visual)
     {
         visual_ = std::move(visual);
     }
@@ -167,7 +151,7 @@ namespace gafro
     }
 
     template <class T>
-    const typename Link<T>::Visual *Link<T>::getVisual() const
+    const LinkVisual *Link<T>::getVisual() const
     {
         return visual_.get();
     }
