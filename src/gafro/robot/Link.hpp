@@ -29,6 +29,45 @@ namespace gafro
     template <class T>
     class Joint;
 
+    class LinkVisual
+    {
+      public:
+        enum class Type
+        {
+            SPHERE,
+            MESH,
+            CYLINDER,
+            BOX
+        };
+
+        LinkVisual(const Type &type, const Motor<double> &transform) : type_(type), transform_(transform) {}
+
+        virtual ~LinkVisual() = default;
+
+        virtual std::unique_ptr<LinkVisual> copy() const = 0;
+
+        const Type &getType() const
+        {
+            return type_;
+        }
+
+        const Motor<double> &getTransform() const
+        {
+            return transform_;
+        }
+
+        template <class Derived>
+        const Derived *cast() const
+        {
+            return static_cast<const Derived *>(this);
+        }
+
+      private:
+        const Type type_;
+
+        Motor<double> transform_;
+    };
+
     template <class T>
     class Link
     {
@@ -89,47 +128,14 @@ namespace gafro
         typename Motor<T>::Generator axis_;
 
       public:
-        class Visual
-        {
-          public:
-            enum class Type
-            {
-                SPHERE,
-                MESH,
-                CYLINDER,
-                BOX
-            };
-
-            Visual(const Type &type, const Motor<T> &transform);
-
-            virtual ~Visual() = default;
-
-            virtual std::unique_ptr<Visual> copy() const = 0;
-
-            const Type &getType() const;
-
-            const Motor<T> &getTransform() const;
-
-            template <class Derived>
-            const Derived *cast() const
-            {
-                return static_cast<const Derived *>(this);
-            }
-
-          private:
-            const Type type_;
-
-            Motor<T> transform_;
-        };
-
       private:
-        std::unique_ptr<Visual> visual_;
+        std::unique_ptr<LinkVisual> visual_;
 
       public:
-        void setVisual(std::unique_ptr<Visual> &&visual);
+        void setVisual(std::unique_ptr<LinkVisual> &&visual);
 
         bool hasVisual() const;
 
-        const Visual *getVisual() const;
+        const LinkVisual *getVisual() const;
     };
 }  // namespace gafro
