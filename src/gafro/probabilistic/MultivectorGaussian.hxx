@@ -53,6 +53,34 @@ namespace gafro::probabilistic
     }
 
     template <class T, template <class S> class Multivector>
+    template <class Derived, int... blades>
+    MultivectorGaussian<T, Multivector> MultivectorGaussian<T, Multivector>::transform(
+      const typename Versor<Derived, T, blades...>::Gaussian &versor) const
+    {
+        MultivectorGaussian<T, Multivector> transformed;
+
+        transformed.setMean(versor.getMean().apply(this->getMean()));
+
+        auto e1 = versor.getMean() * this->getMean();
+        auto e2 = e1.evaluate() * versor.getMean().reverse().evaluate();
+
+        Eigen::MatrixXd reverse = Versor<Derived, T, blades...>::One().reverse().vector().asDiagonal();
+
+        Eigen::MatrixXd jl1 = e1.getLeftJacobian();
+        Eigen::MatrixXd jr1 = e1.getRightJacobian();
+        Eigen::MatrixXd jl2 = e2.getLeftJacobian();
+        Eigen::MatrixXd jr2 = e2.getRightJacobian();
+
+        Eigen::MatrixXd a = jl2 * jl1;
+        Eigen::MatrixXd b = jr2 * reverse;
+
+        Eigen::MatrixXd covariance = a * versor.getCovariance() * a.transpose() + b * versor.getCovariance() * b.transpose() +
+                                     a * versor.getCovariance() * b.transpose() + b * versor.getCovariance() * a.transpose();
+
+        return transformed;
+    }
+
+    template <class T, template <class S> class Multivector>
     MultivectorGaussian<T, Multivector> MultivectorGaussian<T, Multivector>::Zero()
     {
         return MultivectorGaussian(Mean({ 1.0 }), Covariance::Zero());
@@ -239,6 +267,42 @@ namespace gafro::probabilistic
 
     template <class T, template <class S> class Multivector>
     template <template <class S> class Other>
+    auto MultivectorGaussian<T, Multivector>::operator|(const MultivectorGaussian<T, Other> &other) const
+    {
+        using Gaussian = typename InnerProduct<Mean, Other<T>>::Type::Gaussian;
+
+        auto operation = this->getMean() | other.getMean();
+
+        auto left_jacobian = operation.getLeftJacobian();
+        auto right_jacobian = operation.getRightJacobian();
+
+        typename Gaussian::Mean mean = operation.evaluate();
+        typename Gaussian::Covariance covariance = left_jacobian * this->getCovariance() * left_jacobian.transpose() +  //
+                                                   right_jacobian * other.getCovariance() * right_jacobian.transpose();
+
+        Gaussian gaussian;
+
+        gaussian.setMean(mean);
+        gaussian.setCovariance(covariance);
+
+        return gaussian;
+    }
+
+    template <class T, template <class S> class Multivector>
+    template <template <class S> class Other>
+        requires(std::derived_from<Other<T>, AbstractMultivector<typename Other<T>::Type>>)
+    auto MultivectorGaussian<T, Multivector>::operator|(const Other<T> &other) const
+    {
+        typename Other<T>::Gaussian gaussian;
+
+        gaussian.setMean(other);
+        gaussian.setCovariance(Other<T>::Gaussian::Covariance::Zero());
+
+        return (*this) | gaussian;
+    }
+
+    template <class T, template <class S> class Multivector>
+    template <template <class S> class Other>
     auto MultivectorGaussian<T, Multivector>::operator^(const MultivectorGaussian<T, Other> &other) const
     {
         using Gaussian = typename OuterProduct<Mean, Other<T>>::Type::Gaussian;
@@ -309,14 +373,26 @@ namespace gafro::probabilistic
         return (*this) * gaussian;
     }
 
-    template <class T, class Other, template <class> class Multivector>
-    // requires(std::derived_from<Other<T>, AbstractMultivector<typename Other<T>::Type>>)
-    auto operator*(const AbstractMultivector<Other> &other, const MultivectorGaussian<T, Multivector> &gaussian)
+    // template <class T, class Other, template <class> class Multivector>
+    // // requires(std::derived_from<Other<T>, AbstractMultivector<typename Other<T>::Type>>)
+    // auto operator*(const AbstractMultivector<Other> &other, const MultivectorGaussian<T, Multivector> &gaussian)
+    // {
+    //     typename Other::Gaussian second_gaussian;
+
+    //     second_gaussian.setMean(other.derived());
+    //     second_gaussian.setCovariance(Other::Gaussian::Covariance::Zero());
+
+    //     return second_gaussian * gaussian;
+    // }
+
+    template <class T, template <class> class Multivector, template <class> class Other>
+        requires(std::derived_from<Other<T>, AbstractMultivector<typename Other<T>::Type>>)
+    auto operator*(const Other<T> &other, const MultivectorGaussian<T, Multivector> &gaussian)
     {
-        typename Other::Gaussian second_gaussian;
+        typename Other<T>::Gaussian second_gaussian;
 
         second_gaussian.setMean(other.derived());
-        second_gaussian.setCovariance(Other::Gaussian::Covariance::Zero());
+        second_gaussian.setCovariance(Other<T>::Gaussian::Covariance::Zero());
 
         return second_gaussian * gaussian;
     }

@@ -49,6 +49,8 @@ namespace gafro
       public:
         virtual ~System();
 
+        void add(const std::string &parent_link, std::unique_ptr<Joint<T>> &&joint, const System &system, const std::string &pre = "");
+
         void addJoint(std::unique_ptr<Joint<T>> &&joint);
 
         void addLink(std::unique_ptr<Link<T>> &&link);

@@ -19,8 +19,6 @@
 
 #pragma once
 
-#include <gafro/algebra/MultivectorMatrix.hpp>
-//
 #include <gafro/robot/Hand.hpp>
 
 namespace gafro
@@ -193,7 +191,7 @@ namespace gafro
             for (int k = 0; k < finger_dof[j]; ++k)
             {
                 typename Motor<T>::Parameters parameters =
-                  exp_jacobian * log_jacobian / static_cast<double>(n_fingers) * finger_jacobian.getCoefficient(0, k).vector();
+                  exp_jacobian * log_jacobian / static_cast<T>(n_fingers) * finger_jacobian.getCoefficient(0, k).vector();
 
                 jacobian.setCoefficient(0, std::accumulate(finger_dof.begin(), finger_dof.begin() + j, 0) + k, Motor<T>(parameters));
             }
@@ -322,6 +320,64 @@ namespace gafro
         return sphere_jacobian;
     }
 
-    //
+    // template <class T, int... fingers>
+    // MultivectorMatrix<T, SimilarityTransformation, 1, Hand<T, fingers...>::dof> Hand<T, fingers...>::getAnalyticSimilarityJacobian(
+    //   const Eigen::Vector<T, dof> &position) const
+    //     requires(n_fingers == 3)
+    // {
+    //     Circle<T> circle = getFingerCircle(position);
+    //     auto circle_jacobian = getFingerCircleJacobian(position);
+
+    //     auto sim = Circle<T>::Unit(gafro::Motor<T>()).getSimilarityTransformation(circle);
+    //     auto translator = sim.getCanonicalDecomposition().getTranslator();
+    //     auto rotor = sim.getCanonicalDecomposition().getRotor();
+    //     auto dilator = sim.getCanonicalDecomposition().getDilator();
+
+    //     Point<T> p = circle * Ei<T>::One() * circle;
+    //     auto center_jacobian =
+    //       (circle_jacobian * (Ei<T>::One() * circle).evaluate() + (circle * Ei<T>::One()).evaluate() * circle_jacobian).template extract<Point>();
+
+    //     auto translator_jacobian =
+    //       -0.5 * (std::pow(p.template get<blades::e0>(), -1.0) * center_jacobian +
+    //               -std::pow(p.template get<blades::e0>(), -2.0) * p * (Ei<T>(-1.0) | center_jacobian.template extract<E0>())) ^
+    //       Ei<T>::One();
+
+    //     Vector<T> unit_normal = Circle<T>(dilator.apply(Circle<T>::Unit(gafro::Motor<T>()))).getPlane().getNormal().normalized();
+    //     Vector<T> circle_normal_unnormalized = circle.getPlane().getNormal();
+    //     Vector<T> circle_normal = circle_normal_unnormalized.normalized();
+    //     Rotor<T> unnormalized_rotor = Scalar<T>::One() + (unit_normal | circle_normal) - (unit_normal ^ circle_normal);
+
+    //     auto circle_plane_jacobian = circle_jacobian ^ Ei<T>::One();
+    //     auto circle_normal_jacobian_unnormalized =
+    //       (circle_plane_jacobian.dual() + -0.5 * (E0<T>::One() | circle_plane_jacobian.dual()) * Ei<T>::One()).template extract<Vector>();
+
+    //     auto circle_normal_jacobian =
+    //       (1.0 / circle_normal_unnormalized.norm()) * circle_normal_jacobian_unnormalized -
+    //       0.5 * std::pow(circle_normal_unnormalized.norm(), -3.0) *
+    //         (circle_normal_unnormalized * (circle_normal_unnormalized * circle_normal_jacobian_unnormalized.reverse() +
+    //                                        circle_normal_jacobian_unnormalized * circle_normal_unnormalized.reverse().evaluate()))
+    //           .template extract<Vector>();
+
+    //     auto rotor_jacobian_unnormalized = (unit_normal | circle_normal_jacobian) - (unit_normal ^ circle_normal_jacobian);
+
+    //     auto rotor_jacobian = (1.0 / unnormalized_rotor.norm()) * rotor_jacobian_unnormalized -
+    //                           0.5 * std::pow(unnormalized_rotor.norm(), -3.0) *
+    //                             (unnormalized_rotor * (rotor_jacobian_unnormalized * unnormalized_rotor.reverse().evaluate() +
+    //                                                    unnormalized_rotor * rotor_jacobian_unnormalized.reverse()));
+
+    //     MultivectorMatrix<T, Circle, 1, 7> circle_jacobian_reversed = circle_jacobian.reverse();
+    //     auto circle_jacobian_inversed = (1.0 / circle.squaredNorm()) * circle_jacobian.reverse()  //
+    //                                     + -std::pow(circle.squaredNorm(), -2.0) *
+    //                                         (circle.reverse().evaluate() * (2.0 * (circle * circle_jacobian_reversed)).template extract<Scalar>());
+
+    //     auto e = ((Ei<T>::One() | circle) * circle.inverse()).evaluate();
+    //     auto j = ((Ei<T>(1.0) | circle_jacobian) * circle.inverse().evaluate() + (Ei<T>(1.0) | circle).evaluate() * circle_jacobian_inversed);
+
+    //     auto dilator_jacobian = dilator * -0.25 * std::pow(abs(e.squaredNorm()), -1.0)  //
+    //                             * (j * e.reverse().evaluate() + e * j.reverse()).template extract<Scalar>();
+
+    //     return translator_jacobian * (rotor * dilator).evaluate() + translator * rotor_jacobian * dilator +
+    //            (translator * rotor).evaluate() * dilator_jacobian;
+    // }
 
 }  // namespace gafro

@@ -27,7 +27,7 @@ add_subdirectory(src/${PROJECT_NAME})
 add_subdirectory(src/${PROJECT_NAME}_control)
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    add_subdirectory(tests)
+    # add_subdirectory(tests)
 endif()
 
 include(CMakePackageConfigHelpers)

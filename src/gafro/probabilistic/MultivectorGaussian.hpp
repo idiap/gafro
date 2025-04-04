@@ -29,6 +29,9 @@ namespace gafro::probabilistic
 
         const Covariance &getCovariance() const;
 
+        template <class Derived, int... blades>
+        MultivectorGaussian transform(const typename Versor<Derived, T, blades...>::Gaussian &versor) const;
+
         T getProbability(const gafro::Point<T> &point) const;
 
         T getProbability(const gafro::Vector<T> &vector) const;
@@ -44,6 +47,13 @@ namespace gafro::probabilistic
         gafro::Vector<T> getGradient(const gafro::Vector<T> &vector) const;
 
         Eigen::Matrix<T, 5, 5> getHessian(const gafro::Point<T> &point) const;
+
+        template <template <class S> class Other>
+        auto operator|(const MultivectorGaussian<T, Other> &other) const;
+
+        template <template <class S> class Other>
+            requires(std::derived_from<Other<T>, AbstractMultivector<typename Other<T>::Type>>)
+        auto operator|(const Other<T> &other) const;
 
         template <template <class S> class Other>
         auto operator^(const MultivectorGaussian<T, Other> &other) const;
@@ -68,6 +78,9 @@ namespace gafro::probabilistic
       public:
         static MultivectorGaussian Zero();
     };
+
+    // template <class T, template <class> class Multivector, template <class> class Other>
+    // auto operator*(const MultivectorGaussian<T, Multivector> &gaussian, const MultivectorGaussian<T, Other> &other);
 
 }  // namespace gafro::probabilistic
 

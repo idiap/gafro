@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include <gafro/algebra.hpp>
+//
 #include <gafro/robot/System.hpp>
 
 namespace gafro
@@ -100,6 +102,9 @@ namespace gafro
 
         MultivectorMatrix<T, Sphere, 1, dof> getFingerSphereJacobian(const Eigen::Vector<T, dof> &position) const
             requires(n_fingers == 4);
+
+        // MultivectorMatrix<T, SimilarityTransformation, 1, dof> getAnalyticSimilarityJacobian(const Eigen::Vector<T, dof> &position) const
+        //     requires(n_fingers == 3);
 
         //
 
