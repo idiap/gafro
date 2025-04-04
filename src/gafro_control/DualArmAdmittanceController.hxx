@@ -97,11 +97,15 @@ namespace gafro_control
 
     template <int dof, class Reference, orwell::AdmittanceControllerType type>
     void DualArmAdmittanceController<dof, Reference, type>::setDesiredWrench(const gafro::Wrench<double> &w1, const gafro::Wrench<double> &w2)
-    {}
+    {
+        convertWrenchesToDualTaskSpace(w1, w2, desired_absolute_wrench_, desired_relative_wrench_);
+    }
 
     template <int dof, class Reference, orwell::AdmittanceControllerType type>
     void DualArmAdmittanceController<dof, Reference, type>::setExternalWrench(const gafro::Wrench<double> &w1, const gafro::Wrench<double> &w2)
-    {}
+    {
+        convertWrenchesToDualTaskSpace(w1, w2, external_absolute_wrench_, external_relative_wrench_);
+    }
 
     template <int dof, class Reference, orwell::AdmittanceControllerType type>
     void DualArmAdmittanceController<dof, Reference, type>::setAbsoluteResidual(const gafro::Motor<double>::Generator &absolute_residual)
@@ -139,6 +143,33 @@ namespace gafro_control
     {
         return relative_inertia_(desired_relative_wrench_ - external_relative_wrench_ - relative_stiffness_(relative_residual_) -
                                  relative_damping_(relative_residual_dt_));
+    }
+
+    template <int dof, class Reference, orwell::AdmittanceControllerType type>
+    void DualArmAdmittanceController<dof, Reference, type>::convertWrenchesToDualTaskSpace(const gafro::Wrench<double> &w1,
+                                                                                           const gafro::Wrench<double> &w2,
+                                                                                           gafro::Wrench<double> &absolute,
+                                                                                           gafro::Wrench<double> &relative)
+    {
+        auto dual_robot = std::dynamic_pointer_cast<gafro_control::RobotModelDualManipulator<2 * dof>>(this->getRobotModel())->getManipulator();
+
+        Eigen::Vector<double, 2 * dof> position = this->getRobotState().getPosition();
+
+        gafro::Motor<double> absolute_motor = dual_robot->getAbsoluteMotor(position);
+
+        gafro::Motor<double> m1 = dual_robot->getFirstEEMotor(position.topRows(dof));
+        gafro::Motor<double> m2 = dual_robot->getSecondEEMotor(position.bottomRows(dof));
+
+        gafro::Motor<double> m1ma = m1.reverse() * absolute_motor;
+        gafro::Motor<double> m2ma = m2.reverse() * absolute_motor;
+
+        gafro::Translator<double> tr1 = m1ma.getTranslator();
+        gafro::Translator<double> tr2 = m2ma.getTranslator();
+
+        gafro::Rotor<double> relative_rotor = dual_robot->getRelativeMotor(position).getRotor();
+
+        absolute = tr1 * w1 * tr1.reverse() + tr2 * w2 * tr2.reverse();
+        relative = 0.5 * relative_rotor.reverse() * (w2 - w1) * relative_rotor;
     }
 
 }  // namespace gafro_control

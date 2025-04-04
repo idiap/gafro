@@ -87,5 +87,49 @@ namespace gafro
         std::vector<const Joint<T> *> child_joints_;
 
         typename Motor<T>::Generator axis_;
+
+      public:
+        class Visual
+        {
+          public:
+            enum class Type
+            {
+                SPHERE,
+                MESH,
+                CYLINDER,
+                BOX
+            };
+
+            Visual(const Type &type, const Motor<T> &transform);
+
+            virtual ~Visual() = default;
+
+            virtual std::unique_ptr<Visual> copy() const = 0;
+
+            const Type &getType() const;
+
+            const Motor<T> &getTransform() const;
+
+            template <class Derived>
+            const Derived *cast() const
+            {
+                return static_cast<const Derived *>(this);
+            }
+
+          private:
+            const Type type_;
+
+            Motor<T> transform_;
+        };
+
+      private:
+        std::unique_ptr<Visual> visual_;
+
+      public:
+        void setVisual(std::unique_ptr<Visual> &&visual);
+
+        bool hasVisual() const;
+
+        const Visual *getVisual() const;
     };
 }  // namespace gafro

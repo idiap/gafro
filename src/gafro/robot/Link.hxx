@@ -44,6 +44,7 @@ namespace gafro
         parent_joint_ = std::move(other.parent_joint_);
         child_joints_ = std::move(other.child_joints_);
         axis_ = std::move(other.axis_);
+        visual_ = std::move(other.visual_);
 
         return *this;
     }
@@ -135,6 +136,40 @@ namespace gafro
     const typename Motor<T>::Generator &Link<T>::getAxis() const
     {
         return axis_;
+    }
+
+    template <class T>
+    Link<T>::Visual::Visual(const Type &type, const Motor<T> &transform) : type_(type), transform_(transform)
+    {}
+
+    template <class T>
+    const Link<T>::Visual::Type &Link<T>::Visual::getType() const
+    {
+        return type_;
+    }
+
+    template <class T>
+    const Motor<T> &Link<T>::Visual::getTransform() const
+    {
+        return transform_;
+    }
+
+    template <class T>
+    void Link<T>::setVisual(std::unique_ptr<Visual> &&visual)
+    {
+        visual_ = std::move(visual);
+    }
+
+    template <class T>
+    bool Link<T>::hasVisual() const
+    {
+        return visual_ != nullptr;
+    }
+
+    template <class T>
+    const typename Link<T>::Visual *Link<T>::getVisual() const
+    {
+        return visual_.get();
     }
 
 }  // namespace gafro

@@ -82,7 +82,7 @@ namespace gafro
             return -evaluate();
         }
 
-        Type operator*(const double &scalar) const
+        Type operator*(const Vtype &scalar) const
         {
             return scalar * evaluate();
         }
@@ -100,7 +100,7 @@ namespace gafro
     }
 
     template <class Derived, class Result>
-    Result operator*(const double &scalar, const Expression<Derived, Result> &expression)
+    Result operator*(const typename Result::Vtype &scalar, const Expression<Derived, Result> &expression)
     {
         return scalar * expression.evaluate();
     }
