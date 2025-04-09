@@ -63,16 +63,18 @@ namespace gafro
         Line<T> l1 = this->normalized();
         Line<T> l2 = other.normalized();
 
-        auto l2l1 = (gafro::Scalar<double>(1.0) + l2 * l1).evaluate();
-        auto l1l2 = (gafro::Scalar<double>(1.0) + l1 * l2).evaluate();
+        auto l2l1 = (Scalar<T>(TypeTraits<T>::Value(1.0)) + l2 * l1).evaluate();
+        auto l1l2 = (Scalar<T>(TypeTraits<T>::Value(1.0)) + l1 * l2).evaluate();
 
         auto k = (l1l2 + l2l1).evaluate();
 
-        auto k0 = gafro::Scalar<double>(k.template get<gafro::blades::scalar>());
+        auto k0 = Scalar<T>(k.template get<blades::scalar>());
         auto k4 = (k - k0).evaluate();
 
-        auto a1 = gafro::Scalar<double>(sqrt(1.0 / k.template get<gafro::blades::scalar>()));
-        auto a2 = (gafro::Scalar<double>(1.0) - (k4 * gafro::Scalar<double>(1.0 / (2.0 * k.template get<gafro::blades::scalar>())))).evaluate();
+        auto a1 = Scalar<T>(sqrt(TypeTraits<T>::Value(1.0) / k.template get<blades::scalar>()));
+        auto a2 = (Scalar<T>(TypeTraits<T>::Value(1.0)) -
+                   (k4 * Scalar<T>(TypeTraits<T>::Value(1.0) / (TypeTraits<T>::Value(2.0) * k.template get<blades::scalar>()))))
+                    .evaluate();
 
         return Motor<T>(a1 * a2 * l2l1);
     }
