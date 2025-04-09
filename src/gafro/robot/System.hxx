@@ -77,6 +77,116 @@ namespace gafro
     System<T>::~System() = default;
 
     template <class T>
+    void System<T>::add(const std::string &parent_link, std::unique_ptr<Joint<T>> &&joint, const System &system, const std::string &pre)
+    {
+        std::string joint_name = joint->getName();
+        this->addJoint(std::move(joint));
+
+        const auto &links = system.getLinks();
+        const auto &joints = system.getJoints();
+
+        for (unsigned j = 0; j < links.size(); ++j)
+        {
+            std::unique_ptr<Link<T>> link = std::make_unique<Link<T>>();
+
+            link->setName(pre + links[j]->getName());
+            link->setCenterOfMass(links[j]->getCenterOfMass());
+            link->setInertia(links[j]->getInertia());
+            link->setMass(links[j]->getMass());
+            link->setAxis(links[j]->getAxis());
+            if (links[j]->hasVisual())
+            {
+                link->setVisual(links[j]->getVisual()->copy());
+            }
+
+            this->addLink(std::move(link));
+        }
+
+        for (unsigned j = 0; j < joints.size(); ++j)
+        {
+            std::unique_ptr<Joint<T>> joint;
+
+            switch (joints[j]->getType())
+            {
+            case Joint<T>::Type::FIXED: {
+                joint = std::make_unique<FixedJoint<T>>();
+
+                break;
+            }
+            case Joint<T>::Type::REVOLUTE: {
+                joint = std::make_unique<RevoluteJoint<T>>();
+
+                static_cast<RevoluteJoint<T> *>(joint.get())->setAxis(static_cast<RevoluteJoint<T> *>(joints[j].get())->getAxis());
+
+                break;
+            }
+            case Joint<T>::Type::PRISMATIC: {
+                joint = std::make_unique<PrismaticJoint<T>>();
+
+                static_cast<PrismaticJoint<T> *>(joint.get())->setAxis(static_cast<PrismaticJoint<T> *>(joints[j].get())->getAxis());
+
+                break;
+            }
+            }
+
+            joint->setName(pre + joints[j]->getName());
+            joint->setFrame(joints[j]->getFrame());
+            joint->setLimits(joints[j]->getLimits());
+
+            this->addJoint(std::move(joint));
+        }
+
+        for (const std::unique_ptr<Link<T>> &link : links)
+        {
+            {
+                auto child_joints = system.getLink(link->getName())->getChildJoints();
+
+                for (const auto &joint : child_joints)
+                {
+                    this->getLink(pre + link->getName())->addChildJoint(this->getJoint(pre + joint->getName()));
+                }
+            }
+
+            {
+                auto parent_joint = system.getLink(link->getName())->getParentJoint();
+
+                if (parent_joint)
+                {
+                    this->getLink(pre + link->getName())->setParentJoint(this->getJoint(pre + parent_joint->getName()));
+                }
+            }
+        }
+
+        for (const std::unique_ptr<Joint<T>> &joint : joints)
+        {
+            {
+                auto link = joint->getChildLink();
+
+                if (link)
+                {
+                    this->getJoint(pre + joint->getName())->setChildLink(this->getLink(pre + link->getName()));
+                }
+            }
+
+            {
+                auto link = joint->getParentLink();
+
+                if (link)
+                {
+                    this->getJoint(pre + joint->getName())->setParentLink(this->getLink(pre + link->getName()));
+                }
+            }
+        }
+
+        this->getLink(parent_link)->addChildJoint(this->getJoint(joint_name));
+        this->getLink(pre + links.front()->getName())->setParentJoint(this->getJoint(joint_name));
+        this->getJoint(joint_name)->setParentLink(this->getLink(parent_link));
+        this->getJoint(joint_name)->setChildLink(this->getLink(pre + links.front()->getName()));
+
+        this->finalize();
+    }
+
+    template <class T>
     void System<T>::addJoint(std::unique_ptr<Joint<T>> &&joint)
     {
         joints_.push_back(std::move(joint));
@@ -200,6 +310,10 @@ namespace gafro
             link->setInertia(links_[j]->getInertia());
             link->setMass(TypeTraits<S>::Value(links_[j]->getMass()));
             link->setAxis(links_[j]->getAxis());
+            if (links_[j]->hasVisual())
+            {
+                link->setVisual(links_[j]->getVisual()->copy());
+            }
 
             system.addLink(std::move(link));
         }
@@ -346,7 +460,7 @@ namespace gafro
     template <class T>
     ForwardKinematics<T> System<T>::computeForwardKinematics(const Eigen::VectorX<T> &joint_positions, const Motor<T> &base_motor) const
     {
-        assert(joint_positions.rows() == dof_);
+        // assert(joint_positions.rows() == dof_);
 
         return ForwardKinematics<T>(*this, joint_positions, base_motor);
     }
