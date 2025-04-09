@@ -21,6 +21,7 @@
 
 #include <gafro/algebra/Reflection.hpp>
 #include <gafro/algebra/cga/Sphere.hpp>
+#include <gafro/algebra/cga/Translator.hpp>
 
 namespace gafro
 {
@@ -66,6 +67,18 @@ namespace gafro
     Sphere<T> Sphere<T>::Random()
     {
         return Sphere(Point<T>::Random(), Point<T>::Random(), Point<T>::Random(), Point<T>::Random());
+    }
+
+    template <class T>
+    SimilarityTransformation<T> Sphere<T>::getSimilarityTransformation(const Sphere &target) const
+    {
+        Dilator<T> dilator(target.getRadius() / this->getRadius());
+
+        Sphere<T> sphere = dilator.apply(*this);
+
+        Translator<T> translator = Translator<T>::exp(((target.getCenter() - sphere.getCenter()) ^ Ei<double>::One()));
+
+        return translator * Rotor<T>::Unit() * dilator;
     }
 
 }  // namespace gafro

@@ -77,6 +77,8 @@ namespace gafro
         static Exponential exp(const Generator &generator);
 
         static Rotor fromQuaternion(const Eigen::Quaternion<T> &quaternion);
+
+        static Rotor Unit();
     };
 
 }  // namespace gafro
