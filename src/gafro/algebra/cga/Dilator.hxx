@@ -39,7 +39,8 @@ namespace gafro
     template <class T>
     typename Dilator<T>::Generator Dilator<T>::logarithm() const
     {
-        return Generator(TypeTraits<T>::Value(2.0) * acosh(this->template get<blades::scalar>()));
+        return Generator(-log((this->template get<blades::scalar>() + this->template get<blades::e0i>()) *
+                              (this->template get<blades::scalar>() + this->template get<blades::e0i>())));
     }
 
     template <class T>

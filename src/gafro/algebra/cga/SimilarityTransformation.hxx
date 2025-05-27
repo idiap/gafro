@@ -61,10 +61,16 @@ namespace gafro
     {
         Ei<T> ei(TypeTraits<T>::Value(1.0));
 
+        auto rotodilator = (transformation.template extract<blades::scalar>() + transformation.template extract<blades::e12>() +
+                            transformation.template extract<blades::e13>() + transformation.template extract<blades::e23>() +
+                            transformation.template extract<blades::e0i>() + transformation.template extract<blades::e012i>() +
+                            transformation.template extract<blades::e013i>() + transformation.template extract<blades::e023i>())
+                             .evaluate();
+
+        translator_ = transformation * rotodilator.reverse();
         dilator_ = transformation.apply(ei).template get<blades::ei>();
-        Motor<T> motor = transformation * dilator_.reverse();
-        rotor_ = motor.getRotor();
-        translator_ = motor.getTranslator();
+        // Motor<T> motor = transformation * dilator_.reverse();
+        rotor_ = rotodilator * dilator_.reverse();
     }
 
     template <typename T>

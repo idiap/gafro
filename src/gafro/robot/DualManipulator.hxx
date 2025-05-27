@@ -172,6 +172,14 @@ namespace gafro
     //
 
     template <class T, int dof>
+    const System<T> &DualManipulator<T, dof>::getSystem() const
+    {
+        return *this;
+    }
+
+    //
+
+    template <class T, int dof>
     Motor<T> DualManipulator<T, dof>::getFirstBaseMotor() const
     {
         return this->getLink("base_link")->getChildJoints()[0]->getMotor(0.0);
