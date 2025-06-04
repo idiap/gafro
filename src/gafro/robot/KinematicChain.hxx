@@ -260,13 +260,13 @@ namespace gafro
     template <int dof>
     Eigen::Matrix<T, dof, dof> KinematicChain<T>::computeMassMatrix(const Eigen::Vector<T, dof> &position) const
     {
-        Eigen::Matrix<T, 7, 7> mass_matrix = Eigen::Matrix<T, 7, 7>::Zero();
+        Eigen::Matrix<T, dof, dof> mass_matrix = Eigen::Matrix<T, dof, dof>::Zero();
 
         auto gj = this->computeGeometricJacobian(position);
 
         Motor<T> m;
 
-        for (int j = 0; j < 7; ++j)
+        for (int j = 0; j < dof; ++j)
         {
             m *= actuated_joints_[j]->getMotor(position[j]);
 
