@@ -58,15 +58,18 @@ namespace gafro_control
 
         gafro::Wrench<double> singularity = gafro::Wrench<double>::Zero();
 
-        if (svd.singularValues()[dof-1]  < 5e-1)
+        if (svd.singularValues()[dof - 1] < 5e-1)
         {
-            singularity = gafro::Wrench<double>((1.0 - svd.singularValues()[dof-1] / 5e-1) * 0.1 * svd.matrixU().col(dof - 1));
+            double scaling = 1.0 - svd.singularValues()[dof - 1] / 5e-1;
+
+            singularity = gafro::Wrench<double>(scaling * svd.matrixU().col(dof - 1));
+            residual_bivector_.template set<gafro::blades::e13>((1.0 - scaling) * residual_bivector_.template get<gafro::blades::e13>());
+            residual_bivector_.template set<gafro::blades::e23>((1.0 - scaling) * residual_bivector_.template get<gafro::blades::e23>());
         }
 
         gafro::Wrench<double> wrench = desired_wrench_ - external_wrench_ - stiffness_(residual_bivector_) - damping_(residual_twist_) - singularity;
 
         gafro::Twist<double> desired_ee_acceleration = inertia_(wrench);
-
 
         Eigen::Matrix<double, dof, 6> inverse_jacobian =
           (jacobian.transpose() * jacobian + 1e-5 * Eigen::Matrix<double, dof, dof>::Identity()).inverse() * jacobian.transpose();
