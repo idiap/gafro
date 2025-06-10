@@ -11,6 +11,7 @@
 #include <gafro/robot/Joint.hxx>
 #include <gafro/robot/Link.hxx>
 #include <gafro/robot/Manipulator.hxx>
+#include <gafro/robot/Quadruped.hxx>
 #include <gafro/robot/PrismaticJoint.hxx>
 #include <gafro/robot/RevoluteJoint.hxx>
 #include <gafro/robot/System.hxx>
