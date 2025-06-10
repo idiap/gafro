@@ -401,41 +401,41 @@ TEST_CASE("SingleManipulatorDualTarget", "[SingleManipulatorDualTarget]")
             auto error = cost_function.getError({0.0, 0.0, 0.0});
 
             REQUIRE(error.rows() == 10);
-            REQUIRE(error(0, 0) == Approx(2.005));
-            REQUIRE(error(1, 0) == Approx(0.0));
-            REQUIRE(error(2, 0) == Approx(-1.515));
-            REQUIRE(error(3, 0) == Approx(-4.5));
-            REQUIRE(error(4, 0) == Approx(0.0));
-            REQUIRE(error(5, 0) == Approx(-1.0));
-            REQUIRE(error(6, 0) == Approx(1.0));
+            REQUIRE(error(0, 0) == Approx(-1.0));
+            REQUIRE(error(1, 0) == Approx(-1.0));
+            REQUIRE(error(2, 0) == Approx(0.0));
+            REQUIRE(error(3, 0) == Approx(2.005));
+            REQUIRE(error(4, 0) == Approx(-3.0));
+            REQUIRE(error(5, 0) == Approx(0.0));
+            REQUIRE(error(6, 0) == Approx(4.5));
             REQUIRE(error(7, 0) == Approx(0.0));
-            REQUIRE(error(8, 0) == Approx(0.0));
-            REQUIRE(error(9, 0) == Approx(-3.0));
+            REQUIRE(error(8, 0) == Approx(-1.515));
+            REQUIRE(error(9, 0) == Approx(0.0));
 
             error = cost_function.getError({0.0, M_PI / 4.0, 0.0});
 
-            REQUIRE(error(0, 0) == Approx(1.41921));
-            REQUIRE(error(1, 0) == Approx(0.0));
-            REQUIRE(error(2, 0) == Approx(-1.0742));
-            REQUIRE(error(3, 0) == Approx(-2.14998));
-            REQUIRE(error(4, 0) == Approx(0.0));
-            REQUIRE(error(5, 0) == Approx(-0.707107));
-            REQUIRE(error(6, 0) == Approx(0.292893));
+            REQUIRE(error(0, 0) == Approx(-0.292893));
+            REQUIRE(error(1, 0) == Approx(-0.707107));
+            REQUIRE(error(2, 0) == Approx(0.0));
+            REQUIRE(error(3, 0) == Approx(1.41921));
+            REQUIRE(error(4, 0) == Approx(-1.29289));
+            REQUIRE(error(5, 0) == Approx(0.0));
+            REQUIRE(error(6, 0) == Approx(2.14998));
             REQUIRE(error(7, 0) == Approx(0.0));
-            REQUIRE(error(8, 0) == Approx(0.0));
-            REQUIRE(error(9, 0) == Approx(-1.29289));
+            REQUIRE(error(8, 0) == Approx(-1.0742));
+            REQUIRE(error(9, 0) == Approx(0.0));
 
             error = cost_function.getError({0.0, M_PI / 2.0, 0.0});
 
-            REQUIRE(error(0, 0) == Approx(0.005));
+            REQUIRE(error(0, 0) == Approx(0.0));
             REQUIRE(error(1, 0) == Approx(0.0));
-            REQUIRE(error(2, 0) == Approx(-0.01));
-            REQUIRE(error(3, 0) == Approx(-0.005));
+            REQUIRE(error(2, 0) == Approx(0.0));
+            REQUIRE(error(3, 0) == Approx(0.005));
             REQUIRE(error(4, 0) == Approx(0.0));
             REQUIRE(error(5, 0) == Approx(0.0));
-            REQUIRE(error(6, 0) == Approx(0.0));
+            REQUIRE(error(6, 0) == Approx(0.005));
             REQUIRE(error(7, 0) == Approx(0.0));
-            REQUIRE(error(8, 0) == Approx(0.0));
+            REQUIRE(error(8, 0) == Approx(-0.01));
             REQUIRE(error(9, 0) == Approx(0.0));
         }
 
@@ -446,27 +446,27 @@ TEST_CASE("SingleManipulatorDualTarget", "[SingleManipulatorDualTarget]")
             REQUIRE(jacobian.rows() == 10);
             REQUIRE(jacobian.cols() == 3);
 
-            REQUIRE(jacobian(0, 0) == Approx(0.0));
+            REQUIRE(jacobian(0, 0) == Approx(4.0));
             REQUIRE(jacobian(1, 0) == Approx(0.0));
             REQUIRE(jacobian(2, 0) == Approx(0.0));
-            REQUIRE(jacobian(3, 0) == Approx(9.98));
-            REQUIRE(jacobian(4, 0) == Approx(0.0));
+            REQUIRE(jacobian(3, 0) == Approx(0.0));
+            REQUIRE(jacobian(4, 0) == Approx(8.0));
             REQUIRE(jacobian(5, 0) == Approx(0.0));
-            REQUIRE(jacobian(6, 0) == Approx(-4.0));
+            REQUIRE(jacobian(6, 0) == Approx(-9.98));
             REQUIRE(jacobian(7, 0) == Approx(0.0));
             REQUIRE(jacobian(8, 0) == Approx(0.0));
-            REQUIRE(jacobian(9, 0) == Approx(8.0));
+            REQUIRE(jacobian(9, 0) == Approx(0.0));
 
-            REQUIRE(jacobian(0, 1) == Approx(0.0));
+            REQUIRE(jacobian(0, 1) == Approx(2.0));
             REQUIRE(jacobian(1, 1) == Approx(0.0));
             REQUIRE(jacobian(2, 1) == Approx(0.0));
-            REQUIRE(jacobian(3, 1) == Approx(4.99));
-            REQUIRE(jacobian(4, 1) == Approx(0.0));
+            REQUIRE(jacobian(3, 1) == Approx(0.0));
+            REQUIRE(jacobian(4, 1) == Approx(4.0));
             REQUIRE(jacobian(5, 1) == Approx(0.0));
-            REQUIRE(jacobian(6, 1) == Approx(-2.0));
+            REQUIRE(jacobian(6, 1) == Approx(-4.99));
             REQUIRE(jacobian(7, 1) == Approx(0.0));
             REQUIRE(jacobian(8, 1) == Approx(0.0));
-            REQUIRE(jacobian(9, 1) == Approx(4.0));
+            REQUIRE(jacobian(9, 1) == Approx(0.0));
 
             REQUIRE(jacobian(0, 2) == Approx(0.0));
             REQUIRE(jacobian(1, 2) == Approx(0.0));
@@ -482,27 +482,27 @@ TEST_CASE("SingleManipulatorDualTarget", "[SingleManipulatorDualTarget]")
 
             jacobian = cost_function.getJacobian({0.0, M_PI / 4.0, 0.0});
 
-            REQUIRE(jacobian(0, 0) == Approx(-1.41421));
-            REQUIRE(jacobian(1, 0) == Approx(0.0));
-            REQUIRE(jacobian(2, 0) == Approx(-0.700036));
-            REQUIRE(jacobian(3, 0) == Approx(9.93268));
-            REQUIRE(jacobian(4, 0) == Approx(0.0));
-            REQUIRE(jacobian(5, 0) == Approx(1.41421));
-            REQUIRE(jacobian(6, 0) == Approx(-3.41421));
+            REQUIRE(jacobian(0, 0) == Approx(3.41421));
+            REQUIRE(jacobian(1, 0) == Approx(1.41421));
+            REQUIRE(jacobian(2, 0) == Approx(0.0));
+            REQUIRE(jacobian(3, 0) == Approx(-1.41421));
+            REQUIRE(jacobian(4, 0) == Approx(8.24264));
+            REQUIRE(jacobian(5, 0) == Approx(0.0));
+            REQUIRE(jacobian(6, 0) == Approx(-9.93268));
             REQUIRE(jacobian(7, 0) == Approx(0.0));
-            REQUIRE(jacobian(8, 0) == Approx(0.0));
-            REQUIRE(jacobian(9, 0) == Approx(8.24264));
+            REQUIRE(jacobian(8, 0) == Approx(-0.700036));
+            REQUIRE(jacobian(9, 0) == Approx(0.0));
 
-            REQUIRE(jacobian(0, 1) == Approx(-2.82843));
-            REQUIRE(jacobian(1, 1) == Approx(0.0));
-            REQUIRE(jacobian(2, 1) == Approx(2.12839));
-            REQUIRE(jacobian(3, 1) == Approx(6.35689));
-            REQUIRE(jacobian(4, 1) == Approx(0.0));
-            REQUIRE(jacobian(5, 1) == Approx(1.41421));
-            REQUIRE(jacobian(6, 1) == Approx(-1.41421));
+            REQUIRE(jacobian(0, 1) == Approx(1.41421));
+            REQUIRE(jacobian(1, 1) == Approx(1.41421));
+            REQUIRE(jacobian(2, 1) == Approx(0.0));
+            REQUIRE(jacobian(3, 1) == Approx(-2.82843));
+            REQUIRE(jacobian(4, 1) == Approx(4.24264));
+            REQUIRE(jacobian(5, 1) == Approx(0.0));
+            REQUIRE(jacobian(6, 1) == Approx(-6.35689));
             REQUIRE(jacobian(7, 1) == Approx(0.0));
-            REQUIRE(jacobian(8, 1) == Approx(0.0));
-            REQUIRE(jacobian(9, 1) == Approx(4.24264));
+            REQUIRE(jacobian(8, 1) == Approx(2.12839));
+            REQUIRE(jacobian(9, 1) == Approx(0.0));
 
             REQUIRE(jacobian(0, 2) == Approx(0.0).margin(1e-4));
             REQUIRE(jacobian(1, 2) == Approx(0.0).margin(1e-4));
@@ -518,27 +518,27 @@ TEST_CASE("SingleManipulatorDualTarget", "[SingleManipulatorDualTarget]")
 
             jacobian = cost_function.getJacobian({0.0, M_PI / 2.0, 0.0});
 
-            REQUIRE(jacobian(0, 0) == Approx(-2.0));
-            REQUIRE(jacobian(1, 0) == Approx(0.0));
-            REQUIRE(jacobian(2, 0) == Approx(-0.99));
-            REQUIRE(jacobian(3, 0) == Approx(6.99));
-            REQUIRE(jacobian(4, 0) == Approx(0.0));
-            REQUIRE(jacobian(5, 0) == Approx(2.0));
-            REQUIRE(jacobian(6, 0) == Approx(-2.0));
+            REQUIRE(jacobian(0, 0) == Approx(2.0));
+            REQUIRE(jacobian(1, 0) == Approx(2.0));
+            REQUIRE(jacobian(2, 0) == Approx(0.0));
+            REQUIRE(jacobian(3, 0) == Approx(-2.0));
+            REQUIRE(jacobian(4, 0) == Approx(6.0));
+            REQUIRE(jacobian(5, 0) == Approx(0.0));
+            REQUIRE(jacobian(6, 0) == Approx(-6.99));
             REQUIRE(jacobian(7, 0) == Approx(0.0));
-            REQUIRE(jacobian(8, 0) == Approx(0.0));
-            REQUIRE(jacobian(9, 0) == Approx(6.0));
+            REQUIRE(jacobian(8, 0) == Approx(-0.99));
+            REQUIRE(jacobian(9, 0) == Approx(0.0));
 
-            REQUIRE(jacobian(0, 1) == Approx(-4.0));
-            REQUIRE(jacobian(1, 1) == Approx(0.0));
-            REQUIRE(jacobian(2, 1) == Approx(3.01));
-            REQUIRE(jacobian(3, 1) == Approx(4.0));
-            REQUIRE(jacobian(4, 1) == Approx(0.0));
-            REQUIRE(jacobian(5, 1) == Approx(2.0));
-            REQUIRE(jacobian(6, 1) == Approx(0.0).margin(1e-4));
+            REQUIRE(jacobian(0, 1) == Approx(0.0).margin(1e-4));
+            REQUIRE(jacobian(1, 1) == Approx(2.0));
+            REQUIRE(jacobian(2, 1) == Approx(0.0));
+            REQUIRE(jacobian(3, 1) == Approx(-4.0));
+            REQUIRE(jacobian(4, 1) == Approx(2.0));
+            REQUIRE(jacobian(5, 1) == Approx(0.0));
+            REQUIRE(jacobian(6, 1) == Approx(-4.0));
             REQUIRE(jacobian(7, 1) == Approx(0.0));
-            REQUIRE(jacobian(8, 1) == Approx(0.0));
-            REQUIRE(jacobian(9, 1) == Approx(2.0));
+            REQUIRE(jacobian(8, 1) == Approx(3.01));
+            REQUIRE(jacobian(9, 1) == Approx(0.0));
 
             REQUIRE(jacobian(0, 2) == Approx(0.0).margin(1e-4));
             REQUIRE(jacobian(1, 2) == Approx(0.0).margin(1e-4));

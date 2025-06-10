@@ -109,9 +109,9 @@ TEST_CASE("SingleManipulatorMotorCost", "[SingleManipulatorMotorCost]")
         REQUIRE(error(0, 0) == Approx(0.0));
         REQUIRE(error(1, 0) == Approx(0.0));
         REQUIRE(error(2, 0) == Approx(-1.5708));
-        REQUIRE(error(3, 0) == Approx(1.0));
+        REQUIRE(error(3, 0) == Approx(0.0));
         REQUIRE(error(4, 0) == Approx(-1.0));
-        REQUIRE(error(5, 0) == Approx(0.0));
+        REQUIRE(error(5, 0) == Approx(-1.0));
 
 
         error = cost_function.getError({0.0, M_PI / 4.0, 0.0});
@@ -119,9 +119,9 @@ TEST_CASE("SingleManipulatorMotorCost", "[SingleManipulatorMotorCost]")
         REQUIRE(error(0, 0) == Approx(0.0));
         REQUIRE(error(1, 0) == Approx(0.0));
         REQUIRE(error(2, 0) == Approx(-0.785398));
-        REQUIRE(error(3, 0) == Approx(0.707107));
+        REQUIRE(error(3, 0) == Approx(0.0));
         REQUIRE(error(4, 0) == Approx(-0.292893));
-        REQUIRE(error(5, 0) == Approx(0.0));
+        REQUIRE(error(5, 0) == Approx(-0.707107));
 
 
         error = cost_function.getError({0.0, M_PI / 2.0, 0.0});

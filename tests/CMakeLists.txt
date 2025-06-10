@@ -20,7 +20,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif()
 
 add_subdirectory(algebra)
-# add_subdirectory(optimization)
+add_subdirectory(optimization)
 add_subdirectory(physics)
 add_subdirectory(robots)
 
