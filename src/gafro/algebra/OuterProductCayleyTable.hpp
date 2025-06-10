@@ -17,12 +17,12 @@ namespace gafro
       public:
         constexpr static int resulting_grade = Algebra::BladeBitmap::template getGrade<i1 & i2>();
 
-        using Type = std::conditional_t<resulting_grade,                                    //
+        using Type = std::conditional_t<resulting_grade != 0,                               //
                                         typename Algebra<Metric>::template Multivector<T>,  //
                                         typename Algebra<Metric>::template Multivector<T, (i1 ^ i2)>>;
 
         constexpr static std::array<double, Type::size> signs = [] {
-            if constexpr (resulting_grade)
+            if constexpr (resulting_grade != 0)
             {
                 return std::array<double, 0>();
             }
