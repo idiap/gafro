@@ -24,7 +24,6 @@ set(GAFRO_PREFIX_INCLUDE include/gafro)
 find_package(Eigen3 3.4 REQUIRED)
 
 add_subdirectory(src/${PROJECT_NAME})
-add_subdirectory(src/${PROJECT_NAME}_control)
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     # add_subdirectory(tests)

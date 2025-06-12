@@ -40,4 +40,22 @@ namespace gafro
     Vector<T>::Vector(const Base &other) : Base(other)
     {}
 
+    template <class T>
+    Rotor<T> Vector<T>::getRotor(const Vector &other) const
+    {
+        return Rotor<T>(Scalar<T>(TypeTraits<T>::Value(1.0)) + ((*this) | other) - ((*this) ^ other)).normalized();
+    }
+
+    template <class T>
+    Vector<T> Vector<T>::Z(const T &z)
+    {
+        return Vector(0.0, 0.0, z);
+    }
+
+    template <class T>
+    Vector<T> Vector<T>::UnitZ()
+    {
+        return Z(1.0);
+    }
+
 }  // namespace gafro
