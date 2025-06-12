@@ -7,7 +7,7 @@
   <maintainer email="tobias.loew@gafro.ch">Tobias Löw</maintainer>
   <author email="tobias.loew@gafro.ch">Tobias Löw</author>
   
-  <license>GPLv3</license>
+  <license>MPL-2.0</license>
 
   <build_depend>orwell</build_depend>
   <build_depend>sackmesser</build_depend>

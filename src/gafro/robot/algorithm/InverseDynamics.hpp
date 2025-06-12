@@ -1,3 +1,9 @@
+// SPDX-FileCopyrightText: Idiap Research Institute <contact@idiap.ch>
+//
+// SPDX-FileContributor: Tobias Loew <tobias.loew@idiap.ch
+//
+// SPDX-License-Identifier: MPL-2.0
+
 #pragma once
 
 #include <gafro/robot/System.hpp>
@@ -19,26 +25,26 @@ namespace gafro::algorithm
         template <class V, int j>
         struct ForwardIteration
         {
-            static void compute(const std::vector<const Joint<T> *> &joints,           //
-                                const std::vector<std::unique_ptr<Body<T>>> &bodies,   //
-                                const Eigen::Vector<T, dof> &position,                 //
-                                const Eigen::Vector<T, dof> &velocity,                 //
-                                const Eigen::Vector<T, dof> &acceleration,             //
-                                const Translator<T> &previous_com,                     //
-                                std::array<Motor<T>, dof> &frame,                      //
-                                std::array<Twist<T>, dof> &twist,                      //
-                                std::array<Twist<T>, dof> &twist_dt,                   //
+            static void compute(const std::vector<const Joint<T> *> &joints,          //
+                                const std::vector<std::unique_ptr<Body<T>>> &bodies,  //
+                                const Eigen::Vector<T, dof> &position,                //
+                                const Eigen::Vector<T, dof> &velocity,                //
+                                const Eigen::Vector<T, dof> &acceleration,            //
+                                const Translator<T> &previous_com,                    //
+                                std::array<Motor<T>, dof> &frame,                     //
+                                std::array<Twist<T>, dof> &twist,                     //
+                                std::array<Twist<T>, dof> &twist_dt,                  //
                                 const E3i<T> &gravity);
         };
 
         template <class V, int j>
         struct BackwardIteration
         {
-            static void compute(const std::vector<std::unique_ptr<Body<T>>> &bodies,   //
-                                std::array<Motor<T>, dof> &frame,                      //
-                                std::array<Twist<T>, dof> &twist,                      //
-                                std::array<Twist<T>, dof> &twist_dt,                   //
-                                Wrench<T> &wrench,                                     //
+            static void compute(const std::vector<std::unique_ptr<Body<T>>> &bodies,  //
+                                std::array<Motor<T>, dof> &frame,                     //
+                                std::array<Twist<T>, dof> &twist,                     //
+                                std::array<Twist<T>, dof> &twist_dt,                  //
+                                Wrench<T> &wrench,                                    //
                                 Eigen::Vector<T, dof> &torque);
         };
 
