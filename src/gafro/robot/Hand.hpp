@@ -118,6 +118,8 @@ namespace gafro
 
             using FingerFunctor::hand_;
 
+            FingerMotorFunctor(const Hand *hand) : FingerFunctor(hand) {}
+
             template <int idx>
             void call(const Eigen::Vector<T, dof> &position)
             {
@@ -130,6 +132,8 @@ namespace gafro
             MultivectorMatrix<T, Motor, 1, dof> jacobian;
 
             using FingerFunctor::hand_;
+
+            FingerAnalyticJacobianFunctor(const Hand *hand) : FingerFunctor(hand) {}
 
             template <int idx>
             void call(const Eigen::Vector<T, dof> &position)
@@ -150,6 +154,8 @@ namespace gafro
             MultivectorMatrix<T, MotorGenerator, 1, dof> jacobian;
 
             using FingerFunctor::hand_;
+
+            FingerGeometricJacobianFunctor(const Hand *hand) : FingerFunctor(hand) {}
 
             template <int idx>
             void call(const Eigen::Vector<T, dof> &position)
