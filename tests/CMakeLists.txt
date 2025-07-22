@@ -2,7 +2,7 @@ add_executable(unittests
     main.cpp
 )
 
-target_compile_options(unittests PUBLIC "-O3")
+target_compile_options(unittests PUBLIC "-O3" "-Wall")
 
 target_include_directories(unittests
     PUBLIC
@@ -16,7 +16,13 @@ target_link_libraries(unittests
 )
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_compile_options(unittests PUBLIC "-Wall" "-Wno-class-memaccess")
+    target_compile_options(unittests PUBLIC "-Wno-class-memaccess")
+endif()
+
+target_compile_options(unittests PUBLIC "-Wno-unused-variable")
+
+if (APPLE)
+    target_compile_options(unittests PUBLIC "-Wno-unused-command-line-argument")
 endif()
 
 add_subdirectory(algebra)

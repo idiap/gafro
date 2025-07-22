@@ -8,6 +8,7 @@
 
 #include <gafro/robot/DualManipulator.hxx>
 #include <gafro/robot/FixedJoint.hxx>
+#include <gafro/robot/Hand.hxx>
 #include <gafro/robot/Joint.hxx>
 #include <gafro/robot/Link.hxx>
 #include <gafro/robot/Manipulator.hxx>

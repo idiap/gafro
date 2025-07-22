@@ -222,7 +222,7 @@ namespace gafro
     }
 
     template <class T, int dof>
-    Eigen::Matrix<T, 7, 7> Manipulator<T, dof>::getEEKinematicNullspaceProjector(const Vector &position) const
+    Eigen::Matrix<T, dof, dof> Manipulator<T, dof>::getEEKinematicNullspaceProjector(const Vector &position) const
     {
         Eigen::Matrix<T, 6, dof> jacobian = getEEGeometricJacobian(position).embed();
         Eigen::Matrix<T, dof, 6> inverse_jacobian =

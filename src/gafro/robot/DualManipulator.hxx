@@ -454,15 +454,15 @@ namespace gafro
 
         for (unsigned j = 0; j < dof / 2; ++j)
         {
-            pointpair_jacobian.coeffRef(0, j) =
-              ((getFirstBaseMotor() * first_jacobian.coeff(0, j) * E0<T>(TypeTraits<T>::Value(1.0)) * first_motor.reverse()) ^ second_point) +
-              ((first_motor * E0<T>(TypeTraits<T>::Value(1.0)) * Motor<T>(getFirstBaseMotor() * first_jacobian.coeff(0, j)).reverse()) ^
+            pointpair_jacobian.getCoefficient(0, j) =
+              ((getFirstBaseMotor() * first_jacobian.getCoefficient(0, j) * E0<T>(TypeTraits<T>::Value(1.0)) * first_motor.reverse()) ^ second_point) +
+              ((first_motor * E0<T>(TypeTraits<T>::Value(1.0)) * Motor<T>(getFirstBaseMotor() * first_jacobian.getCoefficient(0, j)).reverse()) ^
                second_point);
 
-            pointpair_jacobian.coeffRef(0, j + j) =
-              (first_point ^ (getSecondBaseMotor() * second_jacobian.coeff(0, j) * E0<T>(TypeTraits<T>::Value(1.0)) * second_motor.reverse())) +
+            pointpair_jacobian.getCoefficient(0, j + j) =
+              (first_point ^ (getSecondBaseMotor() * second_jacobian.getCoefficient(0, j) * E0<T>(TypeTraits<T>::Value(1.0)) * second_motor.reverse())) +
               (first_point ^
-               (second_motor * E0<T>(TypeTraits<T>::Value(1.0)) * Motor<T>(getSecondBaseMotor() * second_jacobian.coeff(0, j)).reverse()));
+               (second_motor * E0<T>(TypeTraits<T>::Value(1.0)) * Motor<T>(getSecondBaseMotor() * second_jacobian.getCoefficient(0, j)).reverse()));
         }
 
         return pointpair_jacobian;
