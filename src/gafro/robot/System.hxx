@@ -47,6 +47,7 @@ namespace gafro
             other.finalize();
         }
 
+        name_ = std::move(other.name_);
         links_ = std::move(other.links_);
         joints_ = std::move(other.joints_);
         kinematic_chains_ = std::move(other.kinematic_chains_);
@@ -287,6 +288,8 @@ namespace gafro
     System<S> System<T>::cast()
     {
         System<S> system;
+
+        system.setName(getName());
 
         for (unsigned j = 0; j < links_.size(); ++j)
         {

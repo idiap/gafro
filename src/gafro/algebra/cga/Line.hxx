@@ -13,11 +13,13 @@ namespace gafro
 {
 
     template <class T>
-    Line<T>::Line(const Base &other) : Base(other)
+    Line<T>::Line(const Base &other)
+      : Base(other)
     {}
 
     template <class T>
-    Line<T>::Line(const Point<T> &p1, const Point<T> &p2) : Line(p1 ^ p2 ^ Ei<T>(T(1.0)))
+    Line<T>::Line(const Point<T> &p1, const Point<T> &p2)
+      : Line(p1 ^ p2 ^ Ei<T>(T(1.0)))
     {}
 
     template <class T>
@@ -58,12 +60,20 @@ namespace gafro
         auto k0 = Scalar<T>(k.template get<blades::scalar>());
         auto k4 = (k - k0).evaluate();
 
+        if (k.template get<blades::scalar>() == TypeTraits<T>::Zero())
+        {
+            return Motor<T>(Scalar<T>(TypeTraits<T>::Value(1.0)) - Scalar<T>(TypeTraits<T>::Value(0.5)) * l2l1);
+        }
+
         auto a1 = Scalar<T>(sqrt(TypeTraits<T>::Value(1.0) / k.template get<blades::scalar>()));
+
         auto a2 = (Scalar<T>(TypeTraits<T>::Value(1.0)) -
                    (k4 * Scalar<T>(TypeTraits<T>::Value(1.0) / (TypeTraits<T>::Value(2.0) * k.template get<blades::scalar>()))))
                     .evaluate();
 
-        return Motor<T>(a1 * a2 * l2l1);
+        auto a = (a1 * a2).evaluate();
+
+        return Motor<T>(a * l2l1);
     }
 
 }  // namespace gafro
