@@ -26,7 +26,8 @@ namespace gafro
 
     template <class T, int... fingers>
     Hand<T, fingers...>::Hand(System<T> &&system, const std::array<std::string, n_fingers> &finger_tip_names)
-      : System<T>(std::move(system)), finger_tip_names_(finger_tip_names)
+      : System<T>(std::move(system))
+      , finger_tip_names_(finger_tip_names)
     {
         for (int j = 0; j < n_fingers; ++j)
         {
@@ -85,7 +86,8 @@ namespace gafro
     template <class T, int... fingers>
     template <int id>
     MultivectorMatrix<T, MotorGenerator, 1, Hand<T, fingers...>::finger_dof[id]> Hand<T, fingers...>::getFingerGeometricJacobian(
-      const Eigen::Vector<T, finger_dof[id]> &position, const Motor<T> &motor) const
+      const Eigen::Vector<T, finger_dof[id]> &position,
+      const Motor<T>                         &motor) const
     {
         return getFingerGeometricJacobian<id>(position).transform(motor.reverse());
     }
@@ -203,108 +205,6 @@ namespace gafro
         }
 
         return jacobian;
-    }
-
-    template <class T, int... fingers>
-    Circle<T> Hand<T, fingers...>::getFingerCircle(const Eigen::Vector<T, dof> &position) const
-        requires(n_fingers == 3)
-    {
-        MultivectorMatrix<T, Point, 1, n_fingers> points = getFingerPoints(position);
-
-        return Circle<T>(points.getCoefficient(0, 0), points.getCoefficient(0, 1), points.getCoefficient(0, 2));
-    }
-
-    template <class T, int... fingers>
-    MultivectorMatrix<T, Circle, 1, Hand<T, fingers...>::dof> Hand<T, fingers...>::getFingerCircleJacobian(
-      const Eigen::Vector<T, dof> &position) const
-        requires(n_fingers == 3)
-    {
-        auto finger_motors = getFingerMotors(position).asVector();
-        auto finger_points = getFingerPoints(position).asVector();
-        auto finger_jacobian = getAnalyticJacobian(position);
-
-        MultivectorMatrix<T, Circle, 1, dof> circle_jacobian;
-
-        for (int k = 0; k < finger_dof[0]; ++k)
-        {
-            Point<T> j_0_1 = finger_jacobian.getCoefficient(0, k) * Point<T>() * finger_motors[0].reverse();
-            Point<T> j_0_2 = finger_motors[0] * Point<T>() * finger_jacobian.getCoefficient(0, k).reverse();
-
-            circle_jacobian.setCoefficient(0, k, (j_0_1 + j_0_2) ^ finger_points[1] ^ finger_points[2]);
-        }
-
-        for (int k = finger_dof[0]; k < finger_dof[0] + finger_dof[1]; ++k)
-        {
-            Point<T> j_1_1 = finger_jacobian.getCoefficient(0, k) * (Point<T>() * finger_motors[1].reverse()).evaluate();
-            Point<T> j_1_2 = (finger_motors[1] * Point<T>()).evaluate() * finger_jacobian.getCoefficient(0, k).reverse();
-
-            circle_jacobian.setCoefficient(0, k, finger_points[0] ^ (j_1_1 + j_1_2) ^ finger_points[2]);
-        }
-
-        for (int k = finger_dof[0] + finger_dof[1]; k < dof; ++k)
-        {
-            Point<T> j_2_1 = finger_jacobian.getCoefficient(0, k) * (Point<T>() * finger_motors[2].reverse()).evaluate();
-            Point<T> j_2_2 = (finger_motors[2] * Point<T>()).evaluate() * finger_jacobian.getCoefficient(0, k).reverse();
-
-            circle_jacobian.setCoefficient(0, k, finger_points[0] ^ finger_points[1] ^ (j_2_1 + j_2_2));
-        }
-
-        return circle_jacobian;
-    }
-
-    template <class T, int... fingers>
-    Sphere<T> Hand<T, fingers...>::getFingerSphere(const Eigen::Vector<T, dof> &position) const
-        requires(n_fingers == 4)
-    {
-        MultivectorMatrix<T, Point, 1, n_fingers> points = getFingerPoints(position);
-
-        return Sphere<T>(points.getCoefficient(0, 0), points.getCoefficient(0, 1), points.getCoefficient(0, 2), points.getCoefficient(0, 3));
-    }
-
-    template <class T, int... fingers>
-    MultivectorMatrix<T, Sphere, 1, Hand<T, fingers...>::dof> Hand<T, fingers...>::getFingerSphereJacobian(
-      const Eigen::Vector<T, dof> &position) const
-        requires(n_fingers == 4)
-    {
-        auto finger_motors = getFingerMotors(position).asVector();
-        auto finger_points = getFingerPoints(position).asVector();
-        auto finger_jacobian = getAnalyticJacobian(position);
-
-        MultivectorMatrix<T, Sphere, 1, dof> sphere_jacobian;
-
-        for (int k = 0; k < finger_dof[0]; ++k)
-        {
-            Point<T> j_0_1 = finger_jacobian.getCoefficient(0, k) * (Point<T>() * finger_motors[0].reverse()).evaluate();
-            Point<T> j_0_2 = (finger_motors[0] * Point<T>()).evaluate() * finger_jacobian.getCoefficient(0, k).reverse();
-
-            sphere_jacobian.setCoefficient(0, k, (j_0_1 + j_0_2) ^ finger_points[1] ^ finger_points[2] ^ finger_points[3]);
-        }
-
-        for (int k = finger_dof[0]; k < finger_dof[0] + finger_dof[1]; ++k)
-        {
-            Point<T> j_1_1 = finger_jacobian.getCoefficient(0, k) * (Point<T>() * finger_motors[1].reverse()).evaluate();
-            Point<T> j_1_2 = (finger_motors[1] * Point<T>()).evaluate() * finger_jacobian.getCoefficient(0, k).reverse();
-
-            sphere_jacobian.setCoefficient(0, k, finger_points[0] ^ (j_1_1 + j_1_2) ^ finger_points[2] ^ finger_points[3]);
-        }
-
-        for (int k = finger_dof[0] + finger_dof[1]; k < finger_dof[2]; ++k)
-        {
-            Point<T> j_2_1 = finger_jacobian.getCoefficient(0, k) * (Point<T>() * finger_motors[2].reverse()).evaluate();
-            Point<T> j_2_2 = (finger_motors[2] * Point<T>()).evaluate() * finger_jacobian.getCoefficient(0, k).reverse();
-
-            sphere_jacobian.setCoefficient(0, k, finger_points[0] ^ finger_points[1] ^ (j_2_1 + j_2_2) ^ finger_points[3]);
-        }
-
-        for (int k = finger_dof[0] + finger_dof[1] + finger_dof[2]; k < dof; ++k)
-        {
-            Point<T> j_3_1 = finger_jacobian.getCoefficient(0, k) * (Point<T>() * finger_motors[3].reverse()).evaluate();
-            Point<T> j_3_2 = (finger_motors[3] * Point<T>()).evaluate() * finger_jacobian.getCoefficient(0, k).reverse();
-
-            sphere_jacobian.setCoefficient(0, k, finger_points[0] ^ finger_points[1] ^ finger_points[2] ^ (j_3_1 + j_3_2));
-        }
-
-        return sphere_jacobian;
     }
 
     // template <class T, int... fingers>

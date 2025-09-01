@@ -100,7 +100,7 @@ namespace gafro
 
         Eigen::Matrix<T, 6, 6> getEEDynamicManipulability(const Vector &position) const;
 
-        Eigen::Matrix<T, 7, 7> getEEKinematicNullspaceProjector(const Vector &position) const;
+        Eigen::Matrix<T, dof, dof> getEEKinematicNullspaceProjector(const Vector &position) const;
 
         //
 
