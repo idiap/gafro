@@ -33,6 +33,10 @@ namespace gafro
 
         //
 
+        const System<T> &getSystem() const;
+
+        //
+
         Motor<T> getFirstBaseMotor() const;
 
         Motor<T> getSecondBaseMotor() const;

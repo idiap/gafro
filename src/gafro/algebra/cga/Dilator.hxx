@@ -26,14 +26,15 @@ namespace gafro
     template <class T>
     typename Dilator<T>::Generator Dilator<T>::logarithm() const
     {
-        return Generator(TypeTraits<T>::Value(2.0) * acosh(this->template get<blades::scalar>()));
+        return Generator(-log((this->template get<blades::scalar>() + this->template get<blades::e0i>()) *
+                              (this->template get<blades::scalar>() + this->template get<blades::e0i>())));
     }
 
     template <class T>
     Dilator<T> Dilator<T>::exp(const Generator &generator)
     {
         return Scalar<T>(cosh(TypeTraits<T>::Value(0.5) * generator.norm())) -
-               sinh(TypeTraits<T>::Value(0.5) * generator.norm()) * generator / generator.signedNorm();
+               sinh(TypeTraits<T>::Value(0.5) * generator.norm()) * generator.normalized();
     }
 
 }  // namespace gafro

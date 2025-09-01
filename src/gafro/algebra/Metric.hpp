@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <Eigen/Core>
 #include <gafro/algebra/Algebra.hpp>
 
 namespace gafro

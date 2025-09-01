@@ -179,6 +179,10 @@ namespace gafro
                             {
                                 entry.coeffRef(i, j) = Blade::signs[0];
                             }
+                            else if (Type::blades()[k] == Blade::Type::blades()[1])
+                            {
+                                entry.coeffRef(i, j) = Blade::signs[1];
+                            }
                         }
 
                         Value<i, js...>::add(entry);

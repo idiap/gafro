@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <gafro/algebra.hpp>
+//
 #include <gafro/robot/System.hpp>
 
 namespace gafro
@@ -175,6 +177,9 @@ namespace gafro
 
             return sphere_jacobian;
         }
+
+        // MultivectorMatrix<T, SimilarityTransformation, 1, dof> getAnalyticSimilarityJacobian(const Eigen::Vector<T, dof> &position) const
+        //     requires(n_fingers == 3);
 
         //
 

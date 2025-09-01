@@ -46,6 +46,12 @@ namespace gafro
     template <class T, template <class S> class M, int rows, int cols>
     class MultivectorMatrix;
 
+    namespace probabilistic
+    {
+        template <class T, template <class S> class M>
+        class MultivectorGaussian;
+    }
+
     template <class M>
     template <class T, int... index>
     class Algebra<M>::Multivector : public AbstractMultivector<Multivector<T, index...>>
@@ -266,11 +272,9 @@ namespace gafro
         template <int rows, int cols>
         using Matrix = MultivectorMatrix<T, MV, rows, cols>;
 
-        // template <int rows, int cols>
-        // static Matrix<rows, cols> CreateMatrix()
-        // {
-        //     return MultivectorMatrix<T, M, rows, cols>();
-        // }
+        using Gaussian = probabilistic::MultivectorGaussian<T, MV>;
+
+        //
 
       public:
         auto getBlades() const;
