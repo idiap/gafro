@@ -10,6 +10,8 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
             RevoluteJoint.hxx
             PrismaticJoint.hpp
             PrismaticJoint.hxx
+            FreeJoint.hpp
+            FreeJoint.hxx
 
             Link.hpp
             Link.hxx

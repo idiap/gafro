@@ -22,7 +22,8 @@ namespace gafro
         {
             FIXED,
             REVOLUTE,
-            PRISMATIC
+            PRISMATIC,
+            FREE
         };
 
         Joint(Type type);
@@ -95,6 +96,8 @@ namespace gafro
         virtual Motor<T> getMotorDerivative(const T &angle) const = 0;
 
         virtual typename Motor<T>::Generator getCurrentAxis(const Motor<T> &motor) const = 0;
+
+        virtual std::unique_ptr<Joint> copy() const = 0;
 
       protected:
       private:

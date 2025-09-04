@@ -91,32 +91,36 @@ namespace gafro
         Motor<T> computeKinematicChainMotor(const std::string &name, const Eigen::Vector<T, dof> &position) const;
 
         template <int dof>
-        MultivectorMatrix<T, Motor, 1, dof> computeKinematicChainAnalyticJacobian(const std::string &name,
+        MultivectorMatrix<T, Motor, 1, dof> computeKinematicChainAnalyticJacobian(const std::string           &name,
                                                                                   const Eigen::Vector<T, dof> &position) const;
 
         template <int dof>
-        MultivectorMatrix<T, MotorGenerator, 1, dof> computeKinematicChainGeometricJacobian(const std::string &name,
+        MultivectorMatrix<T, MotorGenerator, 1, dof> computeKinematicChainGeometricJacobian(const std::string           &name,
                                                                                             const Eigen::Vector<T, dof> &position) const;
 
         template <int dof>
-        MultivectorMatrix<T, MotorGenerator, 1, dof> computeKinematicChainGeometricJacobianBody(const std::string &name,
+        MultivectorMatrix<T, MotorGenerator, 1, dof> computeKinematicChainGeometricJacobianBody(const std::string           &name,
                                                                                                 const Eigen::Vector<T, dof> &position) const;
 
         template <int dof>
-        MultivectorMatrix<T, MotorGenerator, 1, dof> computeKinematicChainGeometricJacobianTimeDerivative(const std::string &name,
+        MultivectorMatrix<T, MotorGenerator, 1, dof> computeKinematicChainGeometricJacobianTimeDerivative(const std::string           &name,
                                                                                                           const Eigen::Vector<T, dof> &position,
                                                                                                           const Eigen::Vector<T, dof> &velocity,
                                                                                                           const Motor<T> &reference) const;
 
         template <int dof>
-        Eigen::Vector<T, dof> computeInverseDynamics(const Eigen::Vector<T, dof> &position, const Eigen::Vector<T, dof> &velocity,
-                                                     const Eigen::Vector<T, dof> &acceleration, const T &gravity = 9.81,
-                                                     const Wrench<T> ee_wrench = Wrench<T>::Zero(),
-                                                     const std::string &kinematic_chain_name = "") const;
+        Eigen::Vector<T, dof> computeInverseDynamics(const Eigen::Vector<T, dof> &position,
+                                                     const Eigen::Vector<T, dof> &velocity,
+                                                     const Eigen::Vector<T, dof> &acceleration,
+                                                     const T                     &gravity              = 9.81,
+                                                     const Wrench<T>              ee_wrench            = Wrench<T>::Zero(),
+                                                     const std::string           &kinematic_chain_name = "") const;
 
         template <int dof>
-        Eigen::Vector<T, dof> computeForwardDynamics(const Eigen::Vector<T, dof> &position, const Eigen::Vector<T, dof> &velocity,
-                                                     const Eigen::Vector<T, dof> &torque, const std::string &kinematic_chain_name = "") const;
+        Eigen::Vector<T, dof> computeForwardDynamics(const Eigen::Vector<T, dof> &position,
+                                                     const Eigen::Vector<T, dof> &velocity,
+                                                     const Eigen::Vector<T, dof> &torque,
+                                                     const std::string           &kinematic_chain_name = "") const;
 
         template <int dof>
         Eigen::Matrix<T, dof, dof> computeKinematicChainMassMatrix(const std::string &name, const Eigen::Vector<T, dof> &position) const;
@@ -168,3 +172,5 @@ namespace gafro
     };
 
 }  // namespace gafro
+
+#include <gafro/robot/System.hxx>

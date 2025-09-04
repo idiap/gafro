@@ -12,7 +12,8 @@ namespace gafro
 {
 
     template <class T>
-    Link<T>::Link() : mass_(TypeTraits<T>::Zero())
+    Link<T>::Link()
+      : mass_(TypeTraits<T>::Zero())
     {}
 
     template <class T>
@@ -24,14 +25,14 @@ namespace gafro
     template <class T>
     Link<T> &Link<T>::operator=(Link &&other)
     {
-        mass_ = std::move(other.mass_);
+        mass_           = std::move(other.mass_);
         center_of_mass_ = std::move(other.center_of_mass_);
-        inertia_ = std::move(other.inertia_);
-        name_ = std::move(other.name_);
-        parent_joint_ = std::move(other.parent_joint_);
-        child_joints_ = std::move(other.child_joints_);
-        axis_ = std::move(other.axis_);
-        visual_ = std::move(other.visual_);
+        inertia_        = std::move(other.inertia_);
+        name_           = std::move(other.name_);
+        parent_joint_   = std::move(other.parent_joint_);
+        child_joints_   = std::move(other.child_joints_);
+        axis_           = std::move(other.axis_);
+        visual_         = std::move(other.visual_);
 
         return *this;
     }
@@ -141,6 +142,24 @@ namespace gafro
     const LinkVisual *Link<T>::getVisual() const
     {
         return visual_.get();
+    }
+
+    template <class T>
+    std::unique_ptr<Link<T>> Link<T>::copy() const
+    {
+        std::unique_ptr<Link<T>> link = std::make_unique<Link<T>>();
+
+        link->setName(this->getName());
+        link->setCenterOfMass(this->getCenterOfMass());
+        link->setInertia(this->getInertia());
+        link->setMass(this->getMass());
+        link->setAxis(this->getAxis());
+        if (this->hasVisual())
+        {
+            link->setVisual(this->getVisual()->copy());
+        }
+
+        return link;
     }
 
 }  // namespace gafro

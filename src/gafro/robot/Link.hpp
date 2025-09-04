@@ -27,7 +27,10 @@ namespace gafro
             BOX
         };
 
-        LinkVisual(const Type &type, const Motor<double> &transform) : type_(type), transform_(transform) {}
+        LinkVisual(const Type &type, const Motor<double> &transform)
+          : type_(type)
+          , transform_(transform)
+        {}
 
         virtual ~LinkVisual() = default;
 
@@ -99,6 +102,14 @@ namespace gafro
 
         const typename Motor<T>::Generator &getAxis() const;
 
+        void setVisual(std::unique_ptr<LinkVisual> &&visual);
+
+        bool hasVisual() const;
+
+        const LinkVisual *getVisual() const;
+
+        std::unique_ptr<Link> copy() const;
+
       private:
         Translator<T> center_of_mass_;
 
@@ -117,12 +128,5 @@ namespace gafro
       public:
       private:
         std::unique_ptr<LinkVisual> visual_;
-
-      public:
-        void setVisual(std::unique_ptr<LinkVisual> &&visual);
-
-        bool hasVisual() const;
-
-        const LinkVisual *getVisual() const;
     };
 }  // namespace gafro

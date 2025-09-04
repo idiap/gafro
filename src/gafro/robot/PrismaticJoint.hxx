@@ -12,11 +12,13 @@ namespace gafro
 {
 
     template <class T>
-    PrismaticJoint<T>::PrismaticJoint() : Joint<T>(Joint<T>::Type::PRISMATIC)
+    PrismaticJoint<T>::PrismaticJoint()
+      : Joint<T>(Joint<T>::Type::PRISMATIC)
     {}
 
     template <class T>
-    PrismaticJoint<T>::PrismaticJoint(const std::array<T, 3> &parameters) : Joint<T>(Joint<T>::Type::PRISMATIC)
+    PrismaticJoint<T>::PrismaticJoint(const std::array<T, 3> &parameters)
+      : Joint<T>(Joint<T>::Type::PRISMATIC)
     {
         throw std::runtime_error("PrismaticJoint<T>::PrismaticJoint(const std::array<T, 3> &parameters) not implemented!");
 
@@ -29,7 +31,8 @@ namespace gafro
     }
 
     template <class T>
-    PrismaticJoint<T>::PrismaticJoint(const std::array<T, 6> &parameters, int axis) : Joint<T>(Joint<T>::Type::PRISMATIC)
+    PrismaticJoint<T>::PrismaticJoint(const std::array<T, 6> &parameters, int axis)
+      : Joint<T>(Joint<T>::Type::PRISMATIC)
     {
         Translator<T> t(typename Translator<T>::Generator({ parameters[0], parameters[1], parameters[2] }));
 
@@ -112,6 +115,19 @@ namespace gafro
                 + E2i<T>(expression.template get<blades::e2i>())  //
                 + E3i<T>(expression.template get<blades::e3i>()))
           .evaluate();
+    }
+
+    template <class T>
+    std::unique_ptr<Joint<T>> PrismaticJoint<T>::copy() const
+    {
+        std::unique_ptr<Joint<T>> joint = std::make_unique<PrismaticJoint<T>>();
+
+        joint->setName(this->getName());
+        joint->setFrame(this->getFrame());
+        joint->setLimits(this->getLimits());
+        static_cast<PrismaticJoint<T> *>(joint.get())->setAxis(this->getAxis());
+
+        return joint;
     }
 
 }  // namespace gafro

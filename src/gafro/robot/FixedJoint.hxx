@@ -12,7 +12,8 @@ namespace gafro
 {
 
     template <class T>
-    FixedJoint<T>::FixedJoint() : Joint<T>(Joint<T>::Type::FIXED)
+    FixedJoint<T>::FixedJoint()
+      : Joint<T>(Joint<T>::Type::FIXED)
     {}
 
     template <class T>
@@ -34,6 +35,18 @@ namespace gafro
     typename Motor<T>::Generator FixedJoint<T>::getCurrentAxis(const Motor<T> &) const
     {
         return typename Motor<T>::Generator(Motor<T>::Generator::Parameters::Zero());
+    }
+
+    template <class T>
+    std::unique_ptr<Joint<T>> FixedJoint<T>::copy() const
+    {
+        std::unique_ptr<Joint<T>> joint = std::make_unique<FixedJoint<T>>();
+
+        joint->setName(this->getName());
+        joint->setFrame(this->getFrame());
+        joint->setLimits(this->getLimits());
+
+        return joint;
     }
 
 }  // namespace gafro

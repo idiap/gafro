@@ -13,11 +13,13 @@ namespace gafro
 {
 
     template <class T>
-    RevoluteJoint<T>::RevoluteJoint() : Joint<T>(Joint<T>::Type::REVOLUTE)
+    RevoluteJoint<T>::RevoluteJoint()
+      : Joint<T>(Joint<T>::Type::REVOLUTE)
     {}
 
     template <class T>
-    RevoluteJoint<T>::RevoluteJoint(const std::array<T, 3> &parameters) : Joint<T>(Joint<T>::Type::REVOLUTE)
+    RevoluteJoint<T>::RevoluteJoint(const std::array<T, 3> &parameters)
+      : Joint<T>(Joint<T>::Type::REVOLUTE)
     {
         Rotor<T> rotor(typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::One() })),
                        parameters[2]);
@@ -29,7 +31,8 @@ namespace gafro
     }
 
     template <class T>
-    RevoluteJoint<T>::RevoluteJoint(const std::array<T, 6> &parameters, int axis) : Joint<T>(Joint<T>::Type::REVOLUTE)
+    RevoluteJoint<T>::RevoluteJoint(const std::array<T, 6> &parameters, int axis)
+      : Joint<T>(Joint<T>::Type::REVOLUTE)
     {
         Translator<T> t(typename Translator<T>::Generator({ parameters[0], parameters[1], parameters[2] }));
 
@@ -121,6 +124,19 @@ namespace gafro
     typename Motor<T>::Generator RevoluteJoint<T>::getCurrentAxis(const Motor<T> &motor) const
     {
         return (motor * axis_ * motor.reverse()).template evaluateAs<typename Motor<T>::Generator>();
+    }
+
+    template <class T>
+    std::unique_ptr<Joint<T>> RevoluteJoint<T>::copy() const
+    {
+        std::unique_ptr<Joint<T>> joint = std::make_unique<RevoluteJoint<T>>();
+
+        joint->setName(this->getName());
+        joint->setFrame(this->getFrame());
+        joint->setLimits(this->getLimits());
+        static_cast<RevoluteJoint<T> *>(joint.get())->setAxis(this->getAxis());
+
+        return joint;
     }
 
 }  // namespace gafro
