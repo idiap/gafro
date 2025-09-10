@@ -14,11 +14,13 @@ namespace gafro
 {
 
     template <typename T>
-    Sphere<T>::Sphere() : Base()
+    Sphere<T>::Sphere()
+      : Base()
     {}
 
     template <typename T>
-    Sphere<T>::Sphere(const Base &other) : Base(other)
+    Sphere<T>::Sphere(const Base &other)
+      : Base(other)
     {}
 
     template <typename T>
@@ -45,15 +47,9 @@ namespace gafro
         const typename Point<T>::Base ei({ 0.0, 0.0, 0.0, 0.0, 1.0 });
 
         Point<T> center = Reflection<typename Point<T>::Base, typename Dual<Sphere>::Type>(ei, dual_sphere).evaluate();
-        center = (center * Scalar<T>(1.0 / center.template get<blades::e0>())).evaluate();
+        center          = (center * Scalar<T>(1.0 / center.template get<blades::e0>())).evaluate();
 
         return center;
-    }
-
-    template <class T>
-    Sphere<T> Sphere<T>::Random()
-    {
-        return Sphere(Point<T>::Random(), Point<T>::Random(), Point<T>::Random(), Point<T>::Random());
     }
 
     template <class T>
@@ -66,6 +62,18 @@ namespace gafro
         Translator<T> translator = Translator<T>::exp(((target.getCenter() - sphere.getCenter()) ^ Ei<double>::One()));
 
         return translator * Rotor<T>::Unit() * dilator;
+    }
+
+    template <class T>
+    Sphere<T> Sphere<T>::Random()
+    {
+        return Sphere(Point<T>::Random(), Point<T>::Random(), Point<T>::Random(), Point<T>::Random());
+    }
+
+    template <class T>
+    Sphere<T> Sphere<T>::Unit()
+    {
+        return Sphere(Point<T>(), TypeTraits<T>::Value(1.0));
     }
 
 }  // namespace gafro

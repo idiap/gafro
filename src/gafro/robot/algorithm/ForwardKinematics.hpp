@@ -26,8 +26,8 @@ namespace gafro
 
       private:
         void processLink(const Eigen::VectorX<T> &joint_positions,  //
-                         const gafro::Link<double> *link,           //
-                         const gafro::Motor<double> &parent_pose);
+                         const gafro::Link<T> *link,           //
+                         const gafro::Motor<T> &parent_pose);
 
       private:
         std::map<std::string, Motor<T>> joint_poses_;

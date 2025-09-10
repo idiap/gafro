@@ -43,6 +43,8 @@ namespace gafro
       private:
       public:
         static Sphere Random();
+
+        static Sphere Unit();
     };
 
 }  // namespace gafro

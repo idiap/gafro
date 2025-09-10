@@ -37,8 +37,8 @@ namespace gafro
 
     template <class T>
     void ForwardKinematics<T>::processLink(const Eigen::VectorX<T> &joint_positions,  //
-                                           const gafro::Link<double> *link,           //
-                                           const gafro::Motor<double> &parent_pose)
+                                           const gafro::Link<T>    *link,             //
+                                           const gafro::Motor<T>   &parent_pose)
     {
         link_poses_.emplace(std::make_pair(link->getName(), parent_pose));
 
@@ -50,7 +50,7 @@ namespace gafro
             {
                 if (child_joint->isActuated())
                 {
-                    double joint_position;
+                    T joint_position;
 
                     if (child_joint->getIndex() < joint_positions.rows())
                     {

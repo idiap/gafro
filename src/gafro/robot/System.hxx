@@ -9,16 +9,17 @@
 #include <gafro/gafro_package_config.hpp>
 //
 #include <gafro/robot/FixedJoint.hxx>
+#include <gafro/robot/FreeJoint.hxx>
 #include <gafro/robot/Joint.hxx>
 #include <gafro/robot/Link.hxx>
 #include <gafro/robot/PrismaticJoint.hxx>
 #include <gafro/robot/RevoluteJoint.hxx>
-#include <gafro/robot/FreeJoint.hxx>
 //
 #include <gafro/physics/Twist.hxx>
 #include <gafro/physics/Wrench.hxx>
 //
 #include <gafro/robot/System.hpp>
+#include <gafro/robot/TaskSpace.hpp>
 #include <gafro/robot/algorithm/ForwardKinematics.hpp>
 #include <gafro/robot/algorithm/InverseDynamics.hxx>
 
@@ -52,9 +53,11 @@ namespace gafro
         links_                = std::move(other.links_);
         joints_               = std::move(other.joints_);
         kinematic_chains_     = std::move(other.kinematic_chains_);
+        task_spaces_          = std::move(other.task_spaces_);
         joints_map_           = std::move(other.joints_map_);
         links_map_            = std::move(other.links_map_);
         kinematic_chains_map_ = std::move(other.kinematic_chains_map_);
+        task_spaces_map_      = std::move(other.task_spaces_map_);
         dof_                  = other.dof_;
         joint_limits_min_     = std::move(other.joint_limits_min_);
         joint_limits_max_     = std::move(other.joint_limits_max_);
@@ -179,11 +182,23 @@ namespace gafro
 
         // Finalize the kinematic chain (if not already done)
         if (kinematic_chain->getBodies().empty())
+        {
             kinematic_chain->finalize();
+        }
 
         kinematic_chains_.push_back(std::move(kinematic_chain));
 
         kinematic_chains_map_.emplace(std::make_pair(name, kinematic_chains_.back().get()));
+    }
+
+    template <class T>
+    void System<T>::addTaskSpace(const std::string &name, std::unique_ptr<TaskSpace<T>> &&task_space)
+    {
+        task_spaces_.push_back(std::move(task_space));
+
+        task_spaces_.back()->setSystem(this);
+
+        task_spaces_map_.emplace(std::make_pair(name, task_spaces_.back().get()));
     }
 
     template <class T>
@@ -523,6 +538,22 @@ namespace gafro
     }
 
     template <class T>
+    const TaskSpace<T> *System<T>::getTaskSpace(const std::string &name) const
+    {
+        auto task_space = task_spaces_map_.find(name);
+
+        if (task_space == task_spaces_map_.end())
+        {
+            if (task_space == kinematic_chains_map_.end())
+            {
+                throw std::runtime_error("system " + name_ + " has no task space named " + name);
+            }
+        }
+
+        return task_space->second;
+    }
+
+    template <class T>
     bool System<T>::hasKinematicChain(const std::string &name) const
     {
         return kinematic_chains_map_.find(name) != kinematic_chains_map_.end();
@@ -552,6 +583,12 @@ namespace gafro
         }
 
         return kinematic_chain->second;
+    }
+
+    template <class T>
+    const std::vector<std::unique_ptr<KinematicChain<T>>> &System<T>::getKinematicChains() const
+    {
+        return kinematic_chains_;
     }
 
     template <class T>
