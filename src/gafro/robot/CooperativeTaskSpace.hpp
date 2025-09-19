@@ -4,6 +4,25 @@
 
 namespace gafro
 {
+    template <class T, int points>
+    struct CooperativePrimitive
+    {
+        using Type  = typename OuterProduct<Point<T>, CooperativePrimitive<T, points - 1>>::Type;
+        using Vtype = T;
+
+        static constexpr int  size   = Type::size;
+        static constexpr auto blades = Type::blades;
+    };
+
+    template <class T>
+    struct CooperativePrimitive<T, 1>
+    {
+        using Type  = typename Point<T>::Type;
+        using Vtype = T;
+
+        static constexpr int  size   = Type::size;
+        static constexpr auto blades = Type::blades;
+    };
 
     template <class T, int size, int dof>
     class CooperativeTaskSpace : public TaskSpace<T>
@@ -13,11 +32,20 @@ namespace gafro
 
         virtual ~CooperativeTaskSpace();
 
+        template <class S>
+        using Type = typename CooperativePrimitive<S, size>::Type;
+
+        using PrimitiveJacobian = MultivectorMatrix<T, Type, 1, dof>;
+
         //
 
         Eigen::VectorX<T> convertToSystemConfiguration(const Eigen::Vector<T, dof> &task_space_configuration) const;
 
         Eigen::VectorX<T> convertToTaskSpaceConfiguration(const Eigen::VectorX<T> &task_space_configuration) const;
+
+        Eigen::VectorX<T> extractKinematicChainConfiguration(const std::string &name, const Eigen::VectorX<T> &task_space_configuration) const;
+
+        ForwardKinematics<T> computeForwardKinematics(const Eigen::Vector<T, dof> &task_space_configuration) const;
 
         // size == 3
 
@@ -29,6 +57,8 @@ namespace gafro
         // size == 4
 
         auto computePrimitive(const Eigen::Vector<T, dof> &task_space_configuration) const;
+
+        PrimitiveJacobian computePrimitiveJacobian(const Eigen::Vector<T, dof> &task_space_configuration) const;
 
         // MultivectorMatrix<T, Sphere, 1, dof> computeSphereJacobian(const Eigen::VectorX<T> &task_space_configuration) const;
 

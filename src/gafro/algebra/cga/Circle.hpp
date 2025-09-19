@@ -55,7 +55,7 @@ namespace gafro
       public:
         static Circle Random();
 
-        static Circle Unit(const Motor<T> &motor, const T &radius = TypeTraits<T>::Value(1.0));
+        static Circle Unit();
     };
 
 }  // namespace gafro

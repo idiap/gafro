@@ -1,3 +1,5 @@
+#pragma once
+
 #include <gafro/robot/CooperativeTaskSpace.hpp>
 
 namespace gafro
@@ -69,6 +71,23 @@ namespace gafro
     }
 
     template <class T, int size, int dof>
+    Eigen::VectorX<T> CooperativeTaskSpace<T, size, dof>::extractKinematicChainConfiguration(const std::string       &name,
+                                                                                             const Eigen::VectorX<T> &task_space_configuration) const
+    {
+        std::vector<unsigned> indices = kinematic_chain_joint_indices_.at(name);
+
+        Eigen::VectorX<T> configuration = Eigen::VectorX<T>::Zero(indices.size());
+
+        unsigned i = 0;
+        for (const unsigned &index : indices)
+        {
+            configuration[i++] = task_space_configuration[index];
+        }
+
+        return configuration;
+    }
+
+    template <class T, int size, int dof>
     auto CooperativeTaskSpace<T, size, dof>::computePrimitive(const Eigen::Vector<T, dof> &task_space_configuration) const
     {
         Eigen::VectorX<T> system_configuration = convertToSystemConfiguration(task_space_configuration);
@@ -94,6 +113,79 @@ namespace gafro
         {
             return Sphere<T>(points[0], points[1], points[2], points[3]);
         }
+    }
+
+    template <class T, int size, int dof>
+    ForwardKinematics<T> CooperativeTaskSpace<T, size, dof>::computeForwardKinematics(const Eigen::Vector<T, dof> &task_space_configuration) const
+    {
+        Eigen::VectorX<T> system_configuration = convertToSystemConfiguration(task_space_configuration);
+
+        return this->getSystem()->computeForwardKinematics(system_configuration);
+    }
+
+    template <class T, int size, int dof>
+    CooperativeTaskSpace<T, size, dof>::PrimitiveJacobian CooperativeTaskSpace<T, size, dof>::computePrimitiveJacobian(
+      const Eigen::Vector<T, dof> &task_space_configuration) const
+    {
+        Eigen::VectorX<T> system_configuration = convertToSystemConfiguration(task_space_configuration);
+
+        auto forward_kinematics = this->getSystem()->computeForwardKinematics(system_configuration);
+
+        std::array<Point<T>, size> points;
+        std::array<Motor<T>, size> motors;
+
+        int i = 0;
+
+        for (const auto &indices : kinematic_chain_joint_indices_)
+        {
+            const auto *kinematic_chain = this->getSystem()->getKinematicChain(indices.first);
+
+            motors[i] = forward_kinematics.getJointPose(kinematic_chain->getName());
+            points[i] = motors[i].apply(Point<T>());
+
+            i++;
+        }
+
+        if constexpr (size == 3)
+        {
+            PrimitiveJacobian circle_jacobian;
+
+            int pidx = 0;
+
+            for (const auto &indices : kinematic_chain_joint_indices_)
+            {
+                const auto *kinematic_chain = this->getSystem()->getKinematicChain(indices.first);
+
+                Eigen::Vector<T, 7> configuration = extractKinematicChainConfiguration(indices.first, task_space_configuration);
+
+                gafro::MultivectorMatrix<T, Motor, 1, 7> analytic_jacobian = kinematic_chain->computeAnalyticJacobian(configuration);
+
+                for (const unsigned &k : indices.second)
+                {
+                    Point<T> point = analytic_jacobian.getCoefficient(0, k) * Point<T>() * motors[pidx].reverse() +
+                                     motors[pidx] * Point<T>() * analytic_jacobian.getCoefficient(0, k).reverse();
+
+                    if (pidx == 0)
+                    {
+                        circle_jacobian.setCoefficient(0, k, point ^ points[1] ^ points[2]);
+                    }
+                    else if (pidx == 1)
+                    {
+                        circle_jacobian.setCoefficient(0, k, points[0] ^ point ^ points[2]);
+                    }
+                    else if (pidx == 2)
+                    {
+                        circle_jacobian.setCoefficient(0, k, points[0] ^ points[1] ^ point);
+                    }
+                }
+
+                pidx++;
+            }
+
+            return circle_jacobian;
+        }
+
+        return PrimitiveJacobian();
     }
 
     template <class T, int size, int dof>

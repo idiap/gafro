@@ -14,7 +14,8 @@ namespace gafro
 {
 
     template <class T>
-    Rotor<T>::Rotor() : Base(Parameters({ TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() }))
+    Rotor<T>::Rotor()
+      : Base(Parameters({ TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() }))
     {}
 
     template <typename T>
@@ -23,7 +24,8 @@ namespace gafro
     {}
 
     template <typename T>
-    Rotor<T>::Rotor(const Parameters &parameters) : Base(parameters)
+    Rotor<T>::Rotor(const Parameters &parameters)
+      : Base(parameters)
     {}
 
     template <typename T>
@@ -47,14 +49,13 @@ namespace gafro
     template <typename T>
     typename Rotor<T>::Generator Rotor<T>::log() const
     {
-        T angle = acos(scalar());
-
-        if (abs(angle) < 1e-6)
+        if (scalar() > 0.9999)
         {
             return Rotor<T>::Generator({ e12(), e13(), e23() });
         }
 
-        angle = -2.0 * angle / (sin(angle));
+        T angle = acos(scalar());
+        angle   = -2.0 * angle / (sin(angle));
 
         return Rotor<T>::Generator({ angle * e12(),  //
                                      angle * e13(),  //

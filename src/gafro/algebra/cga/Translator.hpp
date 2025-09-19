@@ -43,6 +43,12 @@ namespace gafro
         static Translator exp(const Eigen::Vector<T, 3> &generator);
 
         static Translator exp(const Generator &generator);
+
+        static Translator X(const T &e1i);
+
+        static Translator Y(const T &e2i);
+
+        static Translator Z(const T &e3i);
     };
 
 }  // namespace gafro

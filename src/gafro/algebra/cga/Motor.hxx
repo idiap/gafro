@@ -16,35 +16,43 @@ namespace gafro
     // CONSTRUCTORS
 
     template <class T>
-    Motor<T>::Motor() : Base(Unit())
+    Motor<T>::Motor()
+      : Base(Unit())
     {}
 
     template <class T>
-    Motor<T>::Motor(const Motor<T> &other) : Base(other.vector())
+    Motor<T>::Motor(const Motor<T> &other)
+      : Base(other.vector())
     {}
 
     template <class T>
-    Motor<T>::Motor(Motor &&other) : Base(std::move(other))
+    Motor<T>::Motor(Motor &&other)
+      : Base(std::move(other))
     {}
 
     template <class T>
-    Motor<T>::Motor(const Generator &generator) : Base(Motor::exp(generator))
+    Motor<T>::Motor(const Generator &generator)
+      : Base(Motor::exp(generator))
     {}
 
     template <class T>
-    Motor<T>::Motor(const Translator<T> &translator) : Motor(translator, Rotor<T>())
+    Motor<T>::Motor(const Translator<T> &translator)
+      : Motor(translator, Rotor<T>())
     {}
 
     template <class T>
-    Motor<T>::Motor(const Translator<T> &translator, const Rotor<T> &rotor) : Motor<T>(translator * rotor)
+    Motor<T>::Motor(const Translator<T> &translator, const Rotor<T> &rotor)
+      : Motor<T>(translator * rotor)
     {}
 
     template <class T>
-    Motor<T>::Motor(const Rotor<T> &rotor, const Translator<T> &translator) : Motor<T>(rotor * translator)
+    Motor<T>::Motor(const Rotor<T> &rotor, const Translator<T> &translator)
+      : Motor<T>(rotor * translator)
     {}
 
     template <class T>
-    Motor<T>::Motor(const Rotor<T> &rotor) : Motor(Translator<T>(), rotor)
+    Motor<T>::Motor(const Rotor<T> &rotor)
+      : Motor(Translator<T>(), rotor)
     {}
 
     template <class T>
@@ -110,9 +118,9 @@ namespace gafro
     {
         Eigen::Matrix<T, 4, 4> transformation_matrix = Eigen::Matrix<T, 4, 4>::Zero();
 
-        transformation_matrix.block(0, 0, 3, 3) = getRotor().toRotationMatrix();
-        transformation_matrix.block(0, 3, 3, 1) = getTranslator().toTranslationVector();
-        transformation_matrix.coeffRef(3, 3) = 1.0;
+        transformation_matrix.template block<3, 3>(0, 0) = getRotor().toRotationMatrix();
+        transformation_matrix.template block<3, 1>(0, 3) = getTranslator().toTranslationVector();
+        transformation_matrix.coeffRef(3, 3)             = 1.0;
 
         return transformation_matrix;
     }
@@ -146,8 +154,14 @@ namespace gafro
     template <class T>
     Motor<T> Motor<T>::Unit()
     {
-        return Motor<T>({ TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(),
-                          TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() });
+        return Motor<T>({ TypeTraits<T>::One(),
+                          TypeTraits<T>::Zero(),
+                          TypeTraits<T>::Zero(),
+                          TypeTraits<T>::Zero(),
+                          TypeTraits<T>::Zero(),
+                          TypeTraits<T>::Zero(),
+                          TypeTraits<T>::Zero(),
+                          TypeTraits<T>::Zero() });
     }
 
     template <class T>

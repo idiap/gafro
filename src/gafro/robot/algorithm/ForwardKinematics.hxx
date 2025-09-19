@@ -26,7 +26,7 @@ namespace gafro
     template <class T>
     const Motor<T> &ForwardKinematics<T>::getLinkPose(const std::string &link_name) const
     {
-        return joint_poses_.at(link_name);
+        return link_poses_.at(link_name);
     }
 
     template <class T>

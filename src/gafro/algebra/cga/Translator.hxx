@@ -13,7 +13,8 @@ namespace gafro
 {
 
     template <typename T>
-    Translator<T>::Translator() : Base(Parameters({ TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() }))
+    Translator<T>::Translator()
+      : Base(Parameters({ TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() }))
     {}
 
     template <typename T>
@@ -34,7 +35,7 @@ namespace gafro
     template <typename T>
     Eigen::Vector<T, 3> Translator<T>::toTranslationVector() const
     {
-        return T(-2.0) * this->vector().bottomRows(3);
+        return this->log().vector();
     }
 
     template <typename T>
@@ -66,6 +67,24 @@ namespace gafro
     Translator<T> Translator<T>::exp(const Generator &generator)
     {
         return Scalar<T>(TypeTraits<T>::One()) + Scalar<T>(TypeTraits<T>::Value(-0.5)) * generator;
+    }
+
+    template <typename T>
+    Translator<T> Translator<T>::X(const T &e1i)
+    {
+        return Translator<T>::exp(1.0, 0.0, 0.0);
+    }
+
+    template <typename T>
+    Translator<T> Translator<T>::Y(const T &e2i)
+    {
+        return Translator<T>::exp(0.0, 1.0, 0.0);
+    }
+
+    template <typename T>
+    Translator<T> Translator<T>::Z(const T &e3i)
+    {
+        return Translator<T>::exp(0.0, 0.0, 1.0);
     }
 
 }  // namespace gafro
