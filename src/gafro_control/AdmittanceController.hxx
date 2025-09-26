@@ -52,20 +52,7 @@ namespace gafro_control
 
         Eigen::Matrix<double, 6, dof> jacobian = robot->getGeometricJacobian(position, getReferenceFrame()).embed();
 
-        auto svd = jacobian.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
-
-        gafro::Wrench<double> singularity = gafro::Wrench<double>::Zero();
-
-        if (svd.singularValues()[dof - 1] < 5e-1)
-        {
-            double scaling = 1.0 - svd.singularValues()[dof - 1] / 5e-1;
-
-            singularity = gafro::Wrench<double>(scaling * svd.matrixU().col(dof - 1));
-            residual_bivector_.template set<gafro::blades::e13>((1.0 - scaling) * residual_bivector_.template get<gafro::blades::e13>());
-            residual_bivector_.template set<gafro::blades::e23>((1.0 - scaling) * residual_bivector_.template get<gafro::blades::e23>());
-        }
-
-        gafro::Wrench<double> wrench = desired_wrench_ - external_wrench_ - stiffness_(residual_bivector_) - damping_(residual_twist_) - singularity;
+        gafro::Wrench<double> wrench = desired_wrench_ - external_wrench_ - stiffness_(residual_bivector_) - damping_(residual_twist_);
 
         gafro::Twist<double> desired_ee_acceleration = inertia_(wrench);
 
