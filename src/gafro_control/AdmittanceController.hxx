@@ -16,10 +16,8 @@ namespace gafro_control
       : orwell::AdmittanceController<dof, Reference, type>(interface, name)
     {
         auto loadTensor = [&](const std::string &tensor) {
-            double mass;
-            std::array<double, 6> values;
-            interface->getConfigurations()->loadParameter(name + "/" + tensor + "/mass", &mass, false);
-            interface->getConfigurations()->loadParameter<6>(name + "/" + tensor + "/tensor", &values);
+            double mass = interface->getConfigurations()->loadParameter<double>(name + "/" + tensor + "/mass");
+            std::array<double, 6> values = interface->getConfigurations()->loadParameterArray<double, 6>(name + "/" + tensor + "/tensor");
 
             return gafro::Inertia<double>(mass, values[0], values[1], values[2], values[3], values[4], values[5]);
         };
