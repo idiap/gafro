@@ -8,6 +8,7 @@
 
 #include <gafro/algebra/Multivector.hxx>
 #include <gafro/algebra/cga/Blades.hpp>
+#include <gafro/algebra/cga/Rotor.hpp>
 
 namespace gafro
 {
@@ -29,9 +30,14 @@ namespace gafro
 
         virtual ~Vector() = default;
 
-      protected:
-      private:
+        Rotor<T> getRotor(const Vector &other) const;
+
       public:
+        static Vector Z(const T &z);
+
+        static Vector UnitZ();
     };
 
 }  // namespace gafro
+
+#include <gafro/algebra/cga/Vector.hxx>
