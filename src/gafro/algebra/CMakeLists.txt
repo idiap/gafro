@@ -8,6 +8,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
         FILES
             Algebra.hpp
             Grade.hpp
+            Metric.hpp
 
             AbstractMultivector.hpp
             AbstractMultivector.hxx
