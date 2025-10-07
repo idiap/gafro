@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <gafro_control/AdmittanceController.hpp>
-#include <gafro_control/RobotModel.hpp>
+#include <gafro/control/AdmittanceController.hpp>
+#include <gafro/control/RobotModel.hpp>
 
 namespace gafro_control
 {
@@ -15,21 +15,22 @@ namespace gafro_control
     AdmittanceController<dof, Reference, type>::AdmittanceController(const sackmesser::Interface::Ptr &interface, const std::string &name)
       : orwell::AdmittanceController<dof, Reference, type>(interface, name)
     {
-        auto loadTensor = [&](const std::string &tensor) {
-            double mass = interface->getConfigurations()->loadParameter<double>(name + "/" + tensor + "/mass");
-            std::array<double, 6> values = interface->getConfigurations()->loadParameterArray<double, 6>(name + "/" + tensor + "/tensor");
+        inertia_ = gafro::Inertia<double>(
+          Eigen::Vector3d(interface->getConfigurations()->loadParameterArray<double, 3>(name + "/inertia/translational").data()).asDiagonal(),
+          Eigen::Vector3d(interface->getConfigurations()->loadParameterArray<double, 3>(name + "/inertia/rotational").data()).asDiagonal());
 
-            return gafro::Inertia<double>(mass, values[0], values[1], values[2], values[3], values[4], values[5]);
-        };
+        damping_ = gafro::Inertia<double>(
+          Eigen::Vector3d(interface->getConfigurations()->loadParameterArray<double, 3>(name + "/damping/translational").data()).asDiagonal(),
+          Eigen::Vector3d(interface->getConfigurations()->loadParameterArray<double, 3>(name + "/damping/rotational").data()).asDiagonal());
 
-        inertia_ = loadTensor("inertia");
-        damping_ = loadTensor("damping");
-        stiffness_ = loadTensor("stiffness");
+        stiffness_ = gafro::Inertia<double>(
+          Eigen::Vector3d(interface->getConfigurations()->loadParameterArray<double, 3>(name + "/stiffness/translational").data()).asDiagonal(),
+          Eigen::Vector3d(interface->getConfigurations()->loadParameterArray<double, 3>(name + "/stiffness/rotational").data()).asDiagonal());
 
         residual_bivector_ = gafro::Motor<double>::Generator::Zero();
-        residual_twist_ = gafro::Twist<double>::Zero();
-        external_wrench_ = gafro::Wrench<double>::Zero();
-        desired_wrench_ = gafro::Wrench<double>::Zero();
+        residual_twist_    = gafro::Twist<double>::Zero();
+        external_wrench_   = gafro::Wrench<double>::Zero();
+        desired_wrench_    = gafro::Wrench<double>::Zero();
     }
 
     template <int dof, class Reference, orwell::AdmittanceControllerType type>

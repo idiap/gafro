@@ -38,4 +38,4 @@ namespace gafro_control
 
 }  // namespace gafro_control
 
-#include <gafro_control/DualArmAbsoluteAdmittanceController.hxx>
+#include <gafro/control/DualArmAbsoluteAdmittanceController.hxx>

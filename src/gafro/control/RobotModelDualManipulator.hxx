@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <gafro_control/RobotModelDualManipulator.hpp>
+#include <gafro/control/RobotModelDualManipulator.hpp>
 
 namespace gafro_control
 {

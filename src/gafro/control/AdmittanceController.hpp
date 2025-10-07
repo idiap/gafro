@@ -63,4 +63,4 @@ namespace gafro_control
 
 }  // namespace gafro_control
 
-#include <gafro_control/AdmittanceController.hxx>
+#include <gafro/control/AdmittanceController.hxx>
