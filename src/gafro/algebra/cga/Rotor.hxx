@@ -49,7 +49,7 @@ namespace gafro
     template <typename T>
     typename Rotor<T>::Generator Rotor<T>::log() const
     {
-        if (scalar() > 0.9999)
+        if (scalar() > 0.99999999)
         {
             return Rotor<T>::Generator({ e12(), e13(), e23() });
         }

@@ -268,7 +268,7 @@ namespace gafro
 
     template <class T>
     template <class S>
-    System<S> System<T>::cast()
+    System<S> System<T>::cast() const
     {
         System<S> system;
 
@@ -375,6 +375,12 @@ namespace gafro
         system.finalize();
 
         return system;
+    }
+
+    template <class T>
+    System<T> System<T>::copy() const
+    {
+        return this->template cast<T>();
     }
 
     template <class T>

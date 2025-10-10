@@ -74,7 +74,9 @@ namespace gafro
         const std::vector<std::unique_ptr<Joint<T>>> &getJoints() const;
 
         template <class S>
-        System<S> cast();
+        System<S> cast() const;
+
+        System copy() const;
 
         bool hasKinematicChain(const std::string &name) const;
 
