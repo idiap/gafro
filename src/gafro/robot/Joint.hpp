@@ -21,8 +21,10 @@ namespace gafro
         enum class Type
         {
             FIXED,
+            FREE,
             REVOLUTE,
-            PRISMATIC
+            PRISMATIC,
+            CONTINUOUS
         };
 
         Joint(Type type);
