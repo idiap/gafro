@@ -1,26 +1,13 @@
-/*
-    Copyright (c) 2022 Idiap Research Institute, http://www.idiap.ch/
-    Written by Tobias Löw <https://tobiloew.ch>
-
-    This file is part of gafro.
-
-    gafro is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License version 3 as
-    published by the Free Software Foundation.
-
-    gafro is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with gafro. If not, see <http://www.gnu.org/licenses/>.
-*/
+// SPDX-FileCopyrightText: Idiap Research Institute <contact@idiap.ch>
+//
+// SPDX-FileContributor: Tobias Loew <tobias.loew@idiap.ch
+//
+// SPDX-License-Identifier: MPL-2.0
 
 #pragma once
 
-#include <gafro_control/DualArmAdmittanceController.hpp>
-#include <gafro_control/RobotModelDualManipulator.hpp>
+#include <gafro/control/DualArmAdmittanceController.hpp>
+#include <gafro/control/RobotModelDualManipulator.hpp>
 
 namespace gafro_control
 {
@@ -97,11 +84,15 @@ namespace gafro_control
 
     template <int dof, class Reference, orwell::AdmittanceControllerType type>
     void DualArmAdmittanceController<dof, Reference, type>::setDesiredWrench(const gafro::Wrench<double> &w1, const gafro::Wrench<double> &w2)
-    {}
+    {
+        convertWrenchesToDualTaskSpace(w1, w2, desired_absolute_wrench_, desired_relative_wrench_);
+    }
 
     template <int dof, class Reference, orwell::AdmittanceControllerType type>
     void DualArmAdmittanceController<dof, Reference, type>::setExternalWrench(const gafro::Wrench<double> &w1, const gafro::Wrench<double> &w2)
-    {}
+    {
+        convertWrenchesToDualTaskSpace(w1, w2, external_absolute_wrench_, external_relative_wrench_);
+    }
 
     template <int dof, class Reference, orwell::AdmittanceControllerType type>
     void DualArmAdmittanceController<dof, Reference, type>::setAbsoluteResidual(const gafro::Motor<double>::Generator &absolute_residual)
@@ -139,6 +130,33 @@ namespace gafro_control
     {
         return relative_inertia_(desired_relative_wrench_ - external_relative_wrench_ - relative_stiffness_(relative_residual_) -
                                  relative_damping_(relative_residual_dt_));
+    }
+
+    template <int dof, class Reference, orwell::AdmittanceControllerType type>
+    void DualArmAdmittanceController<dof, Reference, type>::convertWrenchesToDualTaskSpace(const gafro::Wrench<double> &w1,
+                                                                                           const gafro::Wrench<double> &w2,
+                                                                                           gafro::Wrench<double> &absolute,
+                                                                                           gafro::Wrench<double> &relative)
+    {
+        auto dual_robot = std::dynamic_pointer_cast<gafro_control::RobotModelDualManipulator<2 * dof>>(this->getRobotModel())->getManipulator();
+
+        Eigen::Vector<double, 2 * dof> position = this->getRobotState().getPosition();
+
+        gafro::Motor<double> absolute_motor = dual_robot->getAbsoluteMotor(position);
+
+        gafro::Motor<double> m1 = dual_robot->getFirstEEMotor(position.topRows(dof));
+        gafro::Motor<double> m2 = dual_robot->getSecondEEMotor(position.bottomRows(dof));
+
+        gafro::Motor<double> m1ma = m1.reverse() * absolute_motor;
+        gafro::Motor<double> m2ma = m2.reverse() * absolute_motor;
+
+        gafro::Translator<double> tr1 = m1ma.getTranslator();
+        gafro::Translator<double> tr2 = m2ma.getTranslator();
+
+        gafro::Rotor<double> relative_rotor = dual_robot->getRelativeMotor(position).getRotor();
+
+        absolute = tr1 * w1 * tr1.reverse() + tr2 * w2 * tr2.reverse();
+        relative = 0.5 * relative_rotor.reverse() * (w2 - w1) * relative_rotor;
     }
 
 }  // namespace gafro_control

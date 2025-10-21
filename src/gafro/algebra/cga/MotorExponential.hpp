@@ -1,21 +1,8 @@
-/*
-    Copyright (c) 2022 Idiap Research Institute, http://www.idiap.ch/
-    Written by Tobias Löw <https://tobiloew.ch>
-
-    This file is part of gafro.
-
-    gafro is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License version 3 as
-    published by the Free Software Foundation.
-
-    gafro is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with gafro. If not, see <http://www.gnu.org/licenses/>.
-*/
+// SPDX-FileCopyrightText: Idiap Research Institute <contact@idiap.ch>
+//
+// SPDX-FileContributor: Tobias Loew <tobias.loew@idiap.ch
+//
+// SPDX-License-Identifier: MPL-2.0
 
 #pragma once
 
@@ -80,25 +67,25 @@ namespace gafro
 
             typename Rotor<T>::Generator br({ b3, b2, b1 });
 
-            T m1 = 0.0;
-            T m2 = 0.0;
-            T m3 = 0.0;
-            T m4 = 0.0;
+            T m1 = TypeTraits<T>::Value(0.0);
+            T m2 = TypeTraits<T>::Value(0.0);
+            T m3 = TypeTraits<T>::Value(0.0);
+            T m4 = TypeTraits<T>::Value(0.0);
 
             T theta = br.norm();
 
-            T m1b1 = 0.0;
-            T m1b2 = 0.0;
-            T m1b3 = 0.0;
-            T m2b1 = 0.0;
-            T m2b2 = 0.0;
-            T m2b3 = 0.0;
-            T m3b1 = 0.0;
-            T m3b2 = 0.0;
-            T m3b3 = 0.0;
-            T m4b1 = 0.0;
-            T m4b2 = 0.0;
-            T m4b3 = 0.0;
+            T m1b1 = TypeTraits<T>::Value(0.0);
+            T m1b2 = TypeTraits<T>::Value(0.0);
+            T m1b3 = TypeTraits<T>::Value(0.0);
+            T m2b1 = TypeTraits<T>::Value(0.0);
+            T m2b2 = TypeTraits<T>::Value(0.0);
+            T m2b3 = TypeTraits<T>::Value(0.0);
+            T m3b1 = TypeTraits<T>::Value(0.0);
+            T m3b2 = TypeTraits<T>::Value(0.0);
+            T m3b3 = TypeTraits<T>::Value(0.0);
+            T m4b1 = TypeTraits<T>::Value(0.0);
+            T m4b2 = TypeTraits<T>::Value(0.0);
+            T m4b3 = TypeTraits<T>::Value(0.0);
 
             if (abs(theta) > 0)
             {
@@ -111,60 +98,69 @@ namespace gafro
                 m3 = r.template get<blades::e13>();
                 m4 = r.template get<blades::e12>();
 
-                m1b1 = -0.5 * b1 * sin(0.5 * theta) / theta;
-                m1b2 = -0.5 * b2 * sin(0.5 * theta) / theta;
-                m1b3 = -0.5 * b3 * sin(0.5 * theta) / theta;
+                m1b1 = TypeTraits<T>::Value(-0.5) * b1 * sin(TypeTraits<T>::Value(0.5) * theta) / theta;
+                m1b2 = TypeTraits<T>::Value(-0.5) * b2 * sin(TypeTraits<T>::Value(0.5) * theta) / theta;
+                m1b3 = TypeTraits<T>::Value(-0.5) * b3 * sin(TypeTraits<T>::Value(0.5) * theta) / theta;
 
-                m2b1 = sin(0.5 * theta) * (b1 * b1 / std::pow(theta, 3) - 1.0 / theta) - 0.5 * b1 * b1 * cos(0.5 * theta) / (theta * theta);
-                m2b2 = b1 * (b2 * sin(0.5 * theta) / std::pow(theta, 3) - 0.5 * b2 * cos(0.5 * theta) / (theta * theta));
-                m2b3 = b1 * (b3 * sin(0.5 * theta) / std::pow(theta, 3) - 0.5 * b3 * cos(0.5 * theta) / (theta * theta));
+                m2b1 = sin(TypeTraits<T>::Value(0.5) * theta) * (b1 * b1 / pow(theta, 3) - TypeTraits<T>::Value(1.0) / theta) -
+                       TypeTraits<T>::Value(0.5) * b1 * b1 * cos(TypeTraits<T>::Value(0.5) * theta) / (theta * theta);
+                m2b2 = b1 * (b2 * sin(TypeTraits<T>::Value(0.5) * theta) / pow(theta, 3) -
+                             TypeTraits<T>::Value(0.5) * b2 * cos(TypeTraits<T>::Value(0.5) * theta) / (theta * theta));
+                m2b3 = b1 * (b3 * sin(TypeTraits<T>::Value(0.5) * theta) / pow(theta, 3) -
+                             TypeTraits<T>::Value(0.5) * b3 * cos(TypeTraits<T>::Value(0.5) * theta) / (theta * theta));
 
-                m3b1 = b2 * (b1 * sin(0.5 * theta) / std::pow(theta, 3) - 0.5 * b1 * cos(0.5 * theta) / (theta * theta));
-                m3b2 = sin(0.5 * theta) * (b2 * b2 / std::pow(theta, 3) - 1.0 / theta) - 0.5 * b2 * b2 * cos(0.5 * theta) / (theta * theta);
-                m3b3 = b2 * (b3 * sin(0.5 * theta) / std::pow(theta, 3) - 0.5 * b3 * cos(0.5 * theta) / (theta * theta));
+                m3b1 = b2 * (b1 * sin(TypeTraits<T>::Value(0.5) * theta) / pow(theta, 3) -
+                             TypeTraits<T>::Value(0.5) * b1 * cos(TypeTraits<T>::Value(0.5) * theta) / (theta * theta));
+                m3b2 = sin(TypeTraits<T>::Value(0.5) * theta) * (b2 * b2 / pow(theta, 3) - TypeTraits<T>::Value(1.0) / theta) -
+                       TypeTraits<T>::Value(0.5) * b2 * b2 * cos(TypeTraits<T>::Value(0.5) * theta) / (theta * theta);
+                m3b3 = b2 * (b3 * sin(TypeTraits<T>::Value(0.5) * theta) / pow(theta, 3) -
+                             TypeTraits<T>::Value(0.5) * b3 * cos(TypeTraits<T>::Value(0.5) * theta) / (theta * theta));
 
-                m4b1 = b3 * (b1 * sin(0.5 * theta) / std::pow(theta, 3) - 0.5 * b1 * cos(0.5 * theta) / (theta * theta));
-                m4b2 = b3 * (b2 * sin(0.5 * theta) / std::pow(theta, 3) - 0.5 * b2 * cos(0.5 * theta) / (theta * theta));
-                m4b3 = sin(0.5 * theta) * (b3 * b3 / std::pow(theta, 3) - 1.0 / theta) - 0.5 * b3 * b3 * cos(0.5 * theta) / (theta * theta);
+                m4b1 = b3 * (b1 * sin(TypeTraits<T>::Value(0.5) * theta) / pow(theta, 3) -
+                             TypeTraits<T>::Value(0.5) * b1 * cos(TypeTraits<T>::Value(0.5) * theta) / (theta * theta));
+                m4b2 = b3 * (b2 * sin(TypeTraits<T>::Value(0.5) * theta) / pow(theta, 3) -
+                             TypeTraits<T>::Value(0.5) * b2 * cos(TypeTraits<T>::Value(0.5) * theta) / (theta * theta));
+                m4b3 = sin(TypeTraits<T>::Value(0.5) * theta) * (b3 * b3 / pow(theta, 3) - TypeTraits<T>::Value(1.0) / theta) -
+                       TypeTraits<T>::Value(0.5) * b3 * b3 * cos(TypeTraits<T>::Value(0.5) * theta) / (theta * theta);
             }
             else
             {
-                m2 = 0.5 * b1;
-                m3 = 0.5 * b2;
-                m4 = 0.5 * b3;
+                m2 = TypeTraits<T>::Value(0.5) * b1;
+                m3 = TypeTraits<T>::Value(0.5) * b2;
+                m4 = TypeTraits<T>::Value(0.5) * b3;
             }
 
-            T m5b1 = -0.5 * (t1 * m1b1 - m3b1 * t3 - m4b1 * t2);
-            T m5b2 = -0.5 * (t1 * m1b2 - m3b2 * t3 - m4b2 * t2);
-            T m5b3 = -0.5 * (t1 * m1b3 - m3b3 * t3 - m4b3 * t2);
+            T m5b1 = TypeTraits<T>::Value(-0.5) * (t1 * m1b1 - m3b1 * t3 - m4b1 * t2);
+            T m5b2 = TypeTraits<T>::Value(-0.5) * (t1 * m1b2 - m3b2 * t3 - m4b2 * t2);
+            T m5b3 = TypeTraits<T>::Value(-0.5) * (t1 * m1b3 - m3b3 * t3 - m4b3 * t2);
 
-            T m6b1 = -0.5 * (t2 * m1b1 - m2b1 * t3 + m4b1 * t1);
-            T m6b2 = -0.5 * (t2 * m1b2 - m2b2 * t3 + m4b2 * t1);
-            T m6b3 = -0.5 * (t2 * m1b3 - m2b3 * t3 + m4b3 * t1);
+            T m6b1 = TypeTraits<T>::Value(-0.5) * (t2 * m1b1 - m2b1 * t3 + m4b1 * t1);
+            T m6b2 = TypeTraits<T>::Value(-0.5) * (t2 * m1b2 - m2b2 * t3 + m4b2 * t1);
+            T m6b3 = TypeTraits<T>::Value(-0.5) * (t2 * m1b3 - m2b3 * t3 + m4b3 * t1);
 
-            T m7b1 = -0.5 * (t3 * m1b1 + m2b1 * t2 + m3b1 * t1);
-            T m7b2 = -0.5 * (t3 * m1b2 + m2b2 * t2 + m3b2 * t1);
-            T m7b3 = -0.5 * (t3 * m1b3 + m2b3 * t2 + m3b3 * t1);
+            T m7b1 = TypeTraits<T>::Value(-0.5) * (t3 * m1b1 + m2b1 * t2 + m3b1 * t1);
+            T m7b2 = TypeTraits<T>::Value(-0.5) * (t3 * m1b2 + m2b2 * t2 + m3b2 * t1);
+            T m7b3 = TypeTraits<T>::Value(-0.5) * (t3 * m1b3 + m2b3 * t2 + m3b3 * t1);
 
-            T m8b1 = -0.5 * (t1 * m2b1 - m3b1 * t2 + m4b1 * t3);
-            T m8b2 = -0.5 * (t1 * m2b2 - m3b2 * t2 + m4b2 * t3);
-            T m8b3 = -0.5 * (t1 * m2b3 - m3b3 * t2 + m4b3 * t3);
+            T m8b1 = TypeTraits<T>::Value(-0.5) * (t1 * m2b1 - m3b1 * t2 + m4b1 * t3);
+            T m8b2 = TypeTraits<T>::Value(-0.5) * (t1 * m2b2 - m3b2 * t2 + m4b2 * t3);
+            T m8b3 = TypeTraits<T>::Value(-0.5) * (t1 * m2b3 - m3b3 * t2 + m4b3 * t3);
 
-            T m5t1 = -0.5 * m1;
-            T m5t2 = 0.5 * m4;
-            T m5t3 = 0.5 * m3;
+            T m5t1 = TypeTraits<T>::Value(-0.5) * m1;
+            T m5t2 = TypeTraits<T>::Value(0.5) * m4;
+            T m5t3 = TypeTraits<T>::Value(0.5) * m3;
 
-            T m6t1 = -0.5 * m4;
-            T m6t2 = -0.5 * m1;
-            T m6t3 = 0.5 * m2;
+            T m6t1 = TypeTraits<T>::Value(-0.5) * m4;
+            T m6t2 = TypeTraits<T>::Value(-0.5) * m1;
+            T m6t3 = TypeTraits<T>::Value(0.5) * m2;
 
-            T m7t1 = -0.5 * m3;
-            T m7t2 = -0.5 * m2;
-            T m7t3 = -0.5 * m1;
+            T m7t1 = TypeTraits<T>::Value(-0.5) * m3;
+            T m7t2 = TypeTraits<T>::Value(-0.5) * m2;
+            T m7t3 = TypeTraits<T>::Value(-0.5) * m1;
 
-            T m8t1 = -0.5 * m2;
-            T m8t2 = 0.5 * m3;
-            T m8t3 = -0.5 * m4;
+            T m8t1 = TypeTraits<T>::Value(-0.5) * m2;
+            T m8t2 = TypeTraits<T>::Value(0.5) * m3;
+            T m8t3 = TypeTraits<T>::Value(-0.5) * m4;
 
             Eigen::Matrix<T, 8, 6> exp_jacobian = Eigen::Matrix<T, 8, 6>::Zero();
 
@@ -209,7 +205,6 @@ namespace gafro
             exp_jacobian.coeffRef(5, 5) = m6t3;
             exp_jacobian.coeffRef(6, 5) = m7t3;
             exp_jacobian.coeffRef(7, 5) = m8t3;
-
 
             return exp_jacobian;
         }

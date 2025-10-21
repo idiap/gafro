@@ -2,6 +2,8 @@
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     install(
         FILES 
+            ForwardKinematics.hpp
+            ForwardKinematics.hxx
             InverseDynamics.hpp
             InverseDynamics.hxx
         DESTINATION 

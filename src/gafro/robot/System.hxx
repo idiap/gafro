@@ -1,27 +1,16 @@
-/*
-    Copyright (c) 2022 Idiap Research Institute, http://www.idiap.ch/
-    Written by Tobias Löw <https://tobiloew.ch>
-
-    This file is part of gafro.
-
-    gafro is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License version 3 as
-    published by the Free Software Foundation.
-
-    gafro is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with gafro. If not, see <http://www.gnu.org/licenses/>.
-*/
+// SPDX-FileCopyrightText: Idiap Research Institute <contact@idiap.ch>
+//
+// SPDX-FileContributor: Tobias Loew <tobias.loew@idiap.ch
+//
+// SPDX-License-Identifier: MPL-2.0
 
 #pragma once
 
 #include <gafro/gafro_package_config.hpp>
 //
+#include <gafro/robot/ContinuousJoint.hxx>
 #include <gafro/robot/FixedJoint.hxx>
+#include <gafro/robot/FreeJoint.hxx>
 #include <gafro/robot/Joint.hxx>
 #include <gafro/robot/Link.hxx>
 #include <gafro/robot/PrismaticJoint.hxx>
@@ -31,6 +20,8 @@
 #include <gafro/physics/Wrench.hxx>
 //
 #include <gafro/robot/System.hpp>
+#include <gafro/robot/TaskSpace.hpp>
+#include <gafro/robot/algorithm/ForwardKinematics.hpp>
 #include <gafro/robot/algorithm/InverseDynamics.hxx>
 
 namespace gafro
@@ -59,21 +50,101 @@ namespace gafro
             other.finalize();
         }
 
-        links_ = std::move(other.links_);
-        joints_ = std::move(other.joints_);
-        kinematic_chains_ = std::move(other.kinematic_chains_);
-        joints_map_ = std::move(other.joints_map_);
-        links_map_ = std::move(other.links_map_);
+        name_                 = std::move(other.name_);
+        links_                = std::move(other.links_);
+        joints_               = std::move(other.joints_);
+        kinematic_chains_     = std::move(other.kinematic_chains_);
+        task_spaces_          = std::move(other.task_spaces_);
+        joints_map_           = std::move(other.joints_map_);
+        links_map_            = std::move(other.links_map_);
         kinematic_chains_map_ = std::move(other.kinematic_chains_map_);
-        dof_ = other.dof_;
-        joint_limits_min_ = std::move(other.joint_limits_min_);
-        joint_limits_max_ = std::move(other.joint_limits_max_);
+        task_spaces_map_      = std::move(other.task_spaces_map_);
+        dof_                  = other.dof_;
+        joint_limits_min_     = std::move(other.joint_limits_min_);
+        joint_limits_max_     = std::move(other.joint_limits_max_);
 
         return *this;
     }
 
     template <class T>
     System<T>::~System() = default;
+
+    template <class T>
+    void System<T>::add(const std::string &parent_link, std::unique_ptr<Joint<T>> &&joint, const System &system, const std::string &pre)
+    {
+        std::string joint_name = joint->getName();
+        this->addJoint(std::move(joint));
+
+        const auto &links  = system.getLinks();
+        const auto &joints = system.getJoints();
+
+        for (unsigned j = 0; j < links.size(); ++j)
+        {
+            std::unique_ptr<Link<T>> link = links[j]->copy();
+
+            link->setName(pre + links[j]->getName());
+
+            this->addLink(std::move(link));
+        }
+
+        for (unsigned j = 0; j < joints.size(); ++j)
+        {
+            std::unique_ptr<Joint<T>> joint = joints[j]->copy();
+
+            joint->setName(pre + joints[j]->getName());
+
+            this->addJoint(std::move(joint));
+        }
+
+        for (const std::unique_ptr<Link<T>> &link : links)
+        {
+            {
+                auto child_joints = system.getLink(link->getName())->getChildJoints();
+
+                for (const auto &joint : child_joints)
+                {
+                    this->getLink(pre + link->getName())->addChildJoint(this->getJoint(pre + joint->getName()));
+                }
+            }
+
+            {
+                auto parent_joint = system.getLink(link->getName())->getParentJoint();
+
+                if (parent_joint)
+                {
+                    this->getLink(pre + link->getName())->setParentJoint(this->getJoint(pre + parent_joint->getName()));
+                }
+            }
+        }
+
+        for (const std::unique_ptr<Joint<T>> &joint : joints)
+        {
+            {
+                auto link = joint->getChildLink();
+
+                if (link)
+                {
+                    this->getJoint(pre + joint->getName())->setChildLink(this->getLink(pre + link->getName()));
+                }
+            }
+
+            {
+                auto link = joint->getParentLink();
+
+                if (link)
+                {
+                    this->getJoint(pre + joint->getName())->setParentLink(this->getLink(pre + link->getName()));
+                }
+            }
+        }
+
+        this->getLink(parent_link)->addChildJoint(this->getJoint(joint_name));
+        this->getLink(pre + links.front()->getName())->setParentJoint(this->getJoint(joint_name));
+        this->getJoint(joint_name)->setParentLink(this->getLink(parent_link));
+        this->getJoint(joint_name)->setChildLink(this->getLink(pre + links.front()->getName()));
+
+        this->finalize();
+    }
 
     template <class T>
     void System<T>::addJoint(std::unique_ptr<Joint<T>> &&joint)
@@ -112,11 +183,23 @@ namespace gafro
 
         // Finalize the kinematic chain (if not already done)
         if (kinematic_chain->getBodies().empty())
+        {
             kinematic_chain->finalize();
+        }
 
         kinematic_chains_.push_back(std::move(kinematic_chain));
 
         kinematic_chains_map_.emplace(std::make_pair(name, kinematic_chains_.back().get()));
+    }
+
+    template <class T>
+    void System<T>::addTaskSpace(const std::string &name, std::unique_ptr<TaskSpace<T>> &&task_space)
+    {
+        task_spaces_.push_back(std::move(task_space));
+
+        task_spaces_.back()->setSystem(this);
+
+        task_spaces_map_.emplace(std::make_pair(name, task_spaces_.back().get()));
     }
 
     template <class T>
@@ -186,9 +269,11 @@ namespace gafro
 
     template <class T>
     template <class S>
-    System<S> System<T>::cast()
+    System<S> System<T>::cast() const
     {
         System<S> system;
+
+        system.setName(getName());
 
         for (unsigned j = 0; j < links_.size(); ++j)
         {
@@ -199,6 +284,10 @@ namespace gafro
             link->setInertia(links_[j]->getInertia());
             link->setMass(TypeTraits<S>::Value(links_[j]->getMass()));
             link->setAxis(links_[j]->getAxis());
+            if (links_[j]->hasVisual())
+            {
+                link->setVisual(links_[j]->getVisual()->copy());
+            }
 
             system.addLink(std::move(link));
         }
@@ -214,10 +303,22 @@ namespace gafro
 
                 break;
             }
+            case Joint<T>::Type::FREE: {
+                joint = std::make_unique<FreeJoint<S>>();
+
+                break;
+            }
             case Joint<T>::Type::REVOLUTE: {
                 joint = std::make_unique<RevoluteJoint<S>>();
 
                 static_cast<RevoluteJoint<S> *>(joint.get())->setAxis(static_cast<RevoluteJoint<T> *>(joints_[j].get())->getAxis());
+
+                break;
+            }
+            case Joint<T>::Type::CONTINUOUS: {
+                joint = std::make_unique<ContinuousJoint<S>>();
+
+                static_cast<ContinuousJoint<S> *>(joint.get())->setAxis(static_cast<ContinuousJoint<T> *>(joints_[j].get())->getAxis());
 
                 break;
             }
@@ -285,6 +386,12 @@ namespace gafro
     }
 
     template <class T>
+    System<T> System<T>::copy() const
+    {
+        return this->template cast<T>();
+    }
+
+    template <class T>
     std::vector<const Joint<T> *> System<T>::getJointChain(const std::string &name) const
     {
         auto *link = getLink(name);
@@ -343,6 +450,14 @@ namespace gafro
     }
 
     template <class T>
+    ForwardKinematics<T> System<T>::computeForwardKinematics(const Eigen::VectorX<T> &joint_positions, const Motor<T> &base_motor) const
+    {
+        // assert(joint_positions.rows() == dof_);
+
+        return ForwardKinematics<T>(*this, joint_positions, base_motor);
+    }
+
+    template <class T>
     template <int dof>
     Motor<T> System<T>::computeKinematicChainMotor(const std::string &name, const Eigen::Vector<T, dof> &position) const
     {
@@ -351,7 +466,7 @@ namespace gafro
 
     template <class T>
     template <int dof>
-    MultivectorMatrix<T, Motor, 1, dof> System<T>::computeKinematicChainAnalyticJacobian(const std::string &name,
+    MultivectorMatrix<T, Motor, 1, dof> System<T>::computeKinematicChainAnalyticJacobian(const std::string           &name,
                                                                                          const Eigen::Vector<T, dof> &position) const
     {
         return getKinematicChain(name)->computeAnalyticJacobian(position);
@@ -359,7 +474,7 @@ namespace gafro
 
     template <class T>
     template <int dof>
-    MultivectorMatrix<T, MotorGenerator, 1, dof> System<T>::computeKinematicChainGeometricJacobian(const std::string &name,
+    MultivectorMatrix<T, MotorGenerator, 1, dof> System<T>::computeKinematicChainGeometricJacobian(const std::string           &name,
                                                                                                    const Eigen::Vector<T, dof> &position) const
     {
         return getKinematicChain(name)->computeGeometricJacobian(position);
@@ -367,7 +482,7 @@ namespace gafro
 
     template <class T>
     template <int dof>
-    MultivectorMatrix<T, MotorGenerator, 1, dof> System<T>::computeKinematicChainGeometricJacobianBody(const std::string &name,
+    MultivectorMatrix<T, MotorGenerator, 1, dof> System<T>::computeKinematicChainGeometricJacobianBody(const std::string           &name,
                                                                                                        const Eigen::Vector<T, dof> &position) const
     {
         return getKinematicChain(name)->computeGeometricJacobianBody(position);
@@ -376,7 +491,10 @@ namespace gafro
     template <class T>
     template <int dof>
     MultivectorMatrix<T, MotorGenerator, 1, dof> System<T>::computeKinematicChainGeometricJacobianTimeDerivative(
-      const std::string &name, const Eigen::Vector<T, dof> &position, const Eigen::Vector<T, dof> &velocity, const Motor<T> &reference) const
+      const std::string           &name,
+      const Eigen::Vector<T, dof> &position,
+      const Eigen::Vector<T, dof> &velocity,
+      const Motor<T>              &reference) const
     {
         return getKinematicChain(name)->computeKinematicChainGeometricJacobianTimeDerivative(position, velocity, reference);
     }
@@ -434,6 +552,22 @@ namespace gafro
     }
 
     template <class T>
+    const TaskSpace<T> *System<T>::getTaskSpace(const std::string &name) const
+    {
+        auto task_space = task_spaces_map_.find(name);
+
+        if (task_space == task_spaces_map_.end())
+        {
+            if (task_space == kinematic_chains_map_.end())
+            {
+                throw std::runtime_error("system " + name_ + " has no task space named " + name);
+            }
+        }
+
+        return task_space->second;
+    }
+
+    template <class T>
     bool System<T>::hasKinematicChain(const std::string &name) const
     {
         return kinematic_chains_map_.find(name) != kinematic_chains_map_.end();
@@ -466,6 +600,12 @@ namespace gafro
     }
 
     template <class T>
+    const std::vector<std::unique_ptr<KinematicChain<T>>> &System<T>::getKinematicChains() const
+    {
+        return kinematic_chains_;
+    }
+
+    template <class T>
     void System<T>::setName(const std::string &name)
     {
         name_ = name;
@@ -479,9 +619,12 @@ namespace gafro
 
     template <class T>
     template <int dof>
-    Eigen::Vector<T, dof> System<T>::computeInverseDynamics(const Eigen::Vector<T, dof> &position, const Eigen::Vector<T, dof> &velocity,
-                                                            const Eigen::Vector<T, dof> &acceleration, const T &gravity, const Wrench<T> ee_wrench,
-                                                            const std::string &kinematic_chain_name) const
+    Eigen::Vector<T, dof> System<T>::computeInverseDynamics(const Eigen::Vector<T, dof> &position,
+                                                            const Eigen::Vector<T, dof> &velocity,
+                                                            const Eigen::Vector<T, dof> &acceleration,
+                                                            const T                     &gravity,
+                                                            const Wrench<T>              ee_wrench,
+                                                            const std::string           &kinematic_chain_name) const
     {
         static algorithm::InverseDynamics<T, dof> inverse_dynamics;
 
@@ -518,16 +661,26 @@ namespace gafro
 
     template <class T>
     template <int dof>
-    Eigen::Vector<T, dof> System<T>::computeForwardDynamics(const Eigen::Vector<T, dof> &position, const Eigen::Vector<T, dof> &velocity,
-                                                            const Eigen::Vector<T, dof> &torque, const std::string &kinematic_chain_name) const
+    Eigen::Vector<T, dof> System<T>::computeForwardDynamics(const Eigen::Vector<T, dof> &position,
+                                                            const Eigen::Vector<T, dof> &velocity,
+                                                            const Eigen::Vector<T, dof> &torque,
+                                                            const std::string           &kinematic_chain_name) const
     {
-        std::array<Motor<T>, dof> frames;
+        std::array<Motor<T>, dof>   frames;
         std::array<Inertia<T>, dof> inertia;
-        std::array<Wrench<T>, dof> bias_wrench;
+        std::array<Wrench<T>, dof>  bias_wrench;
 
-        Twist<T> twist({ TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(),
+        Twist<T> twist({ TypeTraits<T>::Zero(),
+                         TypeTraits<T>::Zero(),
+                         TypeTraits<T>::Zero(),
+                         TypeTraits<T>::Zero(),
+                         TypeTraits<T>::Zero(),
                          TypeTraits<T>::Zero() });
-        Twist<T> twist_dt({ TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(),
+        Twist<T> twist_dt({ TypeTraits<T>::Zero(),
+                            TypeTraits<T>::Zero(),
+                            TypeTraits<T>::Zero(),
+                            TypeTraits<T>::Zero(),
+                            TypeTraits<T>::Zero(),
                             TypeTraits<T>::Value(9.81) });
 
         const KinematicChain<T> *kinematic_chain = nullptr;
@@ -558,25 +711,25 @@ namespace gafro
             }
         }
 
-        const std::vector<const Joint<T> *> &joints = kinematic_chain->getActuatedJoints();
+        const std::vector<const Joint<T> *>         &joints = kinematic_chain->getActuatedJoints();
         const std::vector<std::unique_ptr<Body<T>>> &bodies = kinematic_chain->getBodies();
 
         for (int j = 0; j < dof; ++j)
         {
             const auto &axis = joints[j]->getCurrentAxis(gafro::Motor<T>());
-            inertia[j] = bodies[j]->getInertia().transform(bodies[j]->getCenterOfMass());
+            inertia[j]       = bodies[j]->getInertia().transform(bodies[j]->getCenterOfMass());
 
             frames[j] = joints[j]->getMotor(position[j]).reverse();
-            twist = frames[j].apply(twist) + Scalar<T>(velocity[j]) * axis;
-            twist_dt = frames[j].apply(twist_dt) + Scalar<T>(velocity[j]) * axis.commute(twist);
+            twist     = frames[j].apply(twist) + Scalar<T>(velocity[j]) * axis;
+            twist_dt  = frames[j].apply(twist_dt) + Scalar<T>(velocity[j]) * axis.commute(twist);
 
             bias_wrench[j] = inertia[j](twist_dt) - twist.commute(inertia[j](twist));
         }
 
-        std::array<T, dof> total_torque;
+        std::array<T, dof>         total_torque;
         std::array<Wrench<T>, dof> axis_wrench;
 
-        Wrench<T> wrench = Wrench<T>::Zero();
+        Wrench<T> wrench       = Wrench<T>::Zero();
         Wrench<T> total_wrench = Wrench<T>::Zero();
 
         Inertia<T> articulated_body_inertia = Inertia<T>::Zero();

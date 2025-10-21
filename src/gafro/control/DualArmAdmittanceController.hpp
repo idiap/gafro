@@ -1,21 +1,8 @@
-/*
-    Copyright (c) 2022 Idiap Research Institute, http://www.idiap.ch/
-    Written by Tobias Löw <https://tobiloew.ch>
-
-    This file is part of gafro.
-
-    gafro is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License version 3 as
-    published by the Free Software Foundation.
-
-    gafro is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with gafro. If not, see <http://www.gnu.org/licenses/>.
-*/
+// SPDX-FileCopyrightText: Idiap Research Institute <contact@idiap.ch>
+//
+// SPDX-FileContributor: Tobias Loew <tobias.loew@idiap.ch
+//
+// SPDX-License-Identifier: MPL-2.0
 
 #pragma once
 
@@ -55,6 +42,9 @@ namespace gafro_control
 
         void setRelativeResidualDt(const gafro::Twist<double> &relative_residual_dt);
 
+        void convertWrenchesToDualTaskSpace(const gafro::Wrench<double> &w1, const gafro::Wrench<double> &w2, gafro::Wrench<double> &absolute,
+                                            gafro::Wrench<double> &relative);
+
       private:
         gafro::Inertia<double> absolute_inertia_;
         gafro::Inertia<double> absolute_damping_;
@@ -78,4 +68,4 @@ namespace gafro_control
 
 }  // namespace gafro_control
 
-#include <gafro_control/DualArmAdmittanceController.hxx>
+#include <gafro/control/DualArmAdmittanceController.hxx>

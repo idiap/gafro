@@ -1,21 +1,8 @@
-/*
-    Copyright (c) 2022 Idiap Research Institute, http://www.idiap.ch/
-    Written by Tobias Löw <https://tobiloew.ch>
-
-    This file is part of gafro.
-
-    gafro is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License version 3 as
-    published by the Free Software Foundation.
-
-    gafro is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with gafro. If not, see <http://www.gnu.org/licenses/>.
-*/
+// SPDX-FileCopyrightText: Idiap Research Institute <contact@idiap.ch>
+//
+// SPDX-FileContributor: Tobias Loew <tobias.loew@idiap.ch
+//
+// SPDX-License-Identifier: MPL-2.0
 
 #pragma once
 
@@ -26,7 +13,8 @@ namespace gafro
 {
 
     template <typename T>
-    Translator<T>::Translator() : Base(Parameters({ TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() }))
+    Translator<T>::Translator()
+      : Base(Parameters({ TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() }))
     {}
 
     template <typename T>
@@ -47,7 +35,7 @@ namespace gafro
     template <typename T>
     Eigen::Vector<T, 3> Translator<T>::toTranslationVector() const
     {
-        return T(-2.0) * this->vector().bottomRows(3);
+        return this->log().vector();
     }
 
     template <typename T>
@@ -79,6 +67,24 @@ namespace gafro
     Translator<T> Translator<T>::exp(const Generator &generator)
     {
         return Scalar<T>(TypeTraits<T>::One()) + Scalar<T>(TypeTraits<T>::Value(-0.5)) * generator;
+    }
+
+    template <typename T>
+    Translator<T> Translator<T>::X(const T &e1i)
+    {
+        return Translator<T>::exp(1.0, 0.0, 0.0);
+    }
+
+    template <typename T>
+    Translator<T> Translator<T>::Y(const T &e2i)
+    {
+        return Translator<T>::exp(0.0, 1.0, 0.0);
+    }
+
+    template <typename T>
+    Translator<T> Translator<T>::Z(const T &e3i)
+    {
+        return Translator<T>::exp(0.0, 0.0, 1.0);
     }
 
 }  // namespace gafro

@@ -1,21 +1,8 @@
-/*
-    Copyright (c) 2022 Idiap Research Institute, http://www.idiap.ch/
-    Written by Tobias Löw <https://tobiloew.ch>
-
-    This file is part of gafro.
-
-    gafro is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License version 3 as
-    published by the Free Software Foundation.
-
-    gafro is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with gafro. If not, see <http://www.gnu.org/licenses/>.
-*/
+// SPDX-FileCopyrightText: Idiap Research Institute <contact@idiap.ch>
+//
+// SPDX-FileContributor: Tobias Loew <tobias.loew@idiap.ch
+//
+// SPDX-License-Identifier: MPL-2.0
 
 #pragma once
 
@@ -27,7 +14,8 @@ namespace gafro
 {
 
     template <class T>
-    Rotor<T>::Rotor() : Base(Parameters({ TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() }))
+    Rotor<T>::Rotor()
+      : Base(Parameters({ TypeTraits<T>::One(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::Zero() }))
     {}
 
     template <typename T>
@@ -36,7 +24,8 @@ namespace gafro
     {}
 
     template <typename T>
-    Rotor<T>::Rotor(const Parameters &parameters) : Base(parameters)
+    Rotor<T>::Rotor(const Parameters &parameters)
+      : Base(parameters)
     {}
 
     template <typename T>
@@ -60,14 +49,13 @@ namespace gafro
     template <typename T>
     typename Rotor<T>::Generator Rotor<T>::log() const
     {
-        T angle = acos(scalar());
-
-        if (abs(angle) < 1e-6)
+        if (scalar() > 0.99999999)
         {
             return Rotor<T>::Generator({ e12(), e13(), e23() });
         }
 
-        angle = -2.0 * angle / (sin(angle));
+        T angle = acos(scalar());
+        angle   = -2.0 * angle / (sin(angle));
 
         return Rotor<T>::Generator({ angle * e12(),  //
                                      angle * e13(),  //
@@ -129,6 +117,12 @@ namespace gafro
     Eigen::Matrix<T, 3, 3> Rotor<T>::toRotationMatrix() const
     {
         return Eigen::Matrix<T, 3, 3>(quaternion());
+    }
+
+    template <typename T>
+    Rotor<T> Rotor<T>::Unit()
+    {
+        return Rotor<T>({ 1.0, 0.0, 0.0, 0.0 });
     }
 
 }  // namespace gafro

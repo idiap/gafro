@@ -1,21 +1,8 @@
-/*
-    Copyright (c) 2022 Idiap Research Institute, http://www.idiap.ch/
-    Written by Tobias Löw <https://tobiloew.ch>
-
-    This file is part of gafro.
-
-    gafro is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License version 3 as
-    published by the Free Software Foundation.
-
-    gafro is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with gafro. If not, see <http://www.gnu.org/licenses/>.
-*/
+// SPDX-FileCopyrightText: Idiap Research Institute <contact@idiap.ch>
+//
+// SPDX-FileContributor: Tobias Loew <tobias.loew@idiap.ch
+//
+// SPDX-License-Identifier: MPL-2.0
 
 #pragma once
 
@@ -26,11 +13,13 @@ namespace gafro
 {
 
     template <class T>
-    RevoluteJoint<T>::RevoluteJoint() : Joint<T>(Joint<T>::Type::REVOLUTE)
+    RevoluteJoint<T>::RevoluteJoint()
+      : Joint<T>(Joint<T>::Type::REVOLUTE)
     {}
 
     template <class T>
-    RevoluteJoint<T>::RevoluteJoint(const std::array<T, 3> &parameters) : Joint<T>(Joint<T>::Type::REVOLUTE)
+    RevoluteJoint<T>::RevoluteJoint(const std::array<T, 3> &parameters)
+      : Joint<T>(Joint<T>::Type::REVOLUTE)
     {
         Rotor<T> rotor(typename Rotor<T>::Generator(Eigen::Matrix<T, 3, 1>({ TypeTraits<T>::Zero(), TypeTraits<T>::Zero(), TypeTraits<T>::One() })),
                        parameters[2]);
@@ -42,7 +31,8 @@ namespace gafro
     }
 
     template <class T>
-    RevoluteJoint<T>::RevoluteJoint(const std::array<T, 6> &parameters, int axis) : Joint<T>(Joint<T>::Type::REVOLUTE)
+    RevoluteJoint<T>::RevoluteJoint(const std::array<T, 6> &parameters, int axis)
+      : Joint<T>(Joint<T>::Type::REVOLUTE)
     {
         Translator<T> t(typename Translator<T>::Generator({ parameters[0], parameters[1], parameters[2] }));
 
@@ -134,6 +124,19 @@ namespace gafro
     typename Motor<T>::Generator RevoluteJoint<T>::getCurrentAxis(const Motor<T> &motor) const
     {
         return (motor * axis_ * motor.reverse()).template evaluateAs<typename Motor<T>::Generator>();
+    }
+
+    template <class T>
+    std::unique_ptr<Joint<T>> RevoluteJoint<T>::copy() const
+    {
+        std::unique_ptr<Joint<T>> joint = std::make_unique<RevoluteJoint<T>>();
+
+        joint->setName(this->getName());
+        joint->setFrame(this->getFrame());
+        joint->setLimits(this->getLimits());
+        static_cast<RevoluteJoint<T> *>(joint.get())->setAxis(this->getAxis());
+
+        return joint;
     }
 
 }  // namespace gafro

@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>gafro</name>
-  <version>1.0.0</version>
+  <version>1.5.0</version>
   <description>The gafro package</description>
 
-  <maintainer email="tobias.loew@idiap.ch">Tobias Löw</maintainer>
-  <author email="tobias.loew@idiap.ch">Tobias Löw</author>
+  <maintainer email="tobias.loew@gafro.ch">Tobias Löw</maintainer>
+  <author email="tobias.loew@gafro.ch">Tobias Löw</author>
   
-  <license>GPLv3</license>
+  <license>MPL-2.0</license>
 
   <build_depend>orwell</build_depend>
   <build_depend>sackmesser</build_depend>

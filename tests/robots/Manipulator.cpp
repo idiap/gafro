@@ -103,6 +103,24 @@ TEST_CASE("Manipulator configuration 1", "[Manipulator]")
             REQUIRE(config.cols() == 1);
         }
 
+        SECTION("Get min joint limits")
+        {
+            const Eigen::Matrix<double, 3, 1> &limitsMin = manipulator.getJointLimitsMin();
+
+            REQUIRE(limitsMin(0, 0) == Approx(-0.5));
+            REQUIRE(limitsMin(1, 0) == Approx(-0.8));
+            REQUIRE(limitsMin(2, 0) == Approx(-0.8));
+        }
+
+        SECTION("Get max joint limits")
+        {
+            const Eigen::Matrix<double, 3, 1> &limitsMax = manipulator.getJointLimitsMax();
+
+            REQUIRE(limitsMax(0, 0) == Approx(0.5));
+            REQUIRE(limitsMax(1, 0) == Approx(0.8));
+            REQUIRE(limitsMax(2, 0) == Approx(0.8));
+        }
+
         SECTION("Get end-effector kinematic chain")
         {
             auto chain = manipulator.getEEKinematicChain();
@@ -429,6 +447,20 @@ TEST_CASE("Manipulator configuration 1", "[Manipulator]")
             REQUIRE(acceleration(0) == Approx(-0.2).margin(1e-5));
             REQUIRE(acceleration(1) == Approx(0.8).margin(1e-5));
         }
+    }
+
+    SECTION("Compilation")
+    {
+        // Test that some methods at least compile and run, without testing the results
+        Eigen::Vector<double, 3> position({ 0.0, 0.1, 0.0 });
+
+        Manipulator<double, 3> manipulator(std::move(system), "joint3");
+
+        { auto result = manipulator.getEEVelocityManipulability(position); }
+        { auto result = manipulator.getEEForceManipulability(position); }
+        { auto result = manipulator.getEEDynamicManipulability(position); }
+        { auto result = manipulator.getEEKinematicNullspaceProjector(position); }
+        { auto result = manipulator.getMassMatrix(position); }
     }
 }
 
@@ -1164,5 +1196,17 @@ TEST_CASE("Manipulator with 7 joints", "[Manipulator]")
         REQUIRE(acceleration(4) == Approx(0.0).margin(1e-4));
         REQUIRE(acceleration(5) == Approx(0.0).margin(1e-4));
         REQUIRE(acceleration(6) == Approx(0.0).margin(1e-4));
+    }
+
+    SECTION("Compilation")
+    {
+        // Test that some methods at least compile and run, without testing the results
+        Eigen::Vector<double, 7> position({ 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0 });
+
+        { auto result = manipulator.getEEVelocityManipulability(position); }
+        { auto result = manipulator.getEEForceManipulability(position); }
+        { auto result = manipulator.getEEDynamicManipulability(position); }
+        { auto result = manipulator.getEEKinematicNullspaceProjector(position); }
+        { auto result = manipulator.getMassMatrix(position); }
     }
 }

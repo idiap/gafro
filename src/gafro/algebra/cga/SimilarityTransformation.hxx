@@ -1,21 +1,8 @@
-/*
-    Copyright (c) 2022 Idiap Research Institute, http://www.idiap.ch/
-    Written by Tobias Löw <https://tobiloew.ch>
-
-    This file is part of gafro.
-
-    gafro is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License version 3 as
-    published by the Free Software Foundation.
-
-    gafro is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with gafro. If not, see <http://www.gnu.org/licenses/>.
-*/
+// SPDX-FileCopyrightText: Idiap Research Institute <contact@idiap.ch>
+//
+// SPDX-FileContributor: Tobias Loew <tobias.loew@idiap.ch
+//
+// SPDX-License-Identifier: MPL-2.0
 
 #pragma once
 
@@ -36,7 +23,7 @@ namespace gafro
     SimilarityTransformation<T>::~SimilarityTransformation() = default;
 
     template <typename T>
-    SimilarityTransformation<T>::CanonicalDecomposition SimilarityTransformation<T>::getCanonicalDecomposition() const
+    typename SimilarityTransformation<T>::CanonicalDecomposition SimilarityTransformation<T>::getCanonicalDecomposition() const
     {
         return CanonicalDecomposition(*this);
     }
@@ -61,10 +48,16 @@ namespace gafro
     {
         Ei<T> ei(TypeTraits<T>::Value(1.0));
 
+        auto rotodilator = (transformation.template extract<blades::scalar>() + transformation.template extract<blades::e12>() +
+                            transformation.template extract<blades::e13>() + transformation.template extract<blades::e23>() +
+                            transformation.template extract<blades::e0i>() + transformation.template extract<blades::e012i>() +
+                            transformation.template extract<blades::e013i>() + transformation.template extract<blades::e023i>())
+                             .evaluate();
+
+        translator_ = transformation * rotodilator.reverse();
         dilator_ = transformation.apply(ei).template get<blades::ei>();
-        Motor<T> motor = transformation * dilator_.reverse();
-        rotor_ = motor.getRotor();
-        translator_ = motor.getTranslator();
+        // Motor<T> motor = transformation * dilator_.reverse();
+        rotor_ = rotodilator * dilator_.reverse();
     }
 
     template <typename T>
@@ -86,7 +79,7 @@ namespace gafro
     }
 
     template <typename T>
-    SimilarityTransformation<T> SimilarityTransformation<T>::exp(const Generator::Parameters &generator)
+    SimilarityTransformation<T> SimilarityTransformation<T>::exp(const typename Generator::Parameters &generator)
     {
         return SimilarityTransformation<T>::exp(Generator(generator));
     }

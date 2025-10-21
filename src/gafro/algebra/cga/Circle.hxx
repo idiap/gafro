@@ -1,21 +1,8 @@
-/*
-    Copyright (c) 2022 Idiap Research Institute, http://www.idiap.ch/
-    Written by Tobias Löw <https://tobiloew.ch>
-
-    This file is part of gafro.
-
-    gafro is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License version 3 as
-    published by the Free Software Foundation.
-
-    gafro is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with gafro. If not, see <http://www.gnu.org/licenses/>.
-*/
+// SPDX-FileCopyrightText: Idiap Research Institute <contact@idiap.ch>
+//
+// SPDX-FileContributor: Tobias Loew <tobias.loew@idiap.ch
+//
+// SPDX-License-Identifier: MPL-2.0
 
 #pragma once
 
@@ -27,11 +14,13 @@ namespace gafro
 {
 
     template <typename T>
-    Circle<T>::Circle(const Base &other) : Base(other)
+    Circle<T>::Circle(const Base &other)
+      : Base(other)
     {}
 
     template <typename T>
-    Circle<T>::Circle(const Point<T> &p1, const Point<T> &p2, const Point<T> &p3) : Circle(p1 ^ p2 ^ p3)
+    Circle<T>::Circle(const Point<T> &p1, const Point<T> &p2, const Point<T> &p3)
+      : Circle(p1 ^ p2 ^ p3)
     {}
 
     template <typename T>
@@ -66,10 +55,10 @@ namespace gafro
             return ConformalTransformation<T>::Zero();
         }
 
-        Circle<T> circle = this->normalized();
+        Circle<T> circle            = this->normalized();
         Circle<T> target_normalized = target.normalized();
 
-        auto k = (Scalar<T>(TypeTraits<T>::Value(2.0)) + (circle * target_normalized + target_normalized * circle)).evaluate();
+        auto k  = (Scalar<T>(TypeTraits<T>::Value(2.0)) + (circle * target_normalized + target_normalized * circle)).evaluate();
         auto k4 = (k.template extract<blades::e0123>()    //
                    + k.template extract<blades::e123i>()  //
                    + k.template extract<blades::e012i>()  //
@@ -82,10 +71,10 @@ namespace gafro
             return (Scalar<T>(TypeTraits<T>::Value(1.0)) + target_normalized * circle).evaluate().normalized();
         }
 
-        auto k0 = k.template extract<blades::scalar>();
-        T lambda = -(k4 * k4).template get<blades::scalar>();
-        T mu = ((k0 - k4) * k).template get<blades::scalar>();
-        T beta = sqrt(TypeTraits<T>::Value(1.0) / (TypeTraits<T>::Value(2.0) * lambda) * (sqrt(mu) - k0.template get<blades::scalar>()));
+        auto k0     = k.template extract<blades::scalar>();
+        T    lambda = -(k4 * k4).template get<blades::scalar>();
+        T    mu     = ((k0 - k4) * k).template get<blades::scalar>();
+        T    beta   = sqrt(TypeTraits<T>::Value(1.0) / (TypeTraits<T>::Value(2.0) * lambda) * (sqrt(mu) - k0.template get<blades::scalar>()));
 
         return (Scalar<T>(TypeTraits<T>::Value(1.0) / sqrt(mu)) *
                 (Scalar<T>(TypeTraits<T>::Value(-1.0) / (TypeTraits<T>::Value(2.0) * beta)) + Scalar<T>(beta) * k4) *
@@ -96,9 +85,9 @@ namespace gafro
     template <class T>
     Motor<T> Circle<T>::getMotor(const Circle &target) const
     {
-        Vector<T> n1 = this->getPlane().getNormal().normalized();
-        Vector<T> n2 = target.getPlane().getNormal().normalized();
-        Rotor<T> rotor = Rotor<T>(Scalar<T>(TypeTraits<T>::Value(1.0)) + (n1 | n2) - (n1 ^ n2)).normalized();
+        Vector<T> n1    = this->getPlane().getNormal().normalized();
+        Vector<T> n2    = target.getPlane().getNormal().normalized();
+        Rotor<T>  rotor = Rotor<T>(Scalar<T>(TypeTraits<T>::Value(1.0)) + (n1 | n2) - (n1 ^ n2)).normalized();
 
         Circle circle = rotor.apply(*this);
 
@@ -126,13 +115,13 @@ namespace gafro
     }
 
     template <class T>
-    Circle<T> Circle<T>::Unit(const Motor<T> &motor, const T &radius)
+    Circle<T> Circle<T>::Unit()
     {
-        Point<T> p1(radius * TypeTraits<T>::Value(cos(0.0)), radius * TypeTraits<T>::Value(sin(0.0)), TypeTraits<T>::Value(0.0));
-        Point<T> p2(radius * TypeTraits<T>::Value(cos(1.0)), radius * TypeTraits<T>::Value(sin(1.0)), TypeTraits<T>::Value(0.0));
-        Point<T> p3(radius * TypeTraits<T>::Value(cos(2.0)), radius * TypeTraits<T>::Value(sin(2.0)), TypeTraits<T>::Value(0.0));
+        Point<T> p1(TypeTraits<T>::Value(cos(0.0)), TypeTraits<T>::Value(sin(0.0)), TypeTraits<T>::Value(0.0));
+        Point<T> p2(TypeTraits<T>::Value(cos(1.0)), TypeTraits<T>::Value(sin(1.0)), TypeTraits<T>::Value(0.0));
+        Point<T> p3(TypeTraits<T>::Value(cos(2.0)), TypeTraits<T>::Value(sin(2.0)), TypeTraits<T>::Value(0.0));
 
-        return motor.apply(Circle<T>(p1, p2, p3));
+        return Circle<T>(p1, p2, p3).normalized();
     }
 
 }  // namespace gafro

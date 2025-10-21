@@ -1,21 +1,8 @@
-/*
-    Copyright (c) 2022 Idiap Research Institute, http://www.idiap.ch/
-    Written by Tobias Löw <https://tobiloew.ch>
-
-    This file is part of gafro.
-
-    gafro is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License version 3 as
-    published by the Free Software Foundation.
-
-    gafro is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with gafro. If not, see <http://www.gnu.org/licenses/>.
-*/
+// SPDX-FileCopyrightText: Idiap Research Institute <contact@idiap.ch>
+//
+// SPDX-FileContributor: Tobias Loew <tobias.loew@idiap.ch
+//
+// SPDX-License-Identifier: MPL-2.0
 
 #pragma once
 
@@ -28,6 +15,48 @@ namespace gafro
 
     template <class T>
     class Joint;
+
+    class LinkVisual
+    {
+      public:
+        enum class Type
+        {
+            SPHERE,
+            MESH,
+            CYLINDER,
+            BOX
+        };
+
+        LinkVisual(const Type &type, const Motor<double> &transform)
+          : type_(type)
+          , transform_(transform)
+        {}
+
+        virtual ~LinkVisual() = default;
+
+        virtual std::unique_ptr<LinkVisual> copy() const = 0;
+
+        const Type &getType() const
+        {
+            return type_;
+        }
+
+        const Motor<double> &getTransform() const
+        {
+            return transform_;
+        }
+
+        template <class Derived>
+        const Derived *cast() const
+        {
+            return static_cast<const Derived *>(this);
+        }
+
+      private:
+        const Type type_;
+
+        Motor<double> transform_;
+    };
 
     template <class T>
     class Link
@@ -73,6 +102,14 @@ namespace gafro
 
         const typename Motor<T>::Generator &getAxis() const;
 
+        void setVisual(std::unique_ptr<LinkVisual> &&visual);
+
+        bool hasVisual() const;
+
+        const LinkVisual *getVisual() const;
+
+        std::unique_ptr<Link> copy() const;
+
       private:
         Translator<T> center_of_mass_;
 
@@ -87,5 +124,9 @@ namespace gafro
         std::vector<const Joint<T> *> child_joints_;
 
         typename Motor<T>::Generator axis_;
+
+      public:
+      private:
+        std::unique_ptr<LinkVisual> visual_;
     };
 }  // namespace gafro

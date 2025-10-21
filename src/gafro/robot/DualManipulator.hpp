@@ -1,3 +1,9 @@
+// SPDX-FileCopyrightText: Idiap Research Institute <contact@idiap.ch>
+//
+// SPDX-FileContributor: Tobias Loew <tobias.loew@idiap.ch
+//
+// SPDX-License-Identifier: MPL-2.0
+
 #pragma once
 
 #include <gafro/robot/Manipulator.hpp>
@@ -24,6 +30,10 @@ namespace gafro
         DualManipulator(const Manipulator<T, dof / 2> &manipulator, const Motor<T> &first_base_motor, const Motor<T> &second_base_motor);
 
         virtual ~DualManipulator();
+
+        //
+
+        const System<T> &getSystem() const;
 
         //
 

@@ -1,21 +1,8 @@
-/*
-    Copyright (c) 2022 Idiap Research Institute, http://www.idiap.ch/
-    Written by Tobias Löw <https://tobiloew.ch>
-
-    This file is part of gafro.
-
-    gafro is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License version 3 as
-    published by the Free Software Foundation.
-
-    gafro is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with gafro. If not, see <http://www.gnu.org/licenses/>.
-*/
+// SPDX-FileCopyrightText: Idiap Research Institute <contact@idiap.ch>
+//
+// SPDX-FileContributor: Tobias Loew <tobias.loew@idiap.ch
+//
+// SPDX-License-Identifier: MPL-2.0
 
 #pragma once
 
@@ -25,7 +12,8 @@ namespace gafro
 {
 
     template <class T>
-    KinematicChain<T>::KinematicChain(const std::string &name) : name_(name)
+    KinematicChain<T>::KinematicChain(const std::string &name)
+      : name_(name)
     {}
 
     template <class T>
@@ -41,9 +29,9 @@ namespace gafro
     KinematicChain<T> &KinematicChain<T>::operator=(KinematicChain &&other)
     {
         actuated_joints_ = std::move(other.actuated_joints_);
-        fixed_motors_ = std::move(other.fixed_motors_);
-        bodies_ = std::move(other.bodies_);
-        name_ = std::move(other.name_);
+        fixed_motors_    = std::move(other.fixed_motors_);
+        bodies_          = std::move(other.bodies_);
+        name_            = std::move(other.name_);
 
         return *this;
     }
@@ -111,7 +99,7 @@ namespace gafro
     {
         if (dof != actuated_joints_.size())
         {
-            throw std::runtime_error("kinematic chain has not enough dof!");
+            throw std::runtime_error("kinematic chain has " + std::to_string(actuated_joints_.size()) + " instead of " + std::to_string(dof));
         }
 
         Motor<T> motor;
@@ -220,7 +208,7 @@ namespace gafro
     {
         MultivectorMatrix<T, MotorGenerator, 1, dof> jacobian;
 
-        auto fixed_motor = fixed_motors_.find(dof - 1);
+        auto     fixed_motor = fixed_motors_.find(dof - 1);
         Motor<T> joint_motor = (fixed_motor != fixed_motors_.end() ? fixed_motor->second : Motor<T>());
 
         for (int i = dof - 1; i > -1; --i)
@@ -236,7 +224,9 @@ namespace gafro
     template <class T>
     template <int dof>
     MultivectorMatrix<T, MotorGenerator, 1, dof> KinematicChain<T>::computeKinematicChainGeometricJacobianTimeDerivative(
-      const Eigen::Vector<T, dof> &position, const Eigen::Vector<T, dof> &velocity, const Motor<T> &reference) const
+      const Eigen::Vector<T, dof> &position,
+      const Eigen::Vector<T, dof> &velocity,
+      const Motor<T>              &reference) const
     {
         MultivectorMatrix<T, MotorGenerator, 1, dof> jacobian = computeGeometricJacobian(position);
         MultivectorMatrix<T, MotorGenerator, 1, dof> jacobian_time_derivative;
@@ -260,13 +250,13 @@ namespace gafro
     template <int dof>
     Eigen::Matrix<T, dof, dof> KinematicChain<T>::computeMassMatrix(const Eigen::Vector<T, dof> &position) const
     {
-        Eigen::Matrix<T, 7, 7> mass_matrix = Eigen::Matrix<T, 7, 7>::Zero();
+        Eigen::Matrix<T, dof, dof> mass_matrix = Eigen::Matrix<T, dof, dof>::Zero();
 
         auto gj = this->computeGeometricJacobian(position);
 
         Motor<T> m;
 
-        for (int j = 0; j < 7; ++j)
+        for (int j = 0; j < dof; ++j)
         {
             m *= actuated_joints_[j]->getMotor(position[j]);
 
@@ -299,8 +289,8 @@ namespace gafro
     void KinematicChain<T>::createBody(const Joint<T> *startJoint)
     {
         typename Motor<T>::Generator com_generator = Motor<T>::Generator::Zero();
-        Inertia<T> inertia = Inertia<T>::Zero();
-        T total_mass = TypeTraits<T>::Zero();
+        Inertia<T>                   inertia       = Inertia<T>::Zero();
+        T                            total_mass    = TypeTraits<T>::Zero();
 
         std::function<void(const Link<T> *link, const Motor<T> &motor)> addLinkInertia;
 
@@ -337,7 +327,7 @@ namespace gafro
         com_generator /= total_mass;
 
         Motor<T> com = Motor<T>::exp(com_generator);
-        inertia = inertia.inverseTransform(com);
+        inertia      = inertia.inverseTransform(com);
 
         auto body = std::make_unique<Body<T>>();
         body->setCenterOfMass(com.getTranslator());

@@ -1,26 +1,11 @@
-/*
-    Copyright (c) 2022 Idiap Research Institute, http://www.idiap.ch/
-    Written by Tobias Löw <https://tobiloew.ch>
-
-    This file is part of gafro.
-
-    gafro is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License version 3 as
-    published by the Free Software Foundation.
-
-    gafro is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with gafro. If not, see <http://www.gnu.org/licenses/>.
-*/
+// SPDX-FileCopyrightText: Idiap Research Institute <contact@idiap.ch>
+//
+// SPDX-FileContributor: Tobias Loew <tobias.loew@idiap.ch
+//
+// SPDX-License-Identifier: MPL-2.0
 
 #pragma once
 
-#include <gafro/algebra/MultivectorMatrix.hpp>
-//
 #include <gafro/robot/Hand.hpp>
 
 namespace gafro
@@ -41,7 +26,8 @@ namespace gafro
 
     template <class T, int... fingers>
     Hand<T, fingers...>::Hand(System<T> &&system, const std::array<std::string, n_fingers> &finger_tip_names)
-      : System<T>(std::move(system)), finger_tip_names_(finger_tip_names)
+      : System<T>(std::move(system))
+      , finger_tip_names_(finger_tip_names)
     {
         for (int j = 0; j < n_fingers; ++j)
         {
@@ -100,7 +86,8 @@ namespace gafro
     template <class T, int... fingers>
     template <int id>
     MultivectorMatrix<T, MotorGenerator, 1, Hand<T, fingers...>::finger_dof[id]> Hand<T, fingers...>::getFingerGeometricJacobian(
-      const Eigen::Vector<T, finger_dof[id]> &position, const Motor<T> &motor) const
+      const Eigen::Vector<T, finger_dof[id]> &position,
+      const Motor<T>                         &motor) const
     {
         return getFingerGeometricJacobian<id>(position).transform(motor.reverse());
     }
@@ -193,7 +180,7 @@ namespace gafro
             for (int k = 0; k < finger_dof[j]; ++k)
             {
                 typename Motor<T>::Parameters parameters =
-                  exp_jacobian * log_jacobian / static_cast<double>(n_fingers) * finger_jacobian.getCoefficient(0, k).vector();
+                  exp_jacobian * log_jacobian / static_cast<T>(n_fingers) * finger_jacobian.getCoefficient(0, k).vector();
 
                 jacobian.setCoefficient(0, std::accumulate(finger_dof.begin(), finger_dof.begin() + j, 0) + k, Motor<T>(parameters));
             }
@@ -220,108 +207,64 @@ namespace gafro
         return jacobian;
     }
 
-    template <class T, int... fingers>
-    Circle<T> Hand<T, fingers...>::getFingerCircle(const Eigen::Vector<T, dof> &position) const
-        requires(n_fingers == 3)
-    {
-        MultivectorMatrix<T, Point, 1, n_fingers> points = getFingerPoints(position);
+    // template <class T, int... fingers>
+    // MultivectorMatrix<T, SimilarityTransformation, 1, Hand<T, fingers...>::dof> Hand<T, fingers...>::getAnalyticSimilarityJacobian(
+    //   const Eigen::Vector<T, dof> &position) const
+    //     requires(n_fingers == 3)
+    // {
+    //     Circle<T> circle = getFingerCircle(position);
+    //     auto circle_jacobian = getFingerCircleJacobian(position);
 
-        return Circle<T>(points.getCoefficient(0, 0), points.getCoefficient(0, 1), points.getCoefficient(0, 2));
-    }
+    //     auto sim = Circle<T>::Unit(gafro::Motor<T>()).getSimilarityTransformation(circle);
+    //     auto translator = sim.getCanonicalDecomposition().getTranslator();
+    //     auto rotor = sim.getCanonicalDecomposition().getRotor();
+    //     auto dilator = sim.getCanonicalDecomposition().getDilator();
 
-    template <class T, int... fingers>
-    MultivectorMatrix<T, Circle, 1, Hand<T, fingers...>::dof> Hand<T, fingers...>::getFingerCircleJacobian(
-      const Eigen::Vector<T, dof> &position) const
-        requires(n_fingers == 3)
-    {
-        auto finger_motors = getFingerMotors(position).asVector();
-        auto finger_points = getFingerPoints(position).asVector();
-        auto finger_jacobian = getAnalyticJacobian(position);
+    //     Point<T> p = circle * Ei<T>::One() * circle;
+    //     auto center_jacobian =
+    //       (circle_jacobian * (Ei<T>::One() * circle).evaluate() + (circle * Ei<T>::One()).evaluate() * circle_jacobian).template extract<Point>();
 
-        MultivectorMatrix<T, Circle, 1, dof> circle_jacobian;
+    //     auto translator_jacobian =
+    //       -0.5 * (std::pow(p.template get<blades::e0>(), -1.0) * center_jacobian +
+    //               -std::pow(p.template get<blades::e0>(), -2.0) * p * (Ei<T>(-1.0) | center_jacobian.template extract<E0>())) ^
+    //       Ei<T>::One();
 
-        for (int k = 0; k < finger_dof[0]; ++k)
-        {
-            Point<T> j_0_1 = finger_jacobian.getCoefficient(0, k) * Point<T>() * finger_motors[0].reverse();
-            Point<T> j_0_2 = finger_motors[0] * Point<T>() * finger_jacobian.getCoefficient(0, k).reverse();
+    //     Vector<T> unit_normal = Circle<T>(dilator.apply(Circle<T>::Unit(gafro::Motor<T>()))).getPlane().getNormal().normalized();
+    //     Vector<T> circle_normal_unnormalized = circle.getPlane().getNormal();
+    //     Vector<T> circle_normal = circle_normal_unnormalized.normalized();
+    //     Rotor<T> unnormalized_rotor = Scalar<T>::One() + (unit_normal | circle_normal) - (unit_normal ^ circle_normal);
 
-            circle_jacobian.setCoefficient(0, k, (j_0_1 + j_0_2) ^ finger_points[1] ^ finger_points[2]);
-        }
+    //     auto circle_plane_jacobian = circle_jacobian ^ Ei<T>::One();
+    //     auto circle_normal_jacobian_unnormalized =
+    //       (circle_plane_jacobian.dual() + -0.5 * (E0<T>::One() | circle_plane_jacobian.dual()) * Ei<T>::One()).template extract<Vector>();
 
-        for (int k = finger_dof[0]; k < finger_dof[0] + finger_dof[1]; ++k)
-        {
-            Point<T> j_1_1 = finger_jacobian.getCoefficient(0, k) * (Point<T>() * finger_motors[1].reverse()).evaluate();
-            Point<T> j_1_2 = (finger_motors[1] * Point<T>()).evaluate() * finger_jacobian.getCoefficient(0, k).reverse();
+    //     auto circle_normal_jacobian =
+    //       (1.0 / circle_normal_unnormalized.norm()) * circle_normal_jacobian_unnormalized -
+    //       0.5 * std::pow(circle_normal_unnormalized.norm(), -3.0) *
+    //         (circle_normal_unnormalized * (circle_normal_unnormalized * circle_normal_jacobian_unnormalized.reverse() +
+    //                                        circle_normal_jacobian_unnormalized * circle_normal_unnormalized.reverse().evaluate()))
+    //           .template extract<Vector>();
 
-            circle_jacobian.setCoefficient(0, k, finger_points[0] ^ (j_1_1 + j_1_2) ^ finger_points[2]);
-        }
+    //     auto rotor_jacobian_unnormalized = (unit_normal | circle_normal_jacobian) - (unit_normal ^ circle_normal_jacobian);
 
-        for (int k = finger_dof[0] + finger_dof[1]; k < dof; ++k)
-        {
-            Point<T> j_2_1 = finger_jacobian.getCoefficient(0, k) * (Point<T>() * finger_motors[2].reverse()).evaluate();
-            Point<T> j_2_2 = (finger_motors[2] * Point<T>()).evaluate() * finger_jacobian.getCoefficient(0, k).reverse();
+    //     auto rotor_jacobian = (1.0 / unnormalized_rotor.norm()) * rotor_jacobian_unnormalized -
+    //                           0.5 * std::pow(unnormalized_rotor.norm(), -3.0) *
+    //                             (unnormalized_rotor * (rotor_jacobian_unnormalized * unnormalized_rotor.reverse().evaluate() +
+    //                                                    unnormalized_rotor * rotor_jacobian_unnormalized.reverse()));
 
-            circle_jacobian.setCoefficient(0, k, finger_points[0] ^ finger_points[1] ^ (j_2_1 + j_2_2));
-        }
+    //     MultivectorMatrix<T, Circle, 1, 7> circle_jacobian_reversed = circle_jacobian.reverse();
+    //     auto circle_jacobian_inversed = (1.0 / circle.squaredNorm()) * circle_jacobian.reverse()  //
+    //                                     + -std::pow(circle.squaredNorm(), -2.0) *
+    //                                         (circle.reverse().evaluate() * (2.0 * (circle * circle_jacobian_reversed)).template extract<Scalar>());
 
-        return circle_jacobian;
-    }
+    //     auto e = ((Ei<T>::One() | circle) * circle.inverse()).evaluate();
+    //     auto j = ((Ei<T>(1.0) | circle_jacobian) * circle.inverse().evaluate() + (Ei<T>(1.0) | circle).evaluate() * circle_jacobian_inversed);
 
-    template <class T, int... fingers>
-    Sphere<T> Hand<T, fingers...>::getFingerSphere(const Eigen::Vector<T, dof> &position) const
-        requires(n_fingers == 4)
-    {
-        MultivectorMatrix<T, Point, 1, n_fingers> points = getFingerPoints(position);
+    //     auto dilator_jacobian = dilator * -0.25 * std::pow(abs(e.squaredNorm()), -1.0)  //
+    //                             * (j * e.reverse().evaluate() + e * j.reverse()).template extract<Scalar>();
 
-        return Sphere<T>(points.getCoefficient(0, 0), points.getCoefficient(0, 1), points.getCoefficient(0, 2), points.getCoefficient(0, 3));
-    }
-
-    template <class T, int... fingers>
-    MultivectorMatrix<T, Sphere, 1, Hand<T, fingers...>::dof> Hand<T, fingers...>::getFingerSphereJacobian(
-      const Eigen::Vector<T, dof> &position) const
-        requires(n_fingers == 4)
-    {
-        auto finger_motors = getFingerMotors(position).asVector();
-        auto finger_points = getFingerPoints(position).asVector();
-        auto finger_jacobian = getAnalyticJacobian(position);
-
-        MultivectorMatrix<T, Sphere, 1, dof> sphere_jacobian;
-
-        for (int k = 0; k < finger_dof[0]; ++k)
-        {
-            Point<T> j_0_1 = finger_jacobian.getCoefficient(0, k) * (Point<T>() * finger_motors[0].reverse()).evaluate();
-            Point<T> j_0_2 = (finger_motors[0] * Point<T>()).evaluate() * finger_jacobian.getCoefficient(0, k).reverse();
-
-            sphere_jacobian.setCoefficient(0, k, (j_0_1 + j_0_2) ^ finger_points[1] ^ finger_points[2] ^ finger_points[3]);
-        }
-
-        for (int k = finger_dof[0]; k < finger_dof[0] + finger_dof[1]; ++k)
-        {
-            Point<T> j_1_1 = finger_jacobian.getCoefficient(0, k) * (Point<T>() * finger_motors[1].reverse()).evaluate();
-            Point<T> j_1_2 = (finger_motors[1] * Point<T>()).evaluate() * finger_jacobian.getCoefficient(0, k).reverse();
-
-            sphere_jacobian.setCoefficient(0, k, finger_points[0] ^ (j_1_1 + j_1_2) ^ finger_points[2] ^ finger_points[3]);
-        }
-
-        for (int k = finger_dof[0] + finger_dof[1]; k < finger_dof[2]; ++k)
-        {
-            Point<T> j_2_1 = finger_jacobian.getCoefficient(0, k) * (Point<T>() * finger_motors[2].reverse()).evaluate();
-            Point<T> j_2_2 = (finger_motors[2] * Point<T>()).evaluate() * finger_jacobian.getCoefficient(0, k).reverse();
-
-            sphere_jacobian.setCoefficient(0, k, finger_points[0] ^ finger_points[1] ^ (j_2_1 + j_2_2) ^ finger_points[3]);
-        }
-
-        for (int k = finger_dof[0] + finger_dof[1] + finger_dof[2]; k < dof; ++k)
-        {
-            Point<T> j_3_1 = finger_jacobian.getCoefficient(0, k) * (Point<T>() * finger_motors[3].reverse()).evaluate();
-            Point<T> j_3_2 = (finger_motors[3] * Point<T>()).evaluate() * finger_jacobian.getCoefficient(0, k).reverse();
-
-            sphere_jacobian.setCoefficient(0, k, finger_points[0] ^ finger_points[1] ^ finger_points[2] ^ (j_3_1 + j_3_2));
-        }
-
-        return sphere_jacobian;
-    }
-
-    //
+    //     return translator_jacobian * (rotor * dilator).evaluate() + translator * rotor_jacobian * dilator +
+    //            (translator * rotor).evaluate() * dilator_jacobian;
+    // }
 
 }  // namespace gafro

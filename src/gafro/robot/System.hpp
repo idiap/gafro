@@ -1,21 +1,8 @@
-/*
-    Copyright (c) 2022 Idiap Research Institute, http://www.idiap.ch/
-    Written by Tobias Löw <https://tobiloew.ch>
-
-    This file is part of gafro.
-
-    gafro is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License version 3 as
-    published by the Free Software Foundation.
-
-    gafro is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with gafro. If not, see <http://www.gnu.org/licenses/>.
-*/
+// SPDX-FileCopyrightText: Idiap Research Institute <contact@idiap.ch>
+//
+// SPDX-FileContributor: Tobias Loew <tobias.loew@idiap.ch
+//
+// SPDX-License-Identifier: MPL-2.0
 
 #pragma once
 
@@ -27,6 +14,11 @@
 
 namespace gafro
 {
+    template <class T>
+    class ForwardKinematics;
+
+    template <class T>
+    class TaskSpace;
 
     template <class T>
     class System
@@ -47,11 +39,15 @@ namespace gafro
       public:
         virtual ~System();
 
+        void add(const std::string &parent_link, std::unique_ptr<Joint<T>> &&joint, const System &system, const std::string &pre = "");
+
         void addJoint(std::unique_ptr<Joint<T>> &&joint);
 
         void addLink(std::unique_ptr<Link<T>> &&link);
 
         void addKinematicChain(const std::string &name, std::unique_ptr<KinematicChain<T>> &&kinematic_chain);
+
+        void addTaskSpace(const std::string &name, std::unique_ptr<TaskSpace<T>> &&task_space);
 
         void finalize();
 
@@ -78,7 +74,9 @@ namespace gafro
         const std::vector<std::unique_ptr<Joint<T>>> &getJoints() const;
 
         template <class S>
-        System<S> cast();
+        System<S> cast() const;
+
+        System copy() const;
 
         bool hasKinematicChain(const std::string &name) const;
 
@@ -86,11 +84,15 @@ namespace gafro
 
         const KinematicChain<T> *getKinematicChain(const std::string &name) const;
 
+        const std::vector<std::unique_ptr<KinematicChain<T>>> &getKinematicChains() const;
+
         const std::string &getName() const;
 
         //
 
         Motor<T> computeLinkMotor(const std::string &name, const Eigen::Vector<T, Eigen::Dynamic> &position) const;
+
+        ForwardKinematics<T> computeForwardKinematics(const Eigen::VectorX<T> &joint_positions, const Motor<T> &base_motor = Motor<T>()) const;
 
         //
 
@@ -98,39 +100,44 @@ namespace gafro
         Motor<T> computeKinematicChainMotor(const std::string &name, const Eigen::Vector<T, dof> &position) const;
 
         template <int dof>
-        MultivectorMatrix<T, Motor, 1, dof> computeKinematicChainAnalyticJacobian(const std::string &name,
+        MultivectorMatrix<T, Motor, 1, dof> computeKinematicChainAnalyticJacobian(const std::string           &name,
                                                                                   const Eigen::Vector<T, dof> &position) const;
 
         template <int dof>
-        MultivectorMatrix<T, MotorGenerator, 1, dof> computeKinematicChainGeometricJacobian(const std::string &name,
+        MultivectorMatrix<T, MotorGenerator, 1, dof> computeKinematicChainGeometricJacobian(const std::string           &name,
                                                                                             const Eigen::Vector<T, dof> &position) const;
 
         template <int dof>
-        MultivectorMatrix<T, MotorGenerator, 1, dof> computeKinematicChainGeometricJacobianBody(const std::string &name,
+        MultivectorMatrix<T, MotorGenerator, 1, dof> computeKinematicChainGeometricJacobianBody(const std::string           &name,
                                                                                                 const Eigen::Vector<T, dof> &position) const;
 
         template <int dof>
-        MultivectorMatrix<T, MotorGenerator, 1, dof> computeKinematicChainGeometricJacobianTimeDerivative(const std::string &name,
+        MultivectorMatrix<T, MotorGenerator, 1, dof> computeKinematicChainGeometricJacobianTimeDerivative(const std::string           &name,
                                                                                                           const Eigen::Vector<T, dof> &position,
                                                                                                           const Eigen::Vector<T, dof> &velocity,
                                                                                                           const Motor<T> &reference) const;
 
         template <int dof>
-        Eigen::Vector<T, dof> computeInverseDynamics(const Eigen::Vector<T, dof> &position, const Eigen::Vector<T, dof> &velocity,
-                                                     const Eigen::Vector<T, dof> &acceleration, const T &gravity = 9.81,
-                                                     const Wrench<T> ee_wrench = Wrench<T>::Zero(),
-                                                     const std::string &kinematic_chain_name = "") const;
+        Eigen::Vector<T, dof> computeInverseDynamics(const Eigen::Vector<T, dof> &position,
+                                                     const Eigen::Vector<T, dof> &velocity,
+                                                     const Eigen::Vector<T, dof> &acceleration,
+                                                     const T                     &gravity              = 9.81,
+                                                     const Wrench<T>              ee_wrench            = Wrench<T>::Zero(),
+                                                     const std::string           &kinematic_chain_name = "") const;
 
         template <int dof>
-        Eigen::Vector<T, dof> computeForwardDynamics(const Eigen::Vector<T, dof> &position, const Eigen::Vector<T, dof> &velocity,
-                                                     const Eigen::Vector<T, dof> &torque, const std::string &kinematic_chain_name = "") const;
+        Eigen::Vector<T, dof> computeForwardDynamics(const Eigen::Vector<T, dof> &position,
+                                                     const Eigen::Vector<T, dof> &velocity,
+                                                     const Eigen::Vector<T, dof> &torque,
+                                                     const std::string           &kinematic_chain_name = "") const;
 
         template <int dof>
         Eigen::Matrix<T, dof, dof> computeKinematicChainMassMatrix(const std::string &name, const Eigen::Vector<T, dof> &position) const;
 
         std::vector<const Joint<T> *> getJointChain(const std::string &name) const;
 
-      protected:
+        const TaskSpace<T> *getTaskSpace(const std::string &name) const;
+
         void createKinematicChain(const std::string &joint_name);
 
       public:
@@ -156,11 +163,15 @@ namespace gafro
 
         std::vector<std::unique_ptr<KinematicChain<T>>> kinematic_chains_;
 
+        std::vector<std::unique_ptr<TaskSpace<T>>> task_spaces_;
+
         std::map<std::string, Joint<T> *> joints_map_;
 
         std::map<std::string, Link<T> *> links_map_;
 
         std::map<std::string, KinematicChain<T> *> kinematic_chains_map_;
+
+        std::map<std::string, TaskSpace<T> *> task_spaces_map_;
 
         std::string name_;
 
@@ -175,3 +186,5 @@ namespace gafro
     };
 
 }  // namespace gafro
+
+#include <gafro/robot/System.hxx>

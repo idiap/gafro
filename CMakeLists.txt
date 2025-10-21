@@ -8,7 +8,7 @@ endif()
 project(gafro)
 
 set(${PROJECT_NAME}_VERSION_MAJOR 1)
-set(${PROJECT_NAME}_VERSION_MINOR 0)
+set(${PROJECT_NAME}_VERSION_MINOR 5)
 set(${PROJECT_NAME}_VERSION_PATCH 0)
 
 set(${PROJECT_NAME}_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}")
@@ -24,7 +24,6 @@ set(GAFRO_PREFIX_INCLUDE include/gafro)
 find_package(Eigen3 3.4 REQUIRED)
 
 add_subdirectory(src/${PROJECT_NAME})
-add_subdirectory(src/${PROJECT_NAME}_control)
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     # add_subdirectory(tests)

@@ -27,6 +27,7 @@ target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_20)
 add_subdirectory(algebra)
 add_subdirectory(physics)
 add_subdirectory(robot)
+add_subdirectory(control)
 add_subdirectory(optimization)
 add_subdirectory(groups)
 
@@ -71,6 +72,7 @@ target_link_libraries(${PROJECT_NAME}
             physics.hpp
             optimization.hpp
             groups.hpp
+            autodiff.hpp
         DESTINATION
             ${GAFRO_PREFIX_INCLUDE}/gafro
         COMPONENT

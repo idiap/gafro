@@ -1,3 +1,9 @@
+// SPDX-FileCopyrightText: Idiap Research Institute <contact@idiap.ch>
+//
+// SPDX-FileContributor: Tobias Loew <tobias.loew@idiap.ch
+//
+// SPDX-License-Identifier: MPL-2.0
+
 #pragma once
 
 #include <gafro/physics/Wrench.hpp>
@@ -20,6 +26,46 @@ namespace gafro
     template <class T>
     Wrench<T>::~Wrench()
     {}
+
+    template <class T>
+    void Wrench<T>::setLinear(const Linear &linear)
+    {
+        this->template set<blades::e01>(linear.template get<blades::e01>());
+        this->template set<blades::e02>(linear.template get<blades::e02>());
+        this->template set<blades::e03>(linear.template get<blades::e03>());
+    }
+
+    template <class T>
+    void Wrench<T>::setAngular(const Angular &angular)
+    {
+        this->template set<blades::e12>(angular.template get<blades::e12>());
+        this->template set<blades::e13>(angular.template get<blades::e13>());
+        this->template set<blades::e23>(angular.template get<blades::e23>());
+    }
+
+    template <class T>
+    typename Wrench<T>::Linear Wrench<T>::getLinear() const
+    {
+        Linear linear;
+
+        linear.template set<blades::e01>(this->template get<blades::e01>());
+        linear.template set<blades::e02>(this->template get<blades::e02>());
+        linear.template set<blades::e03>(this->template get<blades::e03>());
+
+        return linear;
+    }
+
+    template <class T>
+    typename Wrench<T>::Angular Wrench<T>::getAngular() const
+    {
+        Angular angular;
+
+        angular.template set<blades::e12>(this->template get<blades::e12>());
+        angular.template set<blades::e13>(this->template get<blades::e13>());
+        angular.template set<blades::e23>(this->template get<blades::e23>());
+
+        return angular;
+    }
 
     template <class T>
     typename Wrench<T>::Base &Wrench<T>::multivector()

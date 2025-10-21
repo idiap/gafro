@@ -1,33 +1,19 @@
-/*
-    Copyright (c) 2022 Idiap Research Institute, http://www.idiap.ch/
-    Written by Tobias Löw <https://tobiloew.ch>
-
-    This file is part of gafro.
-
-    gafro is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License version 3 as
-    published by the Free Software Foundation.
-
-    gafro is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with gafro. If not, see <http://www.gnu.org/licenses/>.
-*/
+// SPDX-FileCopyrightText: Idiap Research Institute <contact@idiap.ch>
+//
+// SPDX-FileContributor: Tobias Loew <tobias.loew@idiap.ch
+//
+// SPDX-License-Identifier: MPL-2.0
 
 #pragma once
 
 #include <gafro/algebra/Multivector.hpp>
 #include <gafro/algebra/cga/Blades.hpp>
+#include <gafro/algebra/cga/SimilarityTransformation.hpp>
 
 namespace gafro
 {
     template <typename T>
     class Point;
-    // template <typename T>
-    // class Circle;
 
     template <typename T>
     class Sphere : public Multivector<T, blades::e0123, blades::e012i, blades::e013i, blades::e023i, blades::e123i>
@@ -51,10 +37,14 @@ namespace gafro
 
         Point<T> getCenter() const;
 
+        SimilarityTransformation<T> getSimilarityTransformation(const Sphere &target) const;
+
       protected:
       private:
       public:
         static Sphere Random();
+
+        static Sphere Unit();
     };
 
 }  // namespace gafro

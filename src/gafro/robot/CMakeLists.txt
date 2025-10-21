@@ -6,10 +6,16 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
             Joint.hxx
             FixedJoint.hpp
             FixedJoint.hxx
+            FreeJoint.hpp
+            FreeJoint.hxx
             RevoluteJoint.hpp
             RevoluteJoint.hxx
+            ContinuousJoint.hpp
+            ContinuousJoint.hxx
             PrismaticJoint.hpp
             PrismaticJoint.hxx
+            FreeJoint.hpp
+            FreeJoint.hxx
 
             Link.hpp
             Link.hxx
@@ -28,11 +34,19 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
             Quadruped.hpp
             Quadruped.hxx
 
+            Humanoid.hpp
+            Humanoid.hxx
+
             System.hpp
             System.hxx
 
             KinematicChain.hpp
             KinematicChain.hxx
+
+            TaskSpace.hpp
+            TaskSpace.hxx
+            CooperativeTaskSpace.hpp
+            CooperativeTaskSpace.hxx
         DESTINATION
             ${GAFRO_PREFIX_INCLUDE}/gafro/robot
         COMPONENT

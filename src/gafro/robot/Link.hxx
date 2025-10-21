@@ -1,21 +1,8 @@
-/*
-    Copyright (c) 2022 Idiap Research Institute, http://www.idiap.ch/
-    Written by Tobias Löw <https://tobiloew.ch>
-
-    This file is part of gafro.
-
-    gafro is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License version 3 as
-    published by the Free Software Foundation.
-
-    gafro is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with gafro. If not, see <http://www.gnu.org/licenses/>.
-*/
+// SPDX-FileCopyrightText: Idiap Research Institute <contact@idiap.ch>
+//
+// SPDX-FileContributor: Tobias Loew <tobias.loew@idiap.ch
+//
+// SPDX-License-Identifier: MPL-2.0
 
 #pragma once
 
@@ -25,7 +12,8 @@ namespace gafro
 {
 
     template <class T>
-    Link<T>::Link() : mass_(TypeTraits<T>::Zero())
+    Link<T>::Link()
+      : mass_(TypeTraits<T>::Zero())
     {}
 
     template <class T>
@@ -37,13 +25,14 @@ namespace gafro
     template <class T>
     Link<T> &Link<T>::operator=(Link &&other)
     {
-        mass_ = std::move(other.mass_);
+        mass_           = std::move(other.mass_);
         center_of_mass_ = std::move(other.center_of_mass_);
-        inertia_ = std::move(other.inertia_);
-        name_ = std::move(other.name_);
-        parent_joint_ = std::move(other.parent_joint_);
-        child_joints_ = std::move(other.child_joints_);
-        axis_ = std::move(other.axis_);
+        inertia_        = std::move(other.inertia_);
+        name_           = std::move(other.name_);
+        parent_joint_   = std::move(other.parent_joint_);
+        child_joints_   = std::move(other.child_joints_);
+        axis_           = std::move(other.axis_);
+        visual_         = std::move(other.visual_);
 
         return *this;
     }
@@ -135,6 +124,42 @@ namespace gafro
     const typename Motor<T>::Generator &Link<T>::getAxis() const
     {
         return axis_;
+    }
+
+    template <class T>
+    void Link<T>::setVisual(std::unique_ptr<LinkVisual> &&visual)
+    {
+        visual_ = std::move(visual);
+    }
+
+    template <class T>
+    bool Link<T>::hasVisual() const
+    {
+        return visual_ != nullptr;
+    }
+
+    template <class T>
+    const LinkVisual *Link<T>::getVisual() const
+    {
+        return visual_.get();
+    }
+
+    template <class T>
+    std::unique_ptr<Link<T>> Link<T>::copy() const
+    {
+        std::unique_ptr<Link<T>> link = std::make_unique<Link<T>>();
+
+        link->setName(this->getName());
+        link->setCenterOfMass(this->getCenterOfMass());
+        link->setInertia(this->getInertia());
+        link->setMass(this->getMass());
+        link->setAxis(this->getAxis());
+        if (this->hasVisual())
+        {
+            link->setVisual(this->getVisual()->copy());
+        }
+
+        return link;
     }
 
 }  // namespace gafro

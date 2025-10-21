@@ -1,21 +1,8 @@
-/*
-    Copyright (c) 2022 Idiap Research Institute, http://www.idiap.ch/
-    Written by Tobias Löw <https://tobiloew.ch>
-
-    This file is part of gafro.
-
-    gafro is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License version 3 as
-    published by the Free Software Foundation.
-
-    gafro is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with gafro. If not, see <http://www.gnu.org/licenses/>.
-*/
+// SPDX-FileCopyrightText: Idiap Research Institute <contact@idiap.ch>
+//
+// SPDX-FileContributor: Tobias Loew <tobias.loew@idiap.ch
+//
+// SPDX-License-Identifier: MPL-2.0
 
 #pragma once
 
@@ -25,7 +12,8 @@ namespace gafro
 {
 
     template <class T>
-    FixedJoint<T>::FixedJoint() : Joint<T>(Joint<T>::Type::FIXED)
+    FixedJoint<T>::FixedJoint()
+      : Joint<T>(Joint<T>::Type::FIXED)
     {}
 
     template <class T>
@@ -47,6 +35,18 @@ namespace gafro
     typename Motor<T>::Generator FixedJoint<T>::getCurrentAxis(const Motor<T> &) const
     {
         return typename Motor<T>::Generator(Motor<T>::Generator::Parameters::Zero());
+    }
+
+    template <class T>
+    std::unique_ptr<Joint<T>> FixedJoint<T>::copy() const
+    {
+        std::unique_ptr<Joint<T>> joint = std::make_unique<FixedJoint<T>>();
+
+        joint->setName(this->getName());
+        joint->setFrame(this->getFrame());
+        joint->setLimits(this->getLimits());
+
+        return joint;
     }
 
 }  // namespace gafro
