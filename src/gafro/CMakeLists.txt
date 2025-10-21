@@ -29,6 +29,7 @@ add_subdirectory(physics)
 add_subdirectory(robot)
 add_subdirectory(control)
 add_subdirectory(optimization)
+add_subdirectory(groups)
 
 # include(GenerateExportHeader)
 # generate_export_header(${PROJECT_NAME})
@@ -70,6 +71,7 @@ target_link_libraries(${PROJECT_NAME}
             robot.hpp
             physics.hpp
             optimization.hpp
+            groups.hpp
             autodiff.hpp
         DESTINATION
             ${GAFRO_PREFIX_INCLUDE}/gafro

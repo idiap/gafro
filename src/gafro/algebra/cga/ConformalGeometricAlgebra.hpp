@@ -5,28 +5,31 @@
 namespace gafro
 {
 
-    struct ConformalGeometricAlgebraMetric
+    namespace cga
     {
-        constexpr static int dim = 5;
-
-        template <int i, int j>
-        constexpr static double get()
+        struct Metric
         {
-            if constexpr (((i > 0) && (i < 4)) && ((j > 0) && (j < 4)) && (i == j))
+            constexpr static int dim = 5;
+
+            template <int i, int j>
+            constexpr static double get()
             {
-                return 1.0;
+                if constexpr (((i > 0) && (i < 4)) && ((j > 0) && (j < 4)) && (i == j))
+                {
+                    return 1.0;
+                }
+
+                if constexpr ((i == 0 && j == 4) || (i == 4 && j == 0))
+                {
+                    return -1.0;
+                }
+
+                return 0.0;
             }
+        };
+    }  // namespace cga
 
-            if constexpr ((i == 0 && j == 4) || (i == 4 && j == 0))
-            {
-                return -1.0;
-            }
-
-            return 0.0;
-        }
-    };
-
-    using ConformalGeometricAlgebra = Algebra<ConformalGeometricAlgebraMetric>;
+    using ConformalGeometricAlgebra = Algebra<cga::Metric>;
 
     template <class T, int... index>
     using Multivector = typename ConformalGeometricAlgebra::template Multivector<T, index...>;

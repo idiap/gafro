@@ -1,0 +1,10 @@
+#include <gafro/groups/CliffordGroup.hpp>
+#include <gafro/groups/Group.hpp>
+#include <gafro/groups/LieGroup.hpp>
+#include <gafro/groups/MatrixLieGroup.hpp>
+#include <gafro/groups/OrthogonalGroup.hpp>
+#include <gafro/groups/PinGroup.hpp>
+#include <gafro/groups/SpecialEuclideanGroup.hpp>
+#include <gafro/groups/SpecialOrthogonalGroup.hpp>
+#include <gafro/groups/SpinGroup.hpp>
+#include <gafro/groups/Subgroup.hpp>
