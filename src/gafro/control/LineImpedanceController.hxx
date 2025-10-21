@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <gafro_control/LineImpedanceController.hpp>
-#include <gafro_control/RobotModel.hpp>
+#include <gafro/control/LineImpedanceController.hpp>
+#include <gafro/control/RobotModel.hpp>
 
 namespace gafro_control
 {

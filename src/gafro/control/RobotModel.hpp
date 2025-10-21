@@ -58,4 +58,4 @@ namespace gafro_control
 
 }  // namespace gafro_control
 
-#include <gafro_control/RobotModel.hxx>
+#include <gafro/control/RobotModel.hxx>

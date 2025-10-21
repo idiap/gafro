@@ -6,8 +6,10 @@
 
 #pragma once
 
+#include <gafro/robot/ContinuousJoint.hxx>
 #include <gafro/robot/DualManipulator.hxx>
 #include <gafro/robot/FixedJoint.hxx>
+#include <gafro/robot/FreeJoint.hpp>
 #include <gafro/robot/FreeJoint.hxx>
 #include <gafro/robot/Hand.hxx>
 #include <gafro/robot/Joint.hxx>

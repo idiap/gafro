@@ -8,6 +8,7 @@
 
 #include <gafro/gafro_package_config.hpp>
 //
+#include <gafro/robot/ContinuousJoint.hxx>
 #include <gafro/robot/FixedJoint.hxx>
 #include <gafro/robot/FreeJoint.hxx>
 #include <gafro/robot/Joint.hxx>
@@ -311,6 +312,13 @@ namespace gafro
                 joint = std::make_unique<RevoluteJoint<S>>();
 
                 static_cast<RevoluteJoint<S> *>(joint.get())->setAxis(static_cast<RevoluteJoint<T> *>(joints_[j].get())->getAxis());
+
+                break;
+            }
+            case Joint<T>::Type::CONTINUOUS: {
+                joint = std::make_unique<ContinuousJoint<S>>();
+
+                static_cast<ContinuousJoint<S> *>(joint.get())->setAxis(static_cast<ContinuousJoint<T> *>(joints_[j].get())->getAxis());
 
                 break;
             }

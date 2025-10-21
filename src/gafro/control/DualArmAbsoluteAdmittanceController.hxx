@@ -8,8 +8,8 @@
 
 #include <sackmesser/Callbacks.hpp>
 //
-#include <gafro_control/DualArmAbsoluteAdmittanceController.hpp>
-#include <gafro_control/RobotModelDualManipulator.hpp>
+#include <gafro/control/DualArmAbsoluteAdmittanceController.hpp>
+#include <gafro/control/RobotModelDualManipulator.hpp>
 
 namespace gafro_control
 {

@@ -6,8 +6,12 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
             Joint.hxx
             FixedJoint.hpp
             FixedJoint.hxx
+            FreeJoint.hpp
+            FreeJoint.hxx
             RevoluteJoint.hpp
             RevoluteJoint.hxx
+            ContinuousJoint.hpp
+            ContinuousJoint.hxx
             PrismaticJoint.hpp
             PrismaticJoint.hxx
             FreeJoint.hpp
