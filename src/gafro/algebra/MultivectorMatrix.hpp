@@ -17,12 +17,14 @@ namespace gafro
     class MultivectorMatrix
     {
       public:
-        using Type = M<T>;
+        using Type   = M<T>;
         using Matrix = Eigen::Matrix<T, rows * Type::size, cols>;
 
         MultivectorMatrix();
 
         MultivectorMatrix(const Matrix &parameters);
+
+        MultivectorMatrix(const typename Type::Type::template Matrix<rows, cols> &matrix);
 
         virtual ~MultivectorMatrix();
 

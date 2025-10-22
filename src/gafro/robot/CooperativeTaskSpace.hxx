@@ -88,6 +88,28 @@ namespace gafro
     }
 
     template <class T, int size, int dof>
+    typename Point<T>::template Matrix<1, size> CooperativeTaskSpace<T, size, dof>::computePoints(
+      const Eigen::Vector<T, dof> &task_space_configuration) const
+    {
+        typename Point<T>::template Matrix<1, size> points;
+
+        Eigen::VectorX<T> system_configuration = convertToSystemConfiguration(task_space_configuration);
+
+        auto forward_kinematics = this->getSystem()->computeForwardKinematics(system_configuration);
+
+        int i = 0;
+
+        for (const auto &indices : kinematic_chain_joint_indices_)
+        {
+            const auto *kinematic_chain = this->getSystem()->getKinematicChain(indices.first);
+
+            points.setCoefficient(0, i++, forward_kinematics.getJointPose(kinematic_chain->getName()).apply(Point<T>()));
+        }
+
+        return points;
+    }
+
+    template <class T, int size, int dof>
     auto CooperativeTaskSpace<T, size, dof>::computePrimitive(const Eigen::Vector<T, dof> &task_space_configuration) const
     {
         Eigen::VectorX<T> system_configuration = convertToSystemConfiguration(task_space_configuration);
@@ -160,22 +182,22 @@ namespace gafro
 
                 gafro::MultivectorMatrix<T, Motor, 1, 7> analytic_jacobian = kinematic_chain->computeAnalyticJacobian(configuration);
 
-                for (const unsigned &k : indices.second)
+                for (unsigned k = 0; k < 7; ++k)
                 {
                     Point<T> point = analytic_jacobian.getCoefficient(0, k) * Point<T>() * motors[pidx].reverse() +
                                      motors[pidx] * Point<T>() * analytic_jacobian.getCoefficient(0, k).reverse();
 
                     if (pidx == 0)
                     {
-                        circle_jacobian.setCoefficient(0, k, point ^ points[1] ^ points[2]);
+                        circle_jacobian.setCoefficient(0, indices.second[k], point ^ points[1] ^ points[2]);
                     }
                     else if (pidx == 1)
                     {
-                        circle_jacobian.setCoefficient(0, k, points[0] ^ point ^ points[2]);
+                        circle_jacobian.setCoefficient(0, indices.second[k], points[0] ^ point ^ points[2]);
                     }
                     else if (pidx == 2)
                     {
-                        circle_jacobian.setCoefficient(0, k, points[0] ^ points[1] ^ point);
+                        circle_jacobian.setCoefficient(0, indices.second[k], points[0] ^ points[1] ^ point);
                     }
                 }
 

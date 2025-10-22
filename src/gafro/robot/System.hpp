@@ -17,8 +17,8 @@ namespace gafro
     template <class T>
     class ForwardKinematics;
 
-    template <class T>
-    class TaskSpace;
+    template <class T, int size, int dof>
+    class CooperativeTaskSpace;
 
     template <class T>
     class System
@@ -46,8 +46,6 @@ namespace gafro
         void addLink(std::unique_ptr<Link<T>> &&link);
 
         void addKinematicChain(const std::string &name, std::unique_ptr<KinematicChain<T>> &&kinematic_chain);
-
-        void addTaskSpace(const std::string &name, std::unique_ptr<TaskSpace<T>> &&task_space);
 
         void finalize();
 
@@ -136,7 +134,8 @@ namespace gafro
 
         std::vector<const Joint<T> *> getJointChain(const std::string &name) const;
 
-        const TaskSpace<T> *getTaskSpace(const std::string &name) const;
+        template <int size, int dof>
+        CooperativeTaskSpace<T, size, dof> createCooperativeTaskSpace(const std::array<std::string, size> &kinematic_chains) ;
 
         void createKinematicChain(const std::string &joint_name);
 
@@ -163,15 +162,11 @@ namespace gafro
 
         std::vector<std::unique_ptr<KinematicChain<T>>> kinematic_chains_;
 
-        std::vector<std::unique_ptr<TaskSpace<T>>> task_spaces_;
-
         std::map<std::string, Joint<T> *> joints_map_;
 
         std::map<std::string, Link<T> *> links_map_;
 
         std::map<std::string, KinematicChain<T> *> kinematic_chains_map_;
-
-        std::map<std::string, TaskSpace<T> *> task_spaces_map_;
 
         std::string name_;
 

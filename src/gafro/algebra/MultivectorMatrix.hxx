@@ -30,6 +30,18 @@ namespace gafro
     }
 
     template <class T, template <class S> class M, int rows, int cols>
+    MultivectorMatrix<T, M, rows, cols>::MultivectorMatrix(const typename Type::Type::template Matrix<rows, cols> &matrix)
+    {
+        for (unsigned r = 0; r < rows; r++)
+        {
+            for (unsigned c = 0; c < cols; c++)
+            {
+                this->setCoefficient(r, c, Type(matrix.getCoefficient(r, c)));
+            }
+        }
+    }
+
+    template <class T, template <class S> class M, int rows, int cols>
     MultivectorMatrix<T, M, rows, cols>::~MultivectorMatrix()
     {}
 
@@ -358,7 +370,8 @@ namespace gafro
 }  // namespace gafro
 
 template <class T, template <class S> class M, int rows, int cols>
-std::ostream &operator<<(std::ostream &ostream, const gafro::MultivectorMatrix<T, M, rows, cols> &matrix)
+std::ostream &
+  operator<<(std::ostream &ostream, const gafro::MultivectorMatrix<T, M, rows, cols> &matrix)
 {
     ostream << std::endl;
     for (unsigned r = 0; r < rows; r++)
@@ -375,7 +388,8 @@ std::ostream &operator<<(std::ostream &ostream, const gafro::MultivectorMatrix<T
 }
 
 template <class T, template <class S> class M, int rows, int cols>
-gafro::MultivectorMatrix<T, M, rows, cols> operator*(const T &value, const gafro::MultivectorMatrix<T, M, rows, cols> &matrix)
+gafro::MultivectorMatrix<T, M, rows, cols>
+  operator*(const T &value, const gafro::MultivectorMatrix<T, M, rows, cols> &matrix)
 {
     gafro::MultivectorMatrix<T, M, rows, cols> result;
 

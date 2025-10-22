@@ -35,7 +35,7 @@ namespace gafro
         template <class S>
         using Type = typename CooperativePrimitive<S, size>::Type;
 
-        using PrimitiveJacobian = MultivectorMatrix<T, Type, 1, dof>;
+        using PrimitiveJacobian = typename Type<T>::template Matrix<1, dof>;
 
         //
 
@@ -55,6 +55,7 @@ namespace gafro
         // MultivectorMatrix<T, Circle, 1, dof> computeCircleJacobian(const Eigen::VectorX<T> &task_space_configuration) const;
 
         // size == 4
+        typename Point<T>::template Matrix<1, size> computePoints(const Eigen::Vector<T, dof> &task_space_configuration) const;
 
         auto computePrimitive(const Eigen::Vector<T, dof> &task_space_configuration) const;
 
