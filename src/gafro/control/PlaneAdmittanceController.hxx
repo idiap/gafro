@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <gafro_control/PlaneAdmittanceController.hpp>
+#include <gafro/control/PlaneAdmittanceController.hpp>
 
 namespace gafro_control
 {

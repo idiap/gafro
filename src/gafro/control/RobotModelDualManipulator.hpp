@@ -61,4 +61,4 @@ namespace gafro_control
 
 }  // namespace gafro_control
 
-#include <gafro_control/RobotModelDualManipulator.hxx>
+#include <gafro/control/RobotModelDualManipulator.hxx>

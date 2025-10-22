@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <gafro_control/DualArmMotorAdmittanceController.hpp>
+#include <gafro/control/DualArmMotorAdmittanceController.hpp>
 
 namespace gafro_control
 {
