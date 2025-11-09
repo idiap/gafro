@@ -16,11 +16,13 @@ namespace gafro::dqa
     DualQuaternion<T>::DualQuaternion() = default;
 
     template <class T>
-    DualQuaternion<T>::DualQuaternion(const Base &dq) : Base(dq)
+    DualQuaternion<T>::DualQuaternion(const Base &dq)
+      : Base(dq)
     {}
 
     template <class T>
-    DualQuaternion<T>::DualQuaternion(Base &&dq) : Base(std::move(dq))
+    DualQuaternion<T>::DualQuaternion(Base &&dq)
+      : Base(std::move(dq))
     {}
 
     template <class T>
@@ -57,6 +59,20 @@ namespace gafro::dqa
         this->template set<idx::i>(0.0);
         this->template set<idx::j>(0.0);
         this->template set<idx::k>(0.0);
+    }
+
+    template <class T>
+    DualQuaternion<T>::DualQuaternion(const Line<T> &line)
+    {
+        this->template set<idx::scalar>(0.0);
+        this->template set<idx::e>(0.0);
+
+        this->template set<idx::i>(line.template get<idx::i>());
+        this->template set<idx::j>(line.template get<idx::j>());
+        this->template set<idx::k>(line.template get<idx::k>());
+        this->template set<idx::ei>(line.template get<idx::ei>());
+        this->template set<idx::ej>(line.template get<idx::ej>());
+        this->template set<idx::ek>(line.template get<idx::ek>());
     }
 
     template <class T>

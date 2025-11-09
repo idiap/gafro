@@ -33,6 +33,10 @@ namespace gafro
 
         Motor<T> getMotor(const Line &other) const;
 
+        std::pair<Point<T>, Point<T>> computeClosestPoints(const Line &other) const;
+
+        Line<T> computeOrthogonalLine(const Line &other) const;
+
       protected:
       private:
       public:

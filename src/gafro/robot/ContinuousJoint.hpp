@@ -39,6 +39,8 @@ namespace gafro
 
         typename Motor<T>::Generator getCurrentAxis(const Motor<T> &motor) const;
 
+        std::unique_ptr<Joint<T>> copy() const;
+
       protected:
       private:
         Axis axis_;

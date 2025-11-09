@@ -126,4 +126,17 @@ namespace gafro
         return (motor * axis_ * motor.reverse()).template evaluateAs<typename Motor<T>::Generator>();
     }
 
+    template <class T>
+    std::unique_ptr<Joint<T>> ContinuousJoint<T>::copy() const
+    {
+        std::unique_ptr<Joint<T>> joint = std::make_unique<ContinuousJoint<T>>();
+
+        joint->setName(this->getName());
+        joint->setFrame(this->getFrame());
+        joint->setLimits(this->getLimits());
+        static_cast<ContinuousJoint<T> *>(joint.get())->setAxis(this->getAxis());
+
+        return joint;
+    }
+
 }  // namespace gafro
