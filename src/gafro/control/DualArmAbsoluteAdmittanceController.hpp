@@ -10,16 +10,17 @@
 #include <gafro/robot/DualManipulator.hpp>
 //
 #include <orwell/MultiRobotController.hpp>
-#include <orwell/torque/TorqueController.hpp>
+#include <orwell/torque/Controller.hpp>
 
 namespace gafro_control
 {
 
     template <int dof>
-    class DualArmAbsoluteAdmittanceController : public orwell::MultiRobotController<2, dof, orwell::TorqueController>
+    class DualArmAbsoluteAdmittanceController  // : public orwell::MultiRobotController<2, dof, orwell::TorqueController>
     {
       public:
-        DualArmAbsoluteAdmittanceController(const sackmesser::Interface::Ptr &interface, const std::string &name,
+        DualArmAbsoluteAdmittanceController(const sackmesser::Interface::Ptr                               &interface,
+                                            const std::string                                              &name,
                                             const std::shared_ptr<gafro::DualManipulator<double, 2 * dof>> &manipulator);
 
         virtual ~DualArmAbsoluteAdmittanceController();

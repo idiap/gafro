@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gafro/robot/TaskSpace.hpp>
+#include <gafro/control/task_space/TaskSpace.hpp>
 
 namespace gafro
 {

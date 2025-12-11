@@ -19,4 +19,3 @@
 #include <gafro/robot/Quadruped.hxx>
 #include <gafro/robot/RevoluteJoint.hxx>
 #include <gafro/robot/System.hxx>
-#include <gafro/robot/TaskSpace.hpp>

@@ -1,6 +1,7 @@
 #pragma once
 
-#include <gafro/robot/TaskSpace.hpp>
+#include <gafro/control/task_space/TaskSpace.hpp>
+#include <orwell/TaskSpace.hpp>
 
 namespace gafro
 {
@@ -25,7 +26,7 @@ namespace gafro
     };
 
     template <class T, int size, int dof>
-    class CooperativeTaskSpace : public TaskSpace<T>
+    class CooperativeTaskSpace : public orwell::TaskSpace<dof>
     {
       public:
         CooperativeTaskSpace(System<T> *system, const std::array<std::string, size> &kinematic_chains);
@@ -47,23 +48,17 @@ namespace gafro
 
         ForwardKinematics<T> computeForwardKinematics(const Eigen::Vector<T, dof> &task_space_configuration) const;
 
-        // size == 3
-
-        // template <int dof>
-        // Circle<T> computePrimitive(const Eigen::Vector<T, dof> &task_space_configuration) const
-
-        // MultivectorMatrix<T, Circle, 1, dof> computeCircleJacobian(const Eigen::VectorX<T> &task_space_configuration) const;
-
-        // size == 4
         typename Point<T>::template Matrix<1, size> computePoints(const Eigen::Vector<T, dof> &task_space_configuration) const;
 
         auto computePrimitive(const Eigen::Vector<T, dof> &task_space_configuration) const;
 
         PrimitiveJacobian computePrimitiveJacobian(const Eigen::Vector<T, dof> &task_space_configuration) const;
 
-        // MultivectorMatrix<T, Sphere, 1, dof> computeSphereJacobian(const Eigen::VectorX<T> &task_space_configuration) const;
-
         SimilarityTransformation<T> computeSimilarityTransformation(const Eigen::Vector<T, dof> &task_space_configuration) const;
+
+        System<T> *getSystem();
+
+        const System<T> *getSystem() const;
 
       protected:
       private:
@@ -72,8 +67,10 @@ namespace gafro
         std::map<std::string, std::vector<unsigned>> kinematic_chain_joint_indices_;
 
         std::map<unsigned, unsigned> joint_index_map_;
+
+        System<T> *system_;
     };
 
 }  // namespace gafro
 
-#include <gafro/robot/CooperativeTaskSpace.hxx>
+#include <gafro/control/task_space/CooperativeTaskSpace.hxx>

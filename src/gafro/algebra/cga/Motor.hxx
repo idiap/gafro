@@ -176,4 +176,10 @@ namespace gafro
         return Exponential(*static_cast<const Generator *>(&generator));
     }
 
+    template <class T>
+    typename Motor<T>::Exponential Motor<T>::exp(const T &e12, const T &e13, const T &e23, const T &e1i, const T &e2i, const T &e3i)
+    {
+        return Motor<T>::exp(typename Motor<T>::Generator({ e12, e13, e23, e1i, e2i, e3i }));
+    }
+
 }  // namespace gafro

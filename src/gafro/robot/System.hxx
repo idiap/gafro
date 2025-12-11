@@ -19,7 +19,6 @@
 #include <gafro/physics/Twist.hxx>
 #include <gafro/physics/Wrench.hxx>
 //
-#include <gafro/robot/CooperativeTaskSpace.hpp>
 #include <gafro/robot/System.hpp>
 #include <gafro/robot/algorithm/ForwardKinematics.hpp>
 #include <gafro/robot/algorithm/InverseDynamics.hxx>
@@ -539,12 +538,12 @@ namespace gafro
         return link->second;
     }
 
-    template <class T>
-    template <int size, int dof>
-    CooperativeTaskSpace<T, size, dof> System<T>::createCooperativeTaskSpace(const std::array<std::string, size> &kinematic_chains)
-    {
-        return CooperativeTaskSpace<T, size, dof>(this, kinematic_chains);
-    }
+    // template <class T>
+    // template <int size, int dof>
+    // CooperativeTaskSpace<T, size, dof> System<T>::createCooperativeTaskSpace(const std::array<std::string, size> &kinematic_chains)
+    // {
+    //     return CooperativeTaskSpace<T, size, dof>(this, kinematic_chains);
+    // }
 
     template <class T>
     bool System<T>::hasKinematicChain(const std::string &name) const

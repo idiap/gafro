@@ -24,4 +24,4 @@ namespace gafro
 
 }  // namespace gafro
 
-#include <gafro/robot/TaskSpace.hxx>
+#include <gafro/control/task_space/TaskSpace.hxx>

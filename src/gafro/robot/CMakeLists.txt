@@ -42,11 +42,6 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
             KinematicChain.hpp
             KinematicChain.hxx
-
-            TaskSpace.hpp
-            TaskSpace.hxx
-            CooperativeTaskSpace.hpp
-            CooperativeTaskSpace.hxx
         DESTINATION
             ${GAFRO_PREFIX_INCLUDE}/gafro/robot
         COMPONENT
