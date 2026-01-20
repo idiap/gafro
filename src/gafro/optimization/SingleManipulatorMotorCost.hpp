@@ -42,7 +42,7 @@ namespace gafro
             hessian.block(0, 0, dof, dof) = jacobian.transpose() * jacobian;
         }
 
-        Eigen::Matrix<T, 6, dof> getJacobian(const VectorX &x) const
+        Eigen::Matrix<T, 6, dof> getJacobian(const VectorX &state) const
         {
             Eigen::Matrix<T, 6, 8>              jacobian_log = Motor<T>::Logarithm::getJacobian(target_.reverse() * arm_->getEEMotor(state));
             MultivectorMatrix<T, Motor, 1, dof> jacobian_ee  = arm_->getEEAnalyticJacobian(state);

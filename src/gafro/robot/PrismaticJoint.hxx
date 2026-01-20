@@ -94,7 +94,7 @@ namespace gafro
     template <class T>
     Motor<T> PrismaticJoint<T>::getMotorDerivative(const T &displacement) const
     {
-        return this->getFrame() * Scalar<T>(TypeTraits<T>::Value(-0.5)) * this->getAxis() * this->getTranslator(displacement);
+        return Motor<T>::Zero() + this->getFrame() * Scalar<T>(TypeTraits<T>::Value(-0.5)) * this->getAxis() * this->getTranslator(displacement);
     }
 
     template <class T>
