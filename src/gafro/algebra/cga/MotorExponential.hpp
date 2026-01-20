@@ -27,7 +27,7 @@ namespace gafro
                 typename Rotor<T>::Generator b({ generator.template get<blades::e12>(),  //
                                                  generator.template get<blades::e13>(),  //
                                                  generator.template get<blades::e23>() });
-                T theta = b.norm();
+                T                            theta = b.norm();
 
                 typename Translator<T>::Generator t({ generator.template get<blades::e1i>(),  //
                                                       generator.template get<blades::e2i>(),  //
@@ -125,6 +125,7 @@ namespace gafro
             }
             else
             {
+                m1 = TypeTraits<T>::Value(1.0);
                 m2 = TypeTraits<T>::Value(0.5) * b1;
                 m3 = TypeTraits<T>::Value(0.5) * b2;
                 m4 = TypeTraits<T>::Value(0.5) * b3;

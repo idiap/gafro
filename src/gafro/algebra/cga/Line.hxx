@@ -8,6 +8,8 @@
 
 #include <gafro/algebra/cga/Line.hpp>
 #include <gafro/algebra/cga/Point.hpp>
+#include <gafro/algebra/cga/Rotor.hpp>
+#include <gafro/algebra/cga/Vector.hpp>
 
 namespace gafro
 {
@@ -74,6 +76,40 @@ namespace gafro
         auto a = (a1 * a2).evaluate();
 
         return Motor<T>(a * l2l1);
+    }
+
+    template <class T>
+    std::pair<Point<T>, Point<T>> Line<T>::computeClosestPoints(const Line &other) const
+    {
+        static auto cross = [](auto a, auto b) { return 0.5 * (a * b - b * a); };
+        static auto dot   = [](auto a, auto b) { return -0.5 * (a * b + b * a); };
+
+        Line<T> l1 = this->normalized();
+        Line<T> l2 = other.normalized();
+
+        typename Rotor<T>::Generator l1p = (l1 | E0i<T>::One()) * E123<T>::One();
+        typename Rotor<T>::Generator l1d = (l1.dual() | E0<T>::One()) * E123<T>::One();
+        typename Rotor<T>::Generator l2p = (l2 | E0i<T>::One()) * E123<T>::One();
+        typename Rotor<T>::Generator l2d = (l2.dual() | E0<T>::One()) * E123<T>::One();
+
+        Vector<T> p1vec =
+          ((cross(-l1d, cross(l2p, cross(l1p, l2p))) + dot(l2d, cross(l1p, l2p)) * l1p) * E123<T>(-1.0 / cross(l1p, l2p).squaredNorm()));
+
+        Vector<T> p2vec =
+          ((cross(l2d, cross(l1p, cross(l1p, l2p))) - dot(l1d, cross(l1p, l2p)) * l2p) * E123<T>(-1.0 / cross(l1p, l2p).squaredNorm()));
+
+        Point<T> p1(p1vec.vector()[0], p1vec.vector()[1], p1vec.vector()[2]);
+        Point<T> p2(p2vec.vector()[0], p2vec.vector()[1], p2vec.vector()[2]);
+
+        return std::make_pair(p1, p2);
+    }
+
+    template <class T>
+    Line<T> Line<T>::computeOrthogonalLine(const Line &other) const
+    {
+        auto [p1, p2] = computeClosestPoints(other);
+
+        return Line(p1, p2);
     }
 
 }  // namespace gafro

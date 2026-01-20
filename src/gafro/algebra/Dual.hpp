@@ -23,14 +23,18 @@ namespace gafro
 
         using Type = typename GeometricProduct<M, typename M::MAlgebra::template Pseudoscalar<typename M::Vtype>>::Type;
 
-        constexpr static int size = Type::size;
+        constexpr static int  size   = Type::size;
         constexpr static auto blades = Type::blades;
-        constexpr static auto bits = Type::bits;
-        constexpr static auto has = Type::has;
+        constexpr static auto bits   = Type::bits;
+        constexpr static auto has    = Type::has;
 
-        Dual(const M &m1) : Base(m1) {}
+        Dual(const M &m1)
+          : Base(m1)
+        {}
 
-        Dual(M &&m1) : Base(std::move(m1)) {}
+        Dual(M &&m1)
+          : Base(std::move(m1))
+        {}
 
         virtual ~Dual() = default;
 
@@ -38,7 +42,7 @@ namespace gafro
             requires(has(blade))  //
         Vtype get() const
         {
-            return (this->operand() * typename M::MAlgebra::template Pseudoscalar<Vtype>(Vtype(1.0))).template get<blade>();
+            return (this->operand() * typename M::MAlgebra::template Pseudoscalar<Vtype>(Vtype(-1.0))).template get<blade>();
         }
 
       protected:

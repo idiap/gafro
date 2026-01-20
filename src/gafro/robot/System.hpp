@@ -134,8 +134,8 @@ namespace gafro
 
         std::vector<const Joint<T> *> getJointChain(const std::string &name) const;
 
-        template <int size, int dof>
-        CooperativeTaskSpace<T, size, dof> createCooperativeTaskSpace(const std::array<std::string, size> &kinematic_chains) ;
+        // template <int size, int dof>
+        // CooperativeTaskSpace<T, size, dof> createCooperativeTaskSpace(const std::array<std::string, size> &kinematic_chains) ;
 
         void createKinematicChain(const std::string &joint_name);
 

@@ -52,9 +52,7 @@ namespace gafro
                 jacobian_ee.getCoefficient(0, i) = target_.reverse() * jacobian_ee.getCoefficient(0, i);
             }
 
-            Eigen::Matrix<T, 6, dof> jacobian = jacobian_log * jacobian_ee.embed();
-
-            return jacobian;
+            return jacobian_log * jacobian_ee.embed();
         }
 
       private:

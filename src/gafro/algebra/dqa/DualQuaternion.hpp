@@ -21,6 +21,9 @@ namespace gafro::dqa
     class Point;
 
     template <class T>
+    class Line;
+
+    template <class T>
     class Plane;
 
     template <class T>
@@ -111,6 +114,8 @@ namespace gafro::dqa
         DualQuaternion(const Motor<T> &motor);
 
         DualQuaternion(const Point<T> &point);
+
+        DualQuaternion(const Line<T> &plane);
 
         DualQuaternion(const Plane<T> &plane);
 

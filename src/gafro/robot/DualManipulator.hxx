@@ -152,8 +152,8 @@ namespace gafro
 
         this->finalize();
 
-        first_ee_joint_name_ = "first_" + manipulator.getEEKinematicChain()->getName();
-        second_ee_joint_name_ = "second_" + manipulator.getEEKinematicChain()->getName();
+        first_ee_joint_name_ = "first_panda_endeffector_joint";
+        second_ee_joint_name_ = "second_panda_endeffector_joint";
     }
 
     template <class T, int dof>

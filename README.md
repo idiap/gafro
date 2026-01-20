@@ -37,3 +37,14 @@ If you use *gafro* in your research, please cite the
 	  journal = {IEEE Transactions on Robotics},
 	  doi = {10.1109/TRO.2023.3277282}
 	}
+	
+## Core-dev Team
+
+The currently active core developers of gafro are:
+
+- [Tobias Löw](https://tobiloew.ch) : main developer and manager of the project
+- [Philip Abbet](https://www.idiap.ch/~pabbet/) : CI/CD, packaging, Python bindings
+
+## Acknowledgments
+
+The development of gafro is actively supported by the [Idiap Research Institute](https://www.idiap.ch).

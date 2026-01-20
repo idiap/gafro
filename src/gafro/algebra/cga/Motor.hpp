@@ -93,6 +93,8 @@ namespace gafro
 
         static Exponential exp(const Generator &generator);
 
+        static Exponential exp(const T &e12, const T &e13, const T &e23, const T &e1i, const T &e2i, const T &e3i);
+
       public:
     };
 

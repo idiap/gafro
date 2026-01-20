@@ -442,7 +442,7 @@ namespace gafro
     template <class T, int... index>
     void Algebra<M>::Multivector<T, index...>::normalize()
     {
-        T value = norm();
+        T value = abs(norm());
 
         // if (value > 1e-10)
         // {

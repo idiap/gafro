@@ -8,6 +8,7 @@
 
 #include <gafro/gafro_package_config.hpp>
 //
+#include <gafro/robot/ContinuousJoint.hxx>
 #include <gafro/robot/FixedJoint.hxx>
 #include <gafro/robot/FreeJoint.hxx>
 #include <gafro/robot/Joint.hxx>
@@ -18,7 +19,6 @@
 #include <gafro/physics/Twist.hxx>
 #include <gafro/physics/Wrench.hxx>
 //
-#include <gafro/robot/CooperativeTaskSpace.hpp>
 #include <gafro/robot/System.hpp>
 #include <gafro/robot/algorithm/ForwardKinematics.hpp>
 #include <gafro/robot/algorithm/InverseDynamics.hxx>
@@ -302,6 +302,13 @@ namespace gafro
 
                 break;
             }
+            case Joint<T>::Type::CONTINUOUS: {
+                joint = std::make_unique<ContinuousJoint<S>>();
+
+                static_cast<ContinuousJoint<S> *>(joint.get())->setAxis(static_cast<ContinuousJoint<T> *>(joints_[j].get())->getAxis());
+
+                break;
+            }
             case Joint<T>::Type::PRISMATIC: {
                 joint = std::make_unique<PrismaticJoint<S>>();
 
@@ -531,12 +538,12 @@ namespace gafro
         return link->second;
     }
 
-    template <class T>
-    template <int size, int dof>
-    CooperativeTaskSpace<T, size, dof> System<T>::createCooperativeTaskSpace(const std::array<std::string, size> &kinematic_chains)
-    {
-        return CooperativeTaskSpace<T, size, dof>(this, kinematic_chains);
-    }
+    // template <class T>
+    // template <int size, int dof>
+    // CooperativeTaskSpace<T, size, dof> System<T>::createCooperativeTaskSpace(const std::array<std::string, size> &kinematic_chains)
+    // {
+    //     return CooperativeTaskSpace<T, size, dof>(this, kinematic_chains);
+    // }
 
     template <class T>
     bool System<T>::hasKinematicChain(const std::string &name) const
