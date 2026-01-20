@@ -38,13 +38,15 @@ namespace gafro
     }
 
     template <int dof>
-    DualArmMotorObjective<dof>::DualArmMotorObjective() = default;
+    DualArmMotorObjective<dof>::DualArmMotorObjective(const orwell::TaskSpace<dof>::Ptr &task_space)
+      : orwell::TaskSpaceObjective<dof, 12, DualArmMotorReference>(task_space)
+      , is_reached_(false)
+    {}
 
     template <int dof>
-    typename DualArmMotorObjective<dof>::State DualArmMotorObjective<dof>::computeState(const orwell::TaskSpace<dof>::Ptr &task_space,
-                                                                                        const orwell::RobotState<dof>     &robot_state) const
+    typename DualArmMotorObjective<dof>::State DualArmMotorObjective<dof>::computeState(const orwell::RobotState<dof> &robot_state) const
     {
-        auto robot = std::dynamic_pointer_cast<gafro::CooperativeDualTaskSpace<double, dof>>(task_space);
+        auto robot = std::dynamic_pointer_cast<gafro::CooperativeDualTaskSpace<double, dof>>(this->getTaskSpace());
 
         const Eigen::Vector<double, dof> &position = robot_state.getPosition();
         const Eigen::Vector<double, dof> &velocity = robot_state.getVelocity();
@@ -66,6 +68,8 @@ namespace gafro
 
         error.topRows(6)    = -absolute_residual_motor.log().vector();
         error.bottomRows(6) = -relative_residual_motor.log().vector();
+
+        is_reached_ = error.norm() < 1e-6;
 
         error_derivative.topRows(6)    = (-2.0 * gafro::Twist<double>(absolute_motor.reverse() * absolute_motor_dt)).vector();
         error_derivative.bottomRows(6) = (-2.0 * gafro::Twist<double>(relative_motor.reverse() * relative_motor_dt)).vector();
@@ -89,6 +93,35 @@ namespace gafro
         state.setJacobianDerivative(jacobian_derivative);
 
         return state;
+    }
+
+    template <int dof>
+    Eigen::Vector<double, 12> DualArmMotorObjective<dof>::computeError(const orwell::RobotState<dof> &robot_state) const
+    {
+        auto robot = std::dynamic_pointer_cast<gafro::CooperativeDualTaskSpace<double, dof>>(this->getTaskSpace());
+
+        const Eigen::Vector<double, dof> &position = robot_state.getPosition();
+        const Eigen::Vector<double, dof> &velocity = robot_state.getVelocity();
+
+        const gafro::Motor<double> &absolute_target = this->getReference().getAbsoluteTarget();
+        const gafro::Motor<double> &relative_target = this->getReference().getRelativeTarget();
+
+        gafro::Motor<double> absolute_motor = robot->getAbsoluteMotor(position);
+        gafro::Motor<double> relative_motor = robot->getRelativeMotor(position);
+
+        gafro::Motor<double> absolute_residual_motor = absolute_motor.reverse() * absolute_target;
+        gafro::Motor<double> relative_residual_motor = relative_motor.reverse() * relative_target;
+
+        Eigen::Vector<double, 12> error            = Eigen::Vector<double, 12>::Zero();
+        Eigen::Vector<double, 12> error_derivative = Eigen::Vector<double, 12>::Zero();
+
+        return error;
+    }
+
+    template <int dof>
+    bool DualArmMotorObjective<dof>::isReached() const
+    {
+        return is_reached_;
     }
 
 }  // namespace gafro

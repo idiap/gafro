@@ -33,6 +33,7 @@ namespace gafro
         child_joints_   = std::move(other.child_joints_);
         axis_           = std::move(other.axis_);
         visual_         = std::move(other.visual_);
+        collision_      = std::move(other.collision_);
 
         return *this;
     }
@@ -145,6 +146,24 @@ namespace gafro
     }
 
     template <class T>
+    void Link<T>::setCollision(std::unique_ptr<LinkCollision> &&collision)
+    {
+        collision_ = std::move(collision);
+    }
+
+    template <class T>
+    bool Link<T>::hasCollision() const
+    {
+        return collision_ != nullptr;
+    }
+
+    template <class T>
+    const LinkCollision *Link<T>::getCollision() const
+    {
+        return collision_.get();
+    }
+
+    template <class T>
     std::unique_ptr<Link<T>> Link<T>::copy() const
     {
         std::unique_ptr<Link<T>> link = std::make_unique<Link<T>>();
@@ -157,6 +176,10 @@ namespace gafro
         if (this->hasVisual())
         {
             link->setVisual(this->getVisual()->copy());
+        }
+        if (this->hasCollision())
+        {
+            link->setCollision(this->getCollision()->copy());
         }
 
         return link;

@@ -39,9 +39,15 @@ namespace gafro
       public:
         using State = orwell::TaskSpaceState<dof, 12, DualArmMotorReference>;
 
-        DualArmMotorObjective();
+        DualArmMotorObjective(const orwell::TaskSpace<dof>::Ptr &task_space);
 
-        State computeState(const orwell::TaskSpace<dof>::Ptr &task_space, const orwell::RobotState<dof> &robot_state) const;
+        State computeState(const orwell::RobotState<dof> &robot_state) const;
+
+        Eigen::Vector<double, 12> computeError(const orwell::RobotState<dof> &robot_state) const;
+
+        bool isReached() const;
+
+        mutable bool is_reached_;
     };
 
 }  // namespace gafro

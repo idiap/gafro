@@ -58,6 +58,48 @@ namespace gafro
         Motor<double> transform_;
     };
 
+    class LinkCollision
+    {
+      public:
+        enum class Type
+        {
+            SPHERE,
+            MESH,
+            CYLINDER,
+            BOX
+        };
+
+        LinkCollision(const Type &type, const Motor<double> &transform)
+          : type_(type)
+          , transform_(transform)
+        {}
+
+        virtual ~LinkCollision() = default;
+
+        virtual std::unique_ptr<LinkCollision> copy() const = 0;
+
+        const Type &getType() const
+        {
+            return type_;
+        }
+
+        const Motor<double> &getTransform() const
+        {
+            return transform_;
+        }
+
+        template <class Derived>
+        const Derived *cast() const
+        {
+            return static_cast<const Derived *>(this);
+        }
+
+      private:
+        const Type type_;
+
+        Motor<double> transform_;
+    };
+
     template <class T>
     class Link
     {
@@ -108,6 +150,12 @@ namespace gafro
 
         const LinkVisual *getVisual() const;
 
+        void setCollision(std::unique_ptr<LinkCollision> &&visual);
+
+        bool hasCollision() const;
+
+        const LinkCollision *getCollision() const;
+
         std::unique_ptr<Link> copy() const;
 
       private:
@@ -128,5 +176,7 @@ namespace gafro
       public:
       private:
         std::unique_ptr<LinkVisual> visual_;
+
+        std::unique_ptr<LinkCollision> collision_;
     };
 }  // namespace gafro

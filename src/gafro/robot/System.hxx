@@ -275,6 +275,10 @@ namespace gafro
             {
                 link->setVisual(links_[j]->getVisual()->copy());
             }
+            if (links_[j]->hasCollision())
+            {
+                link->setCollision(links_[j]->getCollision()->copy());
+            }
 
             system.addLink(std::move(link));
         }
