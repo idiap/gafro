@@ -1,12 +1,12 @@
 #pragma once
 
-#include <gafro/robot/CooperativeTaskSpace.hpp>
+#include <gafro/control/task_space/CooperativeTaskSpace.hpp>
 
 namespace gafro
 {
     template <class T, int size, int dof>
     CooperativeTaskSpace<T, size, dof>::CooperativeTaskSpace(System<T> *system, const std::array<std::string, size> &kinematic_chains)
-      : TaskSpace<T>(system)
+      : system_(system)
     {
         std::map<std::string, unsigned> actuated_joints;
 
@@ -36,11 +36,25 @@ namespace gafro
             kinematic_chain_joint_indices_.emplace(std::make_pair(kc, joint_indices));
         }
 
+        std::cout << dof << " " << actuated_joints.size() << std::endl;
+
         assert(dof == actuated_joints.size());
     }
 
     template <class T, int size, int dof>
     CooperativeTaskSpace<T, size, dof>::~CooperativeTaskSpace() = default;
+
+    template <class T, int size, int dof>
+    System<T> *CooperativeTaskSpace<T, size, dof>::getSystem()
+    {
+        return system_;
+    }
+
+    template <class T, int size, int dof>
+    const System<T> *CooperativeTaskSpace<T, size, dof>::getSystem() const
+    {
+        return system_;
+    }
 
     template <class T, int size, int dof>
     Eigen::VectorX<T> CooperativeTaskSpace<T, size, dof>::convertToSystemConfiguration(const Eigen::Vector<T, dof> &task_space_configuration) const
@@ -127,6 +141,10 @@ namespace gafro
             points[i++] = forward_kinematics.getJointPose(kinematic_chain->getName()).apply(Point<T>());
         }
 
+        if constexpr (size == 2)
+        {
+            return PointPair<T>(points[0], points[1]);
+        }
         if constexpr (size == 3)
         {
             return Circle<T>(points[0], points[1], points[2]);
@@ -166,6 +184,41 @@ namespace gafro
             points[i] = motors[i].apply(Point<T>());
 
             i++;
+        }
+
+        if constexpr (size == 2)
+        {
+            PrimitiveJacobian pointpair_jacobian;
+
+            int pidx = 0;
+
+            for (const auto &indices : kinematic_chain_joint_indices_)
+            {
+                const auto *kinematic_chain = this->getSystem()->getKinematicChain(indices.first);
+
+                Eigen::Vector<T, 7> configuration = extractKinematicChainConfiguration(indices.first, task_space_configuration);
+
+                gafro::MultivectorMatrix<T, Motor, 1, 7> analytic_jacobian = kinematic_chain->computeAnalyticJacobian(configuration);
+
+                for (unsigned k = 0; k < 7; ++k)
+                {
+                    Point<T> point = analytic_jacobian.getCoefficient(0, k) * Point<T>() * motors[pidx].reverse() +
+                                     motors[pidx] * Point<T>() * analytic_jacobian.getCoefficient(0, k).reverse();
+
+                    if (pidx == 0)
+                    {
+                        pointpair_jacobian.setCoefficient(0, indices.second[k], point ^ points[1]);
+                    }
+                    else if (pidx == 1)
+                    {
+                        pointpair_jacobian.setCoefficient(0, indices.second[k], points[0] ^ point);
+                    }
+                }
+
+                pidx++;
+            }
+
+            return pointpair_jacobian;
         }
 
         if constexpr (size == 3)

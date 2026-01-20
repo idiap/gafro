@@ -12,7 +12,8 @@ namespace gafro
 {
 
     template <class T>
-    Vector<T>::Vector() : Vector<T>(0.0, 0.0, 0.0)
+    Vector<T>::Vector()
+      : Vector<T>(0.0, 0.0, 0.0)
     {}
 
     template <class T>
@@ -24,7 +25,8 @@ namespace gafro
     }
 
     template <class T>
-    Vector<T>::Vector(const Base &other) : Base(other)
+    Vector<T>::Vector(const Base &other)
+      : Base(other)
     {}
 
     template <class T>

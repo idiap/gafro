@@ -68,4 +68,4 @@ namespace gafro_control
 
 }  // namespace gafro_control
 
-#include <gafro_control/DualArmAdmittanceController.hxx>
+#include <gafro/control/DualArmAdmittanceController.hxx>

@@ -27,6 +27,6 @@ namespace gafro_control
 
 }  // namespace gafro_control
 
-#include <gafro_control/LineImpedanceController.hxx>
+#include <gafro/control/LineImpedanceController.hxx>
 
 REGISTER_CLASS(orwell::TorqueController<7>, gafro_control::LineImpedanceController<7>, "line_impedance_controller")

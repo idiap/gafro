@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <gafro_control/DualArmAdmittanceController.hpp>
-#include <gafro_control/RobotModelDualManipulator.hpp>
+#include <gafro/control/DualArmAdmittanceController.hpp>
+#include <gafro/control/RobotModelDualManipulator.hpp>
 
 namespace gafro_control
 {

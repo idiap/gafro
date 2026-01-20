@@ -7,7 +7,7 @@
 #pragma once
 
 #include <gafro/gafro.hpp>
-#include <gafro_control/AdmittanceController.hpp>
+#include <gafro/control/AdmittanceController.hpp>
 
 namespace gafro_control
 {
@@ -38,7 +38,7 @@ namespace gafro_control
 
 }  // namespace gafro_control
 
-#include <gafro_control/PlaneAdmittanceController.hxx>
+#include <gafro/control/PlaneAdmittanceController.hxx>
 
 REGISTER_CLASS(orwell::TorqueController<7>, gafro_control::PlaneAdmittanceTorqueController<7>, "plane_admittance_controller")
 REGISTER_CLASS(orwell::PositionController<7>, gafro_control::PlaneAdmittancePositionController<7>, "plane_admittance_controller")
