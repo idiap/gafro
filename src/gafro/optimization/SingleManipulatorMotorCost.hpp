@@ -16,11 +16,12 @@ namespace gafro
     class SingleManipulatorMotorCost
     {
       public:
-        using VectorX = Eigen::Matrix<T, dof, 1>;
+        using VectorX  = Eigen::Matrix<T, dof, 1>;
         using MatrixXX = Eigen::Matrix<T, dof, dof>;
 
         SingleManipulatorMotorCost(const Manipulator<T, dof> *arm, const Motor<T> &target)  //
-          : target_(target), arm_(arm)
+          : target_(target)
+          , arm_(arm)
         {}
 
         Eigen::Matrix<T, 6, 1> getError(const VectorX &x) const
@@ -31,8 +32,20 @@ namespace gafro
         void getGradientAndHessian(const VectorX &state, VectorX &gradient, MatrixXX &hessian) const
         {
             Eigen::Matrix<T, 6, 1> error = getError(state);
-            Eigen::Matrix<T, 6, 8> jacobian_log = Motor<T>::Logarithm::getJacobian(target_.reverse() * arm_->getEEMotor(state));
-            MultivectorMatrix<T, Motor, 1, dof> jacobian_ee = arm_->getEEAnalyticJacobian(state);
+
+            Eigen::Matrix<T, 6, dof> jacobian = getJacobian(state);
+
+            gradient = VectorX::Zero();
+            hessian  = MatrixXX::Zero();
+
+            gradient.block(0, 0, dof, 1)  = jacobian.transpose() * error;
+            hessian.block(0, 0, dof, dof) = jacobian.transpose() * jacobian;
+        }
+
+        Eigen::Matrix<T, 6, dof> getJacobian(const VectorX &x) const
+        {
+            Eigen::Matrix<T, 6, 8>              jacobian_log = Motor<T>::Logarithm::getJacobian(target_.reverse() * arm_->getEEMotor(state));
+            MultivectorMatrix<T, Motor, 1, dof> jacobian_ee  = arm_->getEEAnalyticJacobian(state);
 
             for (unsigned i = 0; i < dof; ++i)
             {
@@ -41,11 +54,7 @@ namespace gafro
 
             Eigen::Matrix<T, 6, dof> jacobian = jacobian_log * jacobian_ee.embed();
 
-            gradient = VectorX::Zero();
-            hessian = MatrixXX::Zero();
-
-            gradient.block(0, 0, dof, 1) = jacobian.transpose() * error;
-            hessian.block(0, 0, dof, dof) = jacobian.transpose() * jacobian;
+            return jacobian;
         }
 
       private:
