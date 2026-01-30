@@ -194,7 +194,23 @@ TEST_CASE("Default prismatic joint", "[PrismaticJoint]")
 
     SECTION("get motor derivative")
     {
-        REQUIRE_THROWS_AS(joint.getMotorDerivative(M_PI / 2.0), std::runtime_error);
+        auto derivative = joint.getMotorDerivative(M_PI / 2.0);
+
+        auto translator = derivative.getTranslator();
+
+        REQUIRE(translator.get<blades::scalar>() == Approx(0.0));
+        REQUIRE(translator.get<blades::e1i>() == Approx(0.0));
+        REQUIRE(translator.get<blades::e2i>() == Approx(0.0));
+        REQUIRE(translator.get<blades::e3i>() == Approx(0.0));
+
+        auto log = derivative.log();
+
+        REQUIRE(log.get<blades::e23>() == Approx(0.0));
+        REQUIRE(log.get<blades::e13>() == Approx(0.0));
+        REQUIRE(log.get<blades::e12>() == Approx(0.0));
+        REQUIRE(log.get<blades::e1i>() == Approx(0.0));
+        REQUIRE(log.get<blades::e2i>() == Approx(0.0));
+        REQUIRE(log.get<blades::e3i>() == Approx(0.0));
     }
 
     SECTION("get current axis")

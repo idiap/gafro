@@ -290,11 +290,11 @@ TEST_CASE("Multivector get dual", "[Multivector]")
 
     auto dual = mv.dual();
 
-    REQUIRE(dual.get<blades::e123i>() == Approx(-5.0));
-    REQUIRE(dual.get<blades::e0123>() == Approx(-1.0));
-    REQUIRE(dual.get<blades::e012i>() == Approx(-4.0));
-    REQUIRE(dual.get<blades::e023i>() == Approx(-2.0));
-    REQUIRE(dual.get<blades::e013i>() == Approx(3.0));
+    REQUIRE(dual.get<blades::e123i>() == Approx(5.0));
+    REQUIRE(dual.get<blades::e0123>() == Approx(1.0));
+    REQUIRE(dual.get<blades::e012i>() == Approx(4.0));
+    REQUIRE(dual.get<blades::e023i>() == Approx(2.0));
+    REQUIRE(dual.get<blades::e013i>() == Approx(-3.0));
 }
 
 TEST_CASE("Multivector set blade", "[Multivector]")

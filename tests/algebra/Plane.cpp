@@ -20,7 +20,7 @@ TEST_CASE("Plane creation from points", "[Plane]")
 
         auto normal = plane.getNormal();
 
-        REQUIRE(normal.get<blades::e1>() == Approx(1.0));
+        REQUIRE(normal.get<blades::e1>() == Approx(-1.0));
         REQUIRE(normal.get<blades::e2>() == Approx(0.0));
         REQUIRE(normal.get<blades::e3>() == Approx(0.0));
     }
@@ -40,9 +40,9 @@ TEST_CASE("Plane creation from points", "[Plane]")
 
         auto normal = plane.getNormal();
 
-        REQUIRE(normal.get<blades::e1>() == Approx(3.0));
-        REQUIRE(normal.get<blades::e2>() == Approx(3.0));
-        REQUIRE(normal.get<blades::e3>() == Approx(-1.0));
+        REQUIRE(normal.get<blades::e1>() == Approx(-3.0));
+        REQUIRE(normal.get<blades::e2>() == Approx(-3.0));
+        REQUIRE(normal.get<blades::e3>() == Approx(1.0));
     }
 }
 

@@ -637,13 +637,13 @@ TEST_CASE("SingleManipulatorTarget", "[SingleManipulatorTarget]")
             auto error = cost_function.getError({0.0, 0.0, 0.0});
 
             REQUIRE(error.rows() == 1);
-            REQUIRE(error(0, 0) == Approx(-0.995));
+            REQUIRE(error(0, 0) == Approx(0.995));
 
             error = cost_function.getError({0.0, M_PI / 4.0, 0.0});
-            REQUIRE(error(0, 0) == Approx(-0.287893));
+            REQUIRE(error(0, 0) == Approx(0.287893));
 
             error = cost_function.getError({0.0, M_PI / 2.0, 0.0});
-            REQUIRE(error(0, 0) == Approx(0.005));
+            REQUIRE(error(0, 0) == Approx(-0.005));
         }
 
         SECTION("Get jacobian")
@@ -653,15 +653,15 @@ TEST_CASE("SingleManipulatorTarget", "[SingleManipulatorTarget]")
             REQUIRE(jacobian.rows() == 1);
             REQUIRE(jacobian.cols() == 3);
 
-            REQUIRE(jacobian(0, 0) == Approx(4.0));
-            REQUIRE(jacobian(0, 1) == Approx(2.0));
+            REQUIRE(jacobian(0, 0) == Approx(-4.0));
+            REQUIRE(jacobian(0, 1) == Approx(-2.0));
             REQUIRE(jacobian(0, 2) == Approx(0.0));
 
 
             jacobian = cost_function.getJacobian({0.0, M_PI / 4.0, 0.0});
 
-            REQUIRE(jacobian(0, 0) == Approx(2.0));
-            REQUIRE(jacobian(0, 1) == Approx(1.41421));
+            REQUIRE(jacobian(0, 0) == Approx(-2.0));
+            REQUIRE(jacobian(0, 1) == Approx(-1.41421));
             REQUIRE(jacobian(0, 2) == Approx(0.0).margin(1e-3));
 
 

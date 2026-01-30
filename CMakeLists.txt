@@ -26,7 +26,7 @@ find_package(Eigen3 3.4 REQUIRED)
 add_subdirectory(src/${PROJECT_NAME})
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    # add_subdirectory(tests)
+    add_subdirectory(tests)
 endif()
 
 include(CMakePackageConfigHelpers)

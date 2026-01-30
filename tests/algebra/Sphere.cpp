@@ -11,8 +11,8 @@ TEST_CASE("Sphere creation from center and radius", "[Sphere]")
 
         Sphere<double> sphere(center, 1.0);
 
-        REQUIRE(sphere.get<blades::e123i>() == Approx(0.5));
-        REQUIRE(sphere.get<blades::e0123>() == Approx(-1.0));
+        REQUIRE(sphere.get<blades::e123i>() == Approx(-0.5));
+        REQUIRE(sphere.get<blades::e0123>() == Approx(1.0));
         REQUIRE(sphere.get<blades::e012i>() == Approx(0.0));
         REQUIRE(sphere.get<blades::e023i>() == Approx(0.0));
         REQUIRE(sphere.get<blades::e013i>() == Approx(0.0));
@@ -34,11 +34,11 @@ TEST_CASE("Sphere creation from center and radius", "[Sphere]")
 
         Sphere<double> sphere(center, 2.0);
 
-        REQUIRE(sphere.get<blades::e123i>() == Approx(-5.0));
-        REQUIRE(sphere.get<blades::e0123>() == Approx(-1.0));
-        REQUIRE(sphere.get<blades::e012i>() == Approx(-3.0));
-        REQUIRE(sphere.get<blades::e023i>() == Approx(-1.0));
-        REQUIRE(sphere.get<blades::e013i>() == Approx(2.0));
+        REQUIRE(sphere.get<blades::e123i>() == Approx(5.0));
+        REQUIRE(sphere.get<blades::e0123>() == Approx(1.0));
+        REQUIRE(sphere.get<blades::e012i>() == Approx(3.0));
+        REQUIRE(sphere.get<blades::e023i>() == Approx(1.0));
+        REQUIRE(sphere.get<blades::e013i>() == Approx(-2.0));
 
         REQUIRE(sphere.getRadius() == Approx(2.0));
 
@@ -85,8 +85,8 @@ TEST_CASE("Sphere creation from sphere", "[Sphere]")
     Sphere<double> sphere(center, 1.0);
     Sphere<double> sphere2(sphere);
 
-    REQUIRE(sphere2.get<blades::e123i>() == Approx(0.5));
-    REQUIRE(sphere2.get<blades::e0123>() == Approx(-1.0));
+    REQUIRE(sphere2.get<blades::e123i>() == Approx(-0.5));
+    REQUIRE(sphere2.get<blades::e0123>() == Approx(1.0));
     REQUIRE(sphere2.get<blades::e012i>() == Approx(0.0));
     REQUIRE(sphere2.get<blades::e023i>() == Approx(0.0));
     REQUIRE(sphere2.get<blades::e013i>() == Approx(0.0));
